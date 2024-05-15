@@ -1,0 +1,27 @@
+{% load bootstrap_icons %}
+{% if user.is_authenticated %}
+<li class="nav-item dropdown me-2">
+    <a class="nav-link dropdown-toggle" href="#" id="dropdown-utente" role="button"
+        data-bs-toggle="dropdown" aria-expanded="false">
+        <strong><span class="me-1">{% bs_icon 'person-circle' %}</span><span class="text-info-emphasis">{{user}}</span></strong>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-utente">
+        {% comment %} <li><a class="dropdown-item" href="{% url 'profilo'%}">Aggiorna profilo</a></li> {% endcomment %}
+        <li>
+            <a class="dropdown-item" href="{% url 'password_change'%}">
+                Mofica password</a>
+        </li>
+        <li>
+        <hr class="dropdown-divider">
+        </li>
+        <li>
+            <a class="dropdown-item text-danger" href="{% url 'logout'%}">
+            Esci</a>
+        </li>
+    </ul>
+</li>
+{% else %}
+<li class="nav-item">
+    <a class="btn btn-primary" aria-current="page" href="{% url 'login' %}">Login</a>
+</li>
+{% endif %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Login{% endblock title %}
+
+{% block content %}
+<h4>Login</h4>
+<h6>Accedi per utilizzare l'app</h6>
+
+<div class="row row-cols-1 row-cols-lg-2 g-4 mt-2 mb-4">
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-body">
+                <form class="" action="{% url 'login' %}" method="POST" novalidate>
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <input type="submit" value="Login" class="btn btn-primary mt-2">
+                    <input type="hidden" name="next" value="{{ next }}">
+                </form>
+            </div>
+            {% comment %} <div class="card-footer">
+                <a href="{% url 'password_reset' %}">Password dimenticata?</a>
+            </div> {% endcomment %}
+        </div>
+    </div>
+</div>
+{% endblock content %} 

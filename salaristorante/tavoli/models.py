@@ -12,6 +12,7 @@ class Sala(models.Model):
     class Meta:
         verbose_name = "Sala Ristorante"
         verbose_name_plural = "Sale Ristorante"
+        ordering = ["pk"]
 
 
 class Tavolo(models.Model):
@@ -28,3 +29,4 @@ class Tavolo(models.Model):
 
     class Meta:
         verbose_name_plural = "Tavoli"
+        ordering = ["sala", "codice"]

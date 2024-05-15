@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Pianotavoli{% endblock title %}
+
+{% block content %}
+
+<nav>
+    <div class="nav nav-underline mt-2" id="nav-tab" role="tablist">
+        {% for sala in sale %}
+        <button class="nav-link px-2 {% if forloop.counter == 1 %}active{% endif %}" id="nav-{{sala.id}}-tab"
+            data-bs-toggle="tab" data-bs-target="#nav-{{sala.id}}" type="button" role="tab"
+            aria-controls="nav-{{sala.id}}"
+            aria-selected="{% if forloop.counter == 1 %}true{% else %}false{% endif %}">{{sala}}</button>
+        {% empty %}
+        <p>Non ci ancora sono sale ristorante da visualizzare.
+            <br><a href="{% url 'lista_sale'%}">Vai alla lista Sale</a>.
+        </p>
+        {% endfor %}
+    </div>
+</nav>
+<div class="tab-content mt-4" id="nav-tabContent">
+    {% for sala in sale %}
+    <div class="sala-tab tab-pane fade {% if forloop.counter == 1 %}show active{% endif %}" id="nav-{{sala.id}}"
+        role="tabpanel" data-salaid="{{sala.id}}" aria-labelledby="nav-{{sala.id}}-tab">
+        <p>Questa è la tab di sala: {{sala}}</p>
+    </div>
+    {% endfor %}
+</div>
+    
+    
+{% endblock %}
+    

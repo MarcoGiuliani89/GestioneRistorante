@@ -1,0 +1,39 @@
+{% load bootstrap_icons %}
+{% load static %}
+<!-- Footer -->
+<footer class="bg-body-tertiary text-muted" id="footer"> 
+  <section>
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col">
+          <p class="mt-2"><strong>Ristorante</strong> è un'app sviluppata da <strong>Marco Giuliani</strong> per l'hotel <strong>TH-Golf</strong>, di Campo Carlo Magno (Madonna di Campiglio), TN.</p>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Copyright -->
+  <div class="text-center p-4"  style="background-color: rgba(0, 0, 0, 0.05);">
+    © <span id="copyright_year">    
+    </span> Copyright:
+    <a href="https://mgiuliani.it" target="_blank">Marco Giuliani</a>
+  </div>
+  <!-- Copyright -->
+  <div style="background-color: #212529;">
+    <div class="text-end container">
+      <span class="fs-6 font-monospace">web developed by: <a href="https://mgiuliani.it" target="_blank">Marco Giuliani</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const annoCorrente = new Date().getFullYear();
+
+const annoStringa = annoCorrente === 2024 ? "2024" : `2024-${annoCorrente}`;
+
+const elementoHTML = document.getElementById('copyright_year');
+
+elementoHTML.textContent = annoStringa;
+</script>
+<!-- Footer -->

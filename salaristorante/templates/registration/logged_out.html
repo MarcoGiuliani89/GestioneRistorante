@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}Logout{% endblock title %}
+
+{% block content %}
+<h4>Logout completato</h4>
+<h6>Accedi di nuovo per utilizzare l'app</h6>
+<a href="{% url 'login' %}" class="btn btn-primary mt-4">Login</a>
+
+{% endblock content %}
