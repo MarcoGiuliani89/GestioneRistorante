@@ -14,8 +14,30 @@ class Servizio(models.Model):
     data = models.DateField()
     pasto = models.PositiveSmallIntegerField(choices=PASTO_CHOICES)
 
+    @property
+    def formatted_data(self):
+        giorni_settimana = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
+        mesi = [
+            "Gen",
+            "Feb",
+            "Mar",
+            "Apr",
+            "Mag",
+            "Giu",
+            "Lug",
+            "Ago",
+            "Set",
+            "Ott",
+            "Nov",
+            "Dic",
+        ]
+        giorno_settimana = giorni_settimana[self.data.weekday()]
+        mese = mesi[self.data.month - 1]
+        anno = self.data.strftime("%y")
+        return f"{giorno_settimana} {self.data.day} {mese} {anno}"
+
     def __str__(self):
-        return f"{self.data} {self.get_pasto_display()}"
+        return f"{self.formatted_data} - {self.get_pasto_display()}"
 
     class Meta:
         verbose_name_plural = "Servizi"

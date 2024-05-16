@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap_icons %}
+
+
+{% block title %}
+Ospiti  
+{% endblock %}
+
+
+{% block content %}
+
+<h4>Ospiti</h4> 
+
+{% if is_paginated %}
+    {% include 'partials/pagination.html' %}
+{% endif %}
+
+<div class="row">
+    <div class="col">
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th scope="col">Ospite</th>
+                        <th scope="col">Tipologia</th>
+                        <th scope="col"></th>
+                        <th scope="col">In</th>
+                        <th scope="col">Out</th>
+                        <th scope="col">Adulti</th>
+                        <th scope="col">Bambini</th>
+                        <th scope="col">Infant</th>                        
+                        <th scope="col">Note</th>
+                </thead>
+                <tbody>
+                    {% for ospite in ospiti %}
+                    <tr>
+                        <td>
+                            <button class="btn btn-link p-1" data-pkospite="{{ ospite.id }}" data-nome="{{ ospite.nome }}" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                {% bs_icon 'trash' %}
+                            </button>
+                        </td>
+                        <td>
+                            <a class="btn btn-link p-1" href="{% url 'aggiorna_ospite' ospite.id %}">
+                                {% bs_icon 'pencil' %}
+                            </a>
+                        </td>
+                        <td>{{ ospite.nome }}</td>
+                        <td>{{ ospite.get_tipologia_display }}</td>
+                        <td>
+                            <span class="badge 
+                            
+                            {% if ospite.trattamento == 'BB' %}
+                                text-bg-warning
+
+                            {% elif ospite.trattamento == 'HB' %}
+                                text-bg-info
+                                
+                            {% elif ospite.trattamento == 'FB' %}
+                                text-bg-light
+                                
+                            {% elif ospite.trattamento == 'HBB' %}
+                                text-bg-primary
+                                
+                            {% elif ospite.trattamento == 'FBB' %}
+                                text-bg-danger                                
+                            {% endif %}                                
+                            ">
+                                {{ ospite.trattamento }}
+                            </span>                            
+                        </td>
+                        <td>{{ ospite.servizio_arrivo }}</td>
+                        <td>{{ ospite.servizio_partenza }}</td>
+                        <td>{{ ospite.default_adulti }}</td>
+                        <td>{{ ospite.default_bambini }}</td>
+                        <td>{{ ospite.default_infant }}</td>
+                        <td>{{ ospite.note|default_if_none:"" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="">Non sono ancora stati inseriti ospiti</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODALE DINAMICA ELIMINA RIGA -->
+<form method="POST" id="deleteForm">
+    {% csrf_token %}
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModal_label" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="deleteModal_label">Conferma eliminazione ospite</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>      
+          <div class="modal-body">
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+    </div>
+    </form>
+{% endblock %}
+
+
+{% block extra_js %}
+
+    <script src="{% static 'js/lista_ospiti.js' %}"></script>
+
+{% endblock %}

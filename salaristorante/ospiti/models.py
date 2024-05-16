@@ -13,11 +13,11 @@ class Ospite(models.Model):
         (ESTERNI, "Esterni"),
     ]
 
-    BB = 1
-    HB = 2
-    FB = 3
-    HBB = 4
-    FBB = 5
+    BB = "BB"
+    HB = "HB"
+    FB = "FB"
+    HBB = "HBB"
+    FBB = "FBB"
 
     TRATTAMENTO_CHOICES = [
         (BB, "Bed and Breakfast"),
@@ -42,8 +42,8 @@ class Ospite(models.Model):
     default_infant = models.PositiveSmallIntegerField(default=0, blank=True, null=True)
     rooms = models.CharField(max_length=250, blank=True, null=True)
     note = models.CharField(max_length=250, blank=True, null=True)
-    trattamento = models.PositiveSmallIntegerField(
-        choices=TRATTAMENTO_CHOICES, default=HB
+    trattamento = models.CharField(
+        max_length=4, choices=TRATTAMENTO_CHOICES, default=HB
     )
 
     def __str__(self):
@@ -52,4 +52,4 @@ class Ospite(models.Model):
     class Meta:
         verbose_name = "Gruppo di ospiti"
         verbose_name_plural = "Gruppi di ospiti"
-        ordering = ["servizio_arrivo", "nome"]
+        ordering = ["servizio_arrivo", "servizio_partenza", "nome"]
