@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+
+{% block title %}
+Inizializza servizi   
+{% endblock %}
+    
+
+{% block content %}
+<h4>Inizializza un set di servizi consecutivi</h4>
+<h6>Per crearli per tutta la stagione metti le date di apertura e di chiusura (e la prima e ultima tipologia di pasto servito).</h6>
+
+<form method="POST" class="mt-4">
+    {% csrf_token %}
+    <div class="row mt-2 mb-4">
+        <div class="col-12 col-md-8">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-7 mb-2">
+                            {% bootstrap_field form.primo_giorno %}
+                        </div>
+                        <div class="col-5 mb-2">
+                            {% bootstrap_field form.primo_pasto_apertura %}
+                        </div>
+                    </div>
+                    <div class="row">    
+                        <div class="col-7 mb-2">
+                            {% bootstrap_field form.ultimo_giorno %}
+                        </div>
+                        <div class="col-5 mb-2">
+                            {% bootstrap_field form.ultimo_pasto_chiusura %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h6>Nota bene:</h6>
+                            <p class="text-muted">
+                                <span class="text-danger-emphasis">
+                                    Potrebbe servire un po' di tempo per completare l'inizializzazione.
+                                </span><br>Se alcuni servizi dovessero già esistere non saranno duplicati e non sorgeranno errori.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary me-2 my-2">Aggiungi</button>
+                    <a href="{{request.META.HTTP_REFERER}}" class="btn btn-light my-2">Annulla</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

@@ -17,6 +17,10 @@ class Servizio(models.Model):
     def __str__(self):
         return f"{self.data} {self.get_pasto_display()}"
 
+    class Meta:
+        verbose_name_plural = "Servizi"
+        ordering = ["data", "pasto"]
+
 
 class Presenza(models.Model):
     ospite = models.ForeignKey(

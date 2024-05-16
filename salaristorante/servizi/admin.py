@@ -1,3 +1,15 @@
 from django.contrib import admin
+from .models import Servizio
 
-# Register your models here.
+
+@admin.register(Servizio)
+class ServizioAdmin(admin.ModelAdmin):
+    list_display = [
+        "data",
+        "pasto",
+        "pk",
+    ]
+    ordering = ["data", "pasto"]
+    list_filter = [
+        "pasto",
+    ]

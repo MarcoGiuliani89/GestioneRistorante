@@ -25,14 +25,19 @@
         <p>Questa è la tab di sala: {{sala}}</p>
         
         {% for tavolo in sala.tavoli.all %}
-        <p>Tavolo {{tavolo}} ha un numero_int pari a: {{tavolo.numero_int}}</p>
+        <p>Tavolo {{tavolo}}</p>
             
         {% endfor %}
             
     </div>
     {% endfor %}
-</div>
-    
+</div>  
     
 {% endblock %}
+
+
+{% block extra_js %}
+
+    
+{% endblock extra_js %}
     

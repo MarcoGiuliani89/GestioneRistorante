@@ -28,7 +28,7 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     # path('ospiti/', include('ospiti.urls')),
     path("tavoli/", include("tavoli.urls")),
-    # path('servizi/', include('servizi.urls')),
+    path("servizi/", include("servizi.urls")),
     path("", RedirectView.as_view(url="tavoli/", permanent=True)),
 ]
 
