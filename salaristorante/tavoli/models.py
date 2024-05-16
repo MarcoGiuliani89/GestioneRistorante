@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import IntegerField
+from django.db.models.functions import Cast
 from servizi.models import Presenza
 
 
@@ -29,4 +31,3 @@ class Tavolo(models.Model):
 
     class Meta:
         verbose_name_plural = "Tavoli"
-        ordering = ["sala", "codice"]

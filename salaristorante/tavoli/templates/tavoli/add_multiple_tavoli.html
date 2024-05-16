@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+
+{% block title %}
+Aggiunta multipla di tavoli    
+{% endblock %}
+    
+
+{% block content %}
+<h4>Aggiunta multipla di tavoli</h4>
+<h6>Scegli la sala, la quantità da creare e indica il codice di partenza. <br>Se vuoi puoi specificare un n° di posti di default.</h6>
+
+<form method="POST" class="mt-4">
+    {% csrf_token %}
+    <div class="row mt-2 mb-4">
+        <div class="col-12 col-md-8">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-5 mb-2">{% bootstrap_field form.sala %}</div>
+                        <div class="col-7 mb-2">{% bootstrap_field form.num %}</div>
+                        <div class="col-7 mb-2">{% bootstrap_field form.min_cod %}</div>
+                        <div class="col-5 mb-2">{% bootstrap_field form.posti %}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h6>Nota bene:</h6>
+                            <p class="text-muted">I tavoli verranno creati con numeri consecutivi a partire da <strong>Codice del primo tavolo</strong>.
+                                <br> Se esiste già un tavolo con un codice compreso nell'intervallo inserito la
+                                creazione verrà interrotta.
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary me-2 my-2">Aggiungi</button>
+                    <a href="{{request.META.HTTP_REFERER}}" class="btn btn-light my-2">Annulla</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock content %}

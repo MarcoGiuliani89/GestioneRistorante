@@ -23,6 +23,12 @@
     <div class="sala-tab tab-pane fade {% if forloop.counter == 1 %}show active{% endif %}" id="nav-{{sala.id}}"
         role="tabpanel" data-salaid="{{sala.id}}" aria-labelledby="nav-{{sala.id}}-tab">
         <p>Questa è la tab di sala: {{sala}}</p>
+        
+        {% for tavolo in sala.tavoli.all %}
+        <p>Tavolo {{tavolo}} ha un numero_int pari a: {{tavolo.numero_int}}</p>
+            
+        {% endfor %}
+            
     </div>
     {% endfor %}
 </div>
