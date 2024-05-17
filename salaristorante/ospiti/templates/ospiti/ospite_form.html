@@ -8,7 +8,7 @@ Aggiungi Ospite
     
 
 {% block content %}
-<h4>Aggiungi un ospite</h4>
+<h4>{{ form.nome.value | default_if_none:"Aggiungi ospite" }}</h4>
 <h6></h6>
 
 <form method="POST" class="mt-4">
@@ -31,7 +31,7 @@ Aggiungi Ospite
                         <div class="col-4">{% bootstrap_field form.default_bambini %}</div>
                         <div class="col-4">{% bootstrap_field form.default_infant %}</div>
                         <div class="col-12 mb-2 text-muted">
-                            Numero predefinito di prezenze ai pasti per il gruppo o l'ospite. Potrà essere poi aggiornato per ogni <strong>Servizio</strong> se non rimane costante durante tutto il soggiorno.
+                            Numero predefinito di presenze ai pasti per il gruppo o l'ospite. Potrà essere poi aggiornato per ogni <strong>Servizio</strong> se non rimane costante durante tutto il soggiorno.
                         </div>
                     </div>
                     <div class="row mb-2">

@@ -1,5 +1,4 @@
 from datetime import timedelta
-from django.shortcuts import render
 from django.views.generic.edit import FormView
 
 from .forms import InizializzaServiziForm

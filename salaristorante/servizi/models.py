@@ -75,3 +75,5 @@ class Presenza(models.Model):
                 fields=["ospite", "servizio"], name="unique_ospite_servizio"
             )
         ]
+
+        ordering = ["servizio", "ospite"]
