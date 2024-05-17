@@ -29,3 +29,24 @@ class OspiteForm(forms.ModelForm):
             "note": "Note ospite",
             "trattamento": "Trattamento",
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        servizio_arrivo = cleaned_data.get("servizio_arrivo")
+        servizio_partenza = cleaned_data.get("servizio_partenza")
+
+        if servizio_arrivo.data > servizio_partenza.data:
+            self.add_error(
+                "servizio_arrivo",
+                "Il servizio di arrivo deve essere precedente al servizio di partenza.",
+            )
+        elif (
+            servizio_arrivo.data == servizio_partenza.data
+            and servizio_arrivo.pasto >= servizio_partenza.pasto
+        ):
+            self.add_error(
+                "servizio_arrivo",
+                "Il servizio di arrivo deve essere precedente al servizio di partenza.",
+            )
+
+        return cleaned_data

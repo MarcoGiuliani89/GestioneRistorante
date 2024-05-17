@@ -8,7 +8,7 @@ class InizializzaServiziForm(forms.Form):
     """
 
     primo_giorno = forms.DateField(
-        label="Giorno di apertura stagione",
+        label="Primo giorno del periodo",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     primo_pasto_apertura = forms.ChoiceField(
@@ -17,7 +17,7 @@ class InizializzaServiziForm(forms.Form):
         initial=Servizio.CENA,
     )
     ultimo_giorno = forms.DateField(
-        label="Giorno di chiusura stagione",
+        label="Ultimo giorno del periodo",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     ultimo_pasto_chiusura = forms.ChoiceField(
@@ -25,3 +25,16 @@ class InizializzaServiziForm(forms.Form):
         label="Tipologia pasto dell'ultimo servizio",
         initial=Servizio.COLAZIONE,
     )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        primo_giorno = cleaned_data.get("primo_giorno")
+        ultimo_giorno = cleaned_data.get("ultimo_giorno")
+
+        if primo_giorno > ultimo_giorno:
+            self.add_error(
+                "primo_giorno",
+                "La data di apertura deve precedere la data di chiusura del periodo.",
+            )
+
+        return cleaned_data
