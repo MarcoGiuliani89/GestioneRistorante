@@ -3,12 +3,17 @@ from django.shortcuts import render
 from django.views.generic.edit import FormView
 
 from .forms import MultipleTavoliForm
+from .methods import ordinaTavoli
 from .models import Sala, Tavolo
 
 
 # Create your views here.
 def homepage(request):
-    sale = Sala.objects.all()
+    sale = Sala.objects.all().prefetch_related("tavoli")
+
+    for sala in sale:
+        sala.tavoli_ordinati = ordinaTavoli(sala.tavoli.all())
+
     context = {"sale": sale}
 
     return render(request, "tavoli/homepage.html", context)
@@ -26,13 +31,19 @@ class AddMultipleTavoliView(FormView):
         default_posti = form.cleaned_data["posti"]
         errors = []
 
+        # Pre-fetch dei tavoli esistenti per ridurre le query nel loop
+        tavoli_esistenti = set(
+            Tavolo.objects.filter(
+                codice__in=[str(min_cod + c) for c in range(num)]
+            ).values_list("codice", flat=True)
+        )
+
         for c in range(num):
-            t, created = Tavolo.objects.get_or_create(
-                codice=str(min_cod + c),
-                defaults={"sala": sala, "max_posti": default_posti},
-            )
-            if not created:
-                errors.append(f"il tavolo {t.codice} esiste già.")
+            codice = str(min_cod + c)
+            if codice in tavoli_esistenti:
+                errors.append(f"il tavolo {codice} esiste già.")
+            else:
+                Tavolo.objects.create(codice=codice, sala=sala, max_posti=default_posti)
 
         if errors:
             for e in errors:
