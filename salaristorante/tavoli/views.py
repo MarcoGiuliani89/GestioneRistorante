@@ -24,6 +24,7 @@ class AddMultipleTavoliView(FormView):
         num = form.cleaned_data["num"]
         sala = form.cleaned_data["sala"]
         default_posti = form.cleaned_data["posti"]
+        errors = []
 
         for c in range(num):
             t, created = Tavolo.objects.get_or_create(
@@ -31,10 +32,12 @@ class AddMultipleTavoliView(FormView):
                 defaults={"sala": sala, "max_posti": default_posti},
             )
             if not created:
-                messages.error(
-                    self.request,
-                    f"Il tavolo {t.codice} esiste già, creazione tavoli interrotta.",
-                )
-                return super().form_valid(form)
-        messages.success(self.request, "Tavoli creati correttamente")
+                errors.append(f"il tavolo {t.codice} esiste già.")
+
+        if errors:
+            for e in errors:
+                messages.error(self.request, e)
+        else:
+            messages.success(self.request, f"{num} tavoli creati correttamente!")
+
         return super().form_valid(form)
