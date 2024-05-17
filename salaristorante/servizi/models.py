@@ -56,15 +56,12 @@ class Presenza(models.Model):
     infant = models.PositiveSmallIntegerField()
 
     def __str__(self):
-        return f"{self.servizio} {self.ospite} {self.tavolo}"
+        return f"{self.servizio} {self.ospite}"
 
     def save(self, *args, **kwargs):
-        if not self.adulti:
-            self.adulti = self.ospite.default_adulti
-        if not self.bambini:
-            self.bambini = self.ospite.default_bambini
-        if not self.infant:
-            self.infant = self.ospite.default_infant
+        self.adulti = self.adulti or self.ospite.default_adulti
+        self.bambini = self.bambini or self.ospite.default_bambini
+        self.infant = self.infant or self.ospite.default_infant
         super().save(*args, **kwargs)
 
     @property
@@ -73,3 +70,8 @@ class Presenza(models.Model):
 
     class Meta:
         verbose_name_plural = "Presenze"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["ospite", "servizio"], name="unique_ospite_servizio"
+            )
+        ]
