@@ -33,11 +33,11 @@ class Servizio(models.Model):
         ]
         giorno_settimana = giorni_settimana[self.data.weekday()]
         mese = mesi[self.data.month - 1]
-        anno = self.data.strftime("%y")
-        return f"{giorno_settimana} {self.data.day} {mese} {anno}"
+        anno = self.data.strftime("%Y")
+        return f"{giorno_settimana} {self.data.day:02d} {mese} {anno}"
 
     def __str__(self):
-        return f"{self.formatted_data} - {self.get_pasto_display()}"
+        return f"{self.formatted_data} ({self.get_pasto_display()})"
 
     class Meta:
         verbose_name_plural = "Servizi"

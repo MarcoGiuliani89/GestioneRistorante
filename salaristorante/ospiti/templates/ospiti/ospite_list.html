@@ -19,14 +19,13 @@ Ospiti
 <div class="row">
     <div class="col">
         <div class="table-responsive">
-            <table class="table table-sm">
+            <table class="table table-sm table-striped">
                 <thead>
                     <tr>
                         <th scope="col"></th>
                         <th scope="col"></th>
                         <th scope="col">Ospite</th>
                         <th scope="col">Tipologia</th>
-                        <th scope="col"></th>
                         <th scope="col">In</th>
                         <th scope="col">Out</th>
                         <th scope="col">Adulti</th>
@@ -48,8 +47,7 @@ Ospiti
                             </a>
                         </td>
                         <td>{{ ospite.nome }}</td>
-                        <td>{{ ospite.get_tipologia_display }}</td>
-                        <td>
+                        <td>{{ ospite.get_tipologia_display }}</br>
                             <span class="badge 
                             
                             {% if ospite.trattamento == 'BB' %}
@@ -71,8 +69,12 @@ Ospiti
                                 {{ ospite.trattamento }}
                             </span>                            
                         </td>
-                        <td>{{ ospite.servizio_arrivo }}</td>
-                        <td>{{ ospite.servizio_partenza }}</td>
+                        <td class="text-nowrap pe-4">
+                            {{ ospite.servizio_arrivo }}
+                        </td>
+                        <td class="text-nowrap pe-4">
+                            {{ ospite.servizio_partenza }}
+                        </td>
                         <td>{{ ospite.default_adulti }}</td>
                         <td>{{ ospite.default_bambini }}</td>
                         <td>{{ ospite.default_infant }}</td>
@@ -88,7 +90,9 @@ Ospiti
         </div>
     </div>
 </div>
-
+{% if is_paginated %}
+    {% include 'partials/pagination.html' %}
+{% endif %}
 
 <!-- MODALE DINAMICA ELIMINA RIGA -->
 <form method="POST" id="deleteForm">
