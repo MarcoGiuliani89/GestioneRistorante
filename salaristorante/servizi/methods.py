@@ -3,11 +3,11 @@ from ospiti.models import Ospite
 
 
 def prossimoPasto(p):
-    if p == Servizio.COLAZIONE:
-        return Servizio.PRANZO
-    elif p == Servizio.PRANZO:
-        return Servizio.CENA
-    return Servizio.COLAZIONE
+    return (p % 3) + 1
+
+
+def precedentePasto(p):
+    return (p - 1) if p > 1 else 3
 
 
 def aggiorna_presenze_per_ospite(ospite, nuovo_arrivo, nuova_partenza):
