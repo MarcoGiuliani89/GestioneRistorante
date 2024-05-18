@@ -54,11 +54,13 @@ class Presenza(models.Model):
     adulti = models.PositiveSmallIntegerField()
     bambini = models.PositiveSmallIntegerField()
     infant = models.PositiveSmallIntegerField()
+    note = models.CharField(max_length=250, blank=True, null=True)
 
     def __str__(self):
         return f"{self.servizio} {self.ospite}"
 
     def save(self, *args, **kwargs):
+        # se non ho specificato dati sul numero di ospiti per la presenza specifica, uso il numero di default della prenotazione dell'ospite/gruppo
         self.adulti = self.adulti or self.ospite.default_adulti
         self.bambini = self.bambini or self.ospite.default_bambini
         self.infant = self.infant or self.ospite.default_infant
