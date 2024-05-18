@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load bootstrap_icons %}
+{% load static %}
+
+
+{% block title %}
+{{ospite}}  
+{% endblock %}
+    
+
+{% block content %}
+
+<div class="row mt-2 mb-5">
+    <div class="col-12">
+        <div class="card h-100">
+            <div class="card-header d-flex">
+                <div class="me-auto d-flex">
+                    <h4 class="card-title">
+                        {{ospite}} <span class="text-muted"> ({{ospite.get_tipologia_display}})</span>
+                    </h4>
+                </div>                
+                <div class="d-flex">                    
+                    <span class="badge fs-4 me-1
+                            
+                    {% if ospite.trattamento == 'BB' %}
+                        text-bg-warning
+
+                    {% elif ospite.trattamento == 'HB' %}
+                        text-bg-info
+                        
+                    {% elif ospite.trattamento == 'FB' %}
+                        text-bg-light
+                        
+                    {% elif ospite.trattamento == 'HBB' %}
+                        text-bg-primary
+                        
+                    {% elif ospite.trattamento == 'FBB' %}
+                        text-bg-danger                                
+                    {% endif %}                                
+                    ">
+                        {{ ospite.trattamento }}
+                    </span>                      
+                </div>              
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-6">
+                        In: 
+                            <h5 class="text-success-emphasis">{{ospite.servizio_arrivo}}</h5>
+                    </div>
+                    <div class="col-6">
+                        Out: 
+                           <h5 class="text-danger-emphasis">{{ospite.servizio_partenza}}</h5>
+                    </div>     
+                </div>
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <table class="table table-sm table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td>Adulti:</td>
+                                    <td>{{ospite.default_adulti}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Bambini:</td>
+                                    <td>{{ospite.default_bambini}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Infant:</td>
+                                    <td>{{ospite.default_infant}}</td>
+                                </tr>
+                            </tbody>
+                        </table>                        
+                    </div>
+                    <div class="col-6">
+                        {% if ospite.rooms %}
+                            <p>Camere: {{ospite.rooms}}
+                            </p>                           
+                        {% endif %}
+                    </div>    
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        {% if ospite.note %}
+                            <p>Note ospite: 
+                            <br><span class="text-muted">{{ospite.note}}
+                            </span>
+                        {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>           
+        </div>
+    </div>
+</div>
+<div class="row mb-2">
+    <div class="col-12">
+        <h5><span class="me-2 text-success-emphasis">Tavoli liberi nel periodo:</span> Intero soggiorno <span class="ms-2">{% bs_icon 'pencil' %}</span></h5>
+        Seleziona i tavoli che vuoi assegnare a questo ospite/gruppo nel periodo scelto: 
+        <br><small class="text-muted">(L'eventuale badge giallo indica i posti massimi al tavolo)</small>
+    </div>
+</div>
+<div class="row mb-2">
+    <div class="col-12">
+        <div id="tavoli_disponibili">
+            <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div> Loading...
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    const csrftoken = '{{csrf_token}}';
+    const ospite_pk ='{{ospite.pk}}';
+    const ospite_in_pk ='{{ospite.servizio_arrivo.pk}}';
+    const ospite_out_pk ='{{ospite.servizio_partenza.pk}}';
+</script>
+<script src="{% static 'js/simpleAjax.js' %}"></script>
+<script src="{% static 'js/methods.js' %}"></script>
+<script src="{% static 'js/assegna_tavolo.js' %}"></script>
+{% endblock extra_js %}

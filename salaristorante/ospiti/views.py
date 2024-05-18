@@ -1,11 +1,24 @@
 from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView, ListView, DeleteView
+from django.views.generic import (
+    DetailView,
+    CreateView,
+    UpdateView,
+    ListView,
+    DeleteView,
+)
 
 from servizi.methods import aggiorna_presenze_per_ospite
 from salaristorante import settings
 from .models import Ospite
 from .forms import OspiteForm
+
+
+class OspiteDetailView(DetailView):
+    model = Ospite
+    template_name = "ospiti/ospite_detail.html"
+    context_object_name = "ospite"
 
 
 class OspiteCreateView(CreateView):

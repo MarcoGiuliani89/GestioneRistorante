@@ -13,4 +13,4 @@ if (delete_modal) {
         delete_modal.querySelector('.modal-footer').innerHTML = `<button type="button" class="btn btn-secondary"  data-bs-dismiss="modal">Annulla</button>
         <button type="submit" class="btn btn-primary">Conferma</button>`;
     });
-}  
+}

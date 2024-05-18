@@ -1,5 +1,7 @@
 from django import forms
 from .models import Ospite
+from tavoli.models import Tavolo
+from servizi.models import Presenza
 
 
 class OspiteForm(forms.ModelForm):

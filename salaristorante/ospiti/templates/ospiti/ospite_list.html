@@ -24,6 +24,7 @@ Ospiti
                     <tr>
                         <th scope="col"></th>
                         <th scope="col"></th>
+                        <th scope="col"></th>
                         <th scope="col">Ospite</th>
                         <th scope="col">Tipologia</th>
                         <th scope="col">In</th>
@@ -44,6 +45,11 @@ Ospiti
                         <td>
                             <a class="btn btn-link p-1" href="{% url 'aggiorna_ospite' ospite.id %}">
                                 {% bs_icon 'pencil' %}
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-link p-1 table_button" href="{% url 'assegna_tavoli' ospite.id %}">
+                                {% bs_icon 'pin-angle-fill' %}
                             </a>
                         </td>
                         <td>{{ ospite.nome }}</td>
@@ -115,8 +121,6 @@ Ospiti
 {% endblock %}
 
 
-{% block extra_js %}
-
+{% block extra_js %}    
     <script src="{% static 'js/lista_ospiti.js' %}"></script>
-
 {% endblock %}
