@@ -39,6 +39,11 @@ class Servizio(models.Model):
     def __str__(self):
         return f"{self.formatted_data} ({self.get_pasto_display()})"
 
+    @property
+    def str_short(self):
+        pasto_3 = self.get_pasto_display()[:3]
+        return f"{self.formatted_data} ({pasto_3})"
+
     class Meta:
         verbose_name_plural = "Servizi"
         ordering = ["data", "pasto"]

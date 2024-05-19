@@ -1,0 +1,39 @@
+{% load bootstrap_icons %}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h5><span class="me-2 text-success-emphasis">Tavoli liberi nel periodo:</span> Intero soggiorno <span class="ms-2">{% bs_icon 'pencil' %}</span></h5>
+
+<!-- TODO -->
+<div class="alert alert-warning" role="alert">
+    <div class="spinner-grow text-warning spinner-grow-sm" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <strong>TODO:</strong> Modifica del periodo, con aggiornamento API tavoli disponibili
+</div>
+
+
+        Seleziona i tavoli che vuoi assegnare a questo ospite/gruppo nel periodo scelto e salva. 
+        <br><small class="text-muted">(L'eventuale badge <span class="badge rounded-pill bg-warning text-dark">#</span> indica i posti massimi del tavolo)</small>
+    </div>
+</div>
+<div class="row mb-2">
+    <div class="col-12">
+        <button type="button" class="btn btn-primary mt-1 mb-2 me-2" id="assegna_tavoli" disabled>Salva</button>
+        <span class="text-muted">Assegna a {{ospite}} i tavoli selezionati, nel periodo <span class="periodo_selezionato text-success-emphasis">Intero soggiorno</span>.</span><br>
+        <!-- TODO -->
+        <div class="alert alert-danger" role="alert">
+            <div class="spinner-grow text-danger spinner-grow-sm" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <strong>TODO:</strong> Seleziona tavoli e assegna le presenze del periodo ai tavoli selezionati
+        </div>
+    </div>
+    <div class="col-12">
+        <div id="tavoli_disponibili">
+            <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div> Loading...
+        </div>
+    </div>
+</div>

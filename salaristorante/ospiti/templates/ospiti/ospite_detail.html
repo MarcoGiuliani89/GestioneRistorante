@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load bootstrap_icons %}
 {% load static %}
 
 
@@ -93,22 +92,46 @@
         </div>
     </div>
 </div>
-<div class="row mb-2">
-    <div class="col-12">
-        <h5><span class="me-2 text-success-emphasis">Tavoli liberi nel periodo:</span> Intero soggiorno <span class="ms-2">{% bs_icon 'pencil' %}</span></h5>
-        Seleziona i tavoli che vuoi assegnare a questo ospite/gruppo nel periodo scelto: 
-        <br><small class="text-muted">(L'eventuale badge giallo indica i posti massimi al tavolo)</small>
-    </div>
-</div>
-<div class="row mb-2">
-    <div class="col-12">
-        <div id="tavoli_disponibili">
-            <div class="spinner-border spinner-border-sm" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div> Loading...
+
+
+<div class="accordion accordion-flush" id="accordionFlushExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+          Tavoli assengati a {{ospite}}
+        </button>
+      </h2>
+      <div id="flush-collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+            {% include 'ospiti/partials/tavoli_assegnati_ospite.html' %}
         </div>
+      </div>
     </div>
-</div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+          Presenze "IN PIEDI"
+        </button>
+      </h2>
+      <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+            {% include 'ospiti/partials/presenze_in_piedi_ospite.html' %}
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+          Assegna tavoli a {{ospite}}
+        </button>
+      </h2>
+      <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+            {% include 'ospiti/partials/tavoli_disponibili_periodo.html' %}
+        </div>
+      </div>
+    </div>
+  </div>
 
 {% endblock %}
 
@@ -122,5 +145,5 @@
 </script>
 <script src="{% static 'js/simpleAjax.js' %}"></script>
 <script src="{% static 'js/methods.js' %}"></script>
-<script src="{% static 'js/assegna_tavolo.js' %}"></script>
+<script src="{% static 'js/ospite_detail.js' %}"></script>
 {% endblock extra_js %}

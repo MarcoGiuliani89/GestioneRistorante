@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Tavolo
+from servizi.models import Presenza
 
 
 class AssegnaTavoloSerializer(serializers.ModelSerializer):
