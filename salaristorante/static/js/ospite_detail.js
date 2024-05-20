@@ -1,6 +1,14 @@
 const table_tavoli_assegnati = document.getElementById('tavoli_assegnati')
 const container_tavoli_liberi = document.getElementById('tavoli_disponibili')
 
+const select_inizio = document.querySelector('#inizio_periodo')
+const select_fine = document.querySelector('#fine_periodo')
+const verifica_tavoli_btn = document.querySelector('#verifica_tavoli_btn')
+const alert_inizio_fine = document.querySelector('#alert_inizio_fine')
+
+const saveTavoliBtn = document.querySelector('#assegna_tavoli')
+
+
 const trash_icon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"></path><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"></path></svg>`
 
 // ------------------------------------------------------------ //
@@ -45,7 +53,7 @@ function popola_tavoli_assegnati_ospite(tavoli) {
             <td class="text-danger-emphasis">
                 <form action="/tavoli/elimina-presenze-tavolo-periodo/" method="POST">
                     <input type="hidden" name="csrfmiddlewaretoken" value="${csrftoken}">          
-                    <button type="submit" class="btn btn-link text-danger-emphasis my-1 ms-2">${trash_icon}</button>
+                    <button type="submit" class="btn btn-link text-danger-emphasis">${trash_icon}</button>
                     <input type="hidden" name="id_tavolo" value="${tavolo.id}">
                     <input type="hidden" name="id_ospite" value="${ospite_pk}">
                     <input type="hidden" name="presenza_ids" value="${tavolo.presenza_ids}">
@@ -63,10 +71,90 @@ function popola_tavoli_assegnati_ospite(tavoli) {
 
         // Aggiungi la riga al tbody
         tbody.appendChild(row);
-        console.log(tavolo)
     });
 
 }
+
+// ------------------------------------------------------------ //
+// ----------------- SERVIZI PRESENZE OSPITE ------------------ //
+// ------------------------------------------------------------ //
+
+function API_servizi_presenze_ospite(pk) {
+    ajax(`/servizi/api/servizi-presenze/${pk}/`, {
+        method: 'GET',
+        headers: { 'X-CSRFToken': csrftoken },
+        success: (response) => {
+            popola_select_servizi(response.value)
+        },
+        error: (response) => {
+            console.log(`Errore! STATUS: ${response.status}`)
+            console.log(response.statusText)
+            mostraMessaggio("alert-danger", response.statusText, true)
+        }
+    })
+}
+
+API_servizi_presenze_ospite(ospite_pk)
+
+function popola_select_servizi(servizi) {
+    select_inizio.innerHTML = ''
+    select_fine.innerHTML = ''
+
+    servizi.forEach(el => {
+        const option = document.createElement('option')
+        option.value = el.servizio_id
+        option.textContent = el.servizio_text
+        select_inizio.appendChild(option)
+        select_fine.appendChild(option.cloneNode(true))
+    })
+    // Dopo aver recuperato il contenuto delle select abilito il bottone della modale
+    verifica_tavoli_btn.disabled = false
+}
+
+// Al click su 'verifica tavoli':
+// 1. Verifico che select_inizio < select_fine
+// 2. modifico il valore di s_inizio_pk e s_fine_pk
+// 3. modifico il contenuto di #periodo_selezionato
+// 4. richiamo l'API per popolare le navs con i tavoli disponibili nel nuovo periodo
+// 5. modifico i valori dei campi servizio_inizio_id e servizio_fine_id della form del bottone Salva
+//chiudo la modale
+
+verifica_tavoli_btn.addEventListener('click', () => {
+
+    if (select_inizio.selectedIndex > select_fine.selectedIndex) {
+        alert_inizio_fine.classList.remove('d-none')
+        return
+    }
+
+    alert_inizio_fine.classList.add('d-none')
+    s_inizio_pk = select_inizio.value
+    s_fine_pk = select_fine.value
+
+    const periodo_selezionato_array = document.querySelectorAll('.periodo_selezionato')
+
+    periodo_selezionato_array.forEach(el => {
+        if (s_inizio_pk === ospite_in_pk && s_fine_pk === ospite_out_pk) {
+            el.innerHTML = "Intero soggiorno"
+        }
+        else {
+            el.innerHTML = `${select_inizio.options[select_inizio.selectedIndex].text} - ${select_fine.options[select_fine.selectedIndex].text}`
+        }
+    })
+
+    const s_inizio_form_field = document.querySelector('#servizio_inizio_id')
+    const s_fine_form_field = document.querySelector('#servizio_fine_id')
+
+    s_inizio_form_field.value = s_inizio_pk
+    s_fine_form_field.value = s_fine_pk
+
+    container_tavoli_liberi.innerHTML = `
+    <div class="spinner-border spinner-border-sm" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div> Loading...`
+    // richiamo l'API per trovare i tavoli liberi nel nuovo periodo
+    API_tavoli_liberi(s_inizio_pk, s_fine_pk)
+})
+
 
 
 // ------------------------------------------------------------ //
@@ -156,6 +244,7 @@ function popola_tavoli_liberi(tavoli) {
         tavoli.forEach(tavolo => {
             const tavoloBadge = document.createElement('span');
             tavoloBadge.setAttribute('data-tavolo-id', tavolo.id);
+            tavoloBadge.setAttribute('data-selected', false);
             tavoloBadge.setAttribute('role', 'button');
             tavoloBadge.classList.add('badge', 'rounded-pill', 'text-bg-secondary', 'position-relative', 'fs-6');
             tavoloBadge.textContent = `${tavolo.sala_sigla} ${tavolo.codice}`;
@@ -167,6 +256,10 @@ function popola_tavoli_liberi(tavoli) {
                 tavoloBadge.appendChild(maxPostiBadge);
             }
 
+            tavoloBadge.addEventListener('click', () => {
+                toggle_tavolo(tavolo.id);
+            });
+
             tavoliList.appendChild(tavoloBadge);
         });
 
@@ -176,6 +269,43 @@ function popola_tavoli_liberi(tavoli) {
 
     container_tavoli_liberi.appendChild(navTabs);
     container_tavoli_liberi.appendChild(tabContent);
+}
 
-    // Assegno l'event listener ai tavoli
+function toggle_tavolo(tavolo_id) {
+    // Trova l'elemento del tavolo utilizzando il data attribute
+    const tavoloBadge = document.querySelector(`[data-tavolo-id='${tavolo_id}']`);
+    const selected = tavoloBadge.getAttribute('data-selected') === 'true';
+
+    // Cambia la classe del tavolo
+    if (selected) {
+        tavoloBadge.classList.remove('text-bg-primary');
+        tavoloBadge.classList.add('text-bg-secondary');
+    } else {
+        tavoloBadge.classList.remove('text-bg-secondary');
+        tavoloBadge.classList.add('text-bg-primary');
+    }
+
+    // Cambia l'attributo data-selected
+    tavoloBadge.setAttribute('data-selected', !selected);
+
+    // Trova l'input nascosto
+    const hiddenInput = document.getElementById('tavoli_selezionati_ids');
+    let selectedTavoli = JSON.parse(hiddenInput.value);
+
+    // Aggiungi o rimuovi il tavolo.id dal value
+    if (!selected) {
+        selectedTavoli.push(tavolo_id);
+    } else {
+        selectedTavoli = selectedTavoli.filter(id => id !== tavolo_id);
+    }
+
+    // Aggiorna il value dell'input nascosto
+    hiddenInput.value = JSON.stringify(selectedTavoli);
+
+    // Disabilita o abilita il pulsante di salvataggio
+    if (selectedTavoli.length === 0) {
+        saveTavoliBtn.disabled = true;
+    } else {
+        saveTavoliBtn.disabled = false;
+    }
 }

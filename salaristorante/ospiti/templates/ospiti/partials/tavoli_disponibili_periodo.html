@@ -1,32 +1,38 @@
 {% load bootstrap_icons %}
 
-<div class="row mb-4">
-    <div class="col-12">
-        <h5><span class="me-2 text-success-emphasis">Tavoli liberi nel periodo:</span> Intero soggiorno <span class="ms-2">{% bs_icon 'pencil' %}</span></h5>
+<div class="row mb-5">
+    <div class="col-12 ">
+        <h5><span class="me-2">Tavoli liberi nel periodo:</span><span class="text-primary-emphasis periodo_selezionato">Intero soggiorno</span>
+            <button type="button" class="btn btn-link  text-light" data-bs-toggle="modal" data-bs-target="#modaleSelezionePeriodo">
+                {% bs_icon 'pencil' %}
+              </button>
 
-<!-- TODO -->
-<div class="alert alert-warning" role="alert">
-    <div class="spinner-grow text-warning spinner-grow-sm" role="status">
-        <span class="visually-hidden">Loading...</span>
-    </div>
-    <strong>TODO:</strong> Modifica del periodo, con aggiornamento API tavoli disponibili
-</div>
-
-
+        </h5>    
         Seleziona i tavoli che vuoi assegnare a questo ospite/gruppo nel periodo scelto e salva. 
         <br><small class="text-muted">(L'eventuale badge <span class="badge rounded-pill bg-warning text-dark">#</span> indica i posti massimi del tavolo)</small>
     </div>
 </div>
+
 <div class="row mb-2">
     <div class="col-12">
-        <button type="button" class="btn btn-primary mt-1 mb-2 me-2" id="assegna_tavoli" disabled>Salva</button>
-        <span class="text-muted">Assegna a {{ospite}} i tavoli selezionati, nel periodo <span class="periodo_selezionato text-success-emphasis">Intero soggiorno</span>.</span><br>
-        <!-- TODO -->
-        <div class="alert alert-danger" role="alert">
-            <div class="spinner-grow text-danger spinner-grow-sm" role="status">
-                <span class="visually-hidden">Loading...</span>
+        <div class="row mb-2">
+            <div class="col-auto">
+                <form action="{% url 'assegna_presenze_tavoli' %}" method="post" id="assegna_tavoli_form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary mt-1 mb-2 me-2" id="assegna_tavoli" disabled>Salva</button>
+
+                    <input type="hidden" name="ospite_id" id="ospite_id" value="{{ospite.id}}">
+                    <input type="hidden" name="servizio_inizio_id" id="servizio_inizio_id" value="{{ospite.servizio_arrivo.pk}}">
+                    <input type="hidden" name="servizio_fine_id" id="servizio_fine_id" value="{{ospite.servizio_partenza.pk}}">
+                    <input type="hidden" name="tavoli_selezionati_ids" id="tavoli_selezionati_ids" value="[]">
+                </form>
+            </div>        
+            <div class="col">
+                <span class="text-muted">Assegna a {{ospite}} i tavoli selezionati, nel periodo:
+                <br><span class="text-primary-emphasis periodo_selezionato">
+                    Intero soggiorno</span>.
+                </span>
             </div>
-            <strong>TODO:</strong> Seleziona tavoli e assegna le presenze del periodo ai tavoli selezionati
         </div>
     </div>
     <div class="col-12">
@@ -37,3 +43,45 @@
         </div>
     </div>
 </div>
+
+
+<!-- MODALE SELEZIONE PERIODO -->
+<div class="modal modal-lg fade" id="modaleSelezionePeriodo" tabindex="-1" aria-labelledby="modaleSelezionePeriodoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modaleSelezionePeriodoLabel">Seleziona periodo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <h6>Scegli il periodo per il quale vuoi cercare i tavoli liberi</h6>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <strong><small>Da:</small></strong>
+                    <select class="form-select form-select-sm" aria-label="seleziona periodo" id="inizio_periodo">
+                        <option value="{{ospite.servizio_arrivo.pk}}" selected>{{ospite.servizio_arrivo}}</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-6">
+                    <strong><small>A:</small></strong>
+                    <select class="form-select form-select-sm" aria-label="seleziona periodo" id="fine_periodo">
+                        <option value="{{ospite.servizio_partenza.pk}}" selected>{{ospite.servizio_partenza}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-danger-emphasis d-none" id="alert_inizio_fine">Il servizio iniziale deve essere precedente o uguale al servizio finale                    
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                Annulla
+            </button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="verifica_tavoli_btn" disabled>
+                Verifica tavoli
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>

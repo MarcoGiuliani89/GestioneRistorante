@@ -6,9 +6,10 @@ from django.views.generic.edit import FormView
 from .forms import MultipleTavoliForm
 from .methods import ordinaTavoli
 from .models import Sala, Tavolo
+from ospiti.models import Ospite
+from servizi.models import Servizio, Presenza
 
 
-# Create your views here.
 def homepage(request):
     sale = Sala.objects.all().prefetch_related("tavoli")
 
@@ -97,3 +98,57 @@ class EliminaPresenzeTavoloPeriodo(View):
 
         # Reindirizza alla pagina assegna_tavoli dell'ospite corrispondente
         return redirect("assegna_tavoli", pk=id_ospite)
+
+
+class AssegnaPresenzeTavoli(View):
+    """
+    Assegna un set di presenze dell'ospite ai tavoli specificati nel periodo definito dai servizi di inizio e fine.
+    """
+
+    def post(self, request):
+        # Recupera i parametri dalla richiesta POST
+        ospite_id = request.POST.get("ospite_id")
+        tavoli_ids_str = request.POST.get("tavoli_selezionati_ids")
+        servizio_inizio_id = request.POST.get("servizio_inizio_id")
+        servizio_fine_id = request.POST.get("servizio_fine_id")
+
+        # Crea la lista di ID di tavoli da assegnare
+        tavoli_ids_str = tavoli_ids_str.replace("[", "").replace("]", "")
+        tavoli_ids = [int(t) for t in tavoli_ids_str.strip().split(",")]
+
+        # Recupera l'ospite
+        ospite = get_object_or_404(Ospite, id=ospite_id)
+
+        # Recupera i tavoli
+        tavoli = Tavolo.objects.filter(id__in=tavoli_ids)
+
+        # Recupera i servizi di inizio e di fine
+        servizio_inizio = get_object_or_404(Servizio, id=servizio_inizio_id)
+        servizio_fine = get_object_or_404(Servizio, id=servizio_fine_id)
+
+        # Filtra le presenze dell'ospite per includere solo quelle i cui servizi rientrano nel periodo specificato
+        presenze_da_assegnare = (
+            Presenza.objects.filter(
+                ospite=ospite,
+                servizio__data__range=(servizio_inizio.data, servizio_fine.data),
+            )
+            .exclude(
+                servizio__data=servizio_inizio.data,
+                servizio__pasto__lt=servizio_inizio.pasto,
+            )
+            .exclude(
+                servizio__data=servizio_fine.data,
+                servizio__pasto__gt=servizio_fine.pasto,
+            )
+        )
+
+        # Assegna le presenze filtrate ai tavoli specificati
+        for tavolo in tavoli:
+            tavolo.presenze.add(*presenze_da_assegnare)
+
+        # Crea il messaggio di successo
+        success_message = f'Le presenze di "{ospite}" nel periodo scelto sono state assegnate ai tavoli {", ".join([tavolo.codice for tavolo in tavoli])}.'
+        messages.success(request, success_message)
+
+        # Reindirizza alla pagina assegna_tavoli dell'ospite corrispondente
+        return redirect("assegna_tavoli", pk=ospite_id)

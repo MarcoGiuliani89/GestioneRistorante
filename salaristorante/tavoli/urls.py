@@ -4,6 +4,7 @@ from .views import (
     homepage,
     AddMultipleTavoliView,
     EliminaPresenzeTavoloPeriodo,
+    AssegnaPresenzeTavoli,
 )
 
 from .api import TavoliDisponibiliAPI, TavoliAssegnatiAPI
@@ -17,6 +18,11 @@ urlpatterns = [
         "elimina-presenze-tavolo-periodo/",
         EliminaPresenzeTavoloPeriodo.as_view(),
         name="elimina_presenze_tavolo_periodo",
+    ),
+    path(
+        "assegna-presenze-tavoli/",
+        AssegnaPresenzeTavoli.as_view(),
+        name="assegna_presenze_tavoli",
     ),
     # API
     path(
