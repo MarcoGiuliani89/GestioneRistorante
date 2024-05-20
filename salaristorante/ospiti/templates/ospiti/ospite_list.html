@@ -38,21 +38,21 @@ Ospiti
                     {% for ospite in ospiti %}
                     <tr>
                         <td>
-                            <button class="btn btn-link p-1" data-pkospite="{{ ospite.id }}" data-nome="{{ ospite.nome }}" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <button class="btn btn-link p-1" data-pkospite="{{ ospite.id }}" data-nome="{{ ospite.nome }}" data-bs-toggle="modal" data-bs-target="#deleteModal" title="Elimina {{ospite}}">
                                 {% bs_icon 'trash' %}
                             </button>
                         </td>
                         <td>
-                            <a class="btn btn-link p-1" href="{% url 'aggiorna_ospite' ospite.id %}">
+                            <a class="btn btn-link p-1" href="{% url 'aggiorna_ospite' ospite.id %}" title="Modifica {{ospite}}">
                                 {% bs_icon 'pencil' %}
                             </a>
                         </td>
                         <td>
-                            <a class="btn btn-link p-1 table_button" href="{% url 'assegna_tavoli' ospite.id %}">
+                            <a class="btn btn-link p-1 table_button" href="{% url 'assegna_tavoli' ospite.id %}" title="Assegna tavoli a {{ospite}}">
                                 {% bs_icon 'pin-angle-fill' %}
                             </a>
                         </td>
-                        <td>{{ ospite.nome }}</td>
+                        <td>{{ ospite }}</td>
                         <td>{{ ospite.get_tipologia_display }}</br>
                             <span class="badge 
                             

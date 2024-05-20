@@ -51,20 +51,29 @@ class TavoliDisponibiliAPI(APIView):
 
 
 class TavoliAssegnatiAPI(APIView):
+    """
+    API che restituisce tutti i tavoli assegnati all'ospite specificato.
+    """
+
     def get(self, request, ospite_id):
         try:
+            # Tenta di recuperare l'ospite con l'ID fornito
             ospite = Ospite.objects.select_related(
                 "servizio_arrivo", "servizio_partenza"
             ).get(pk=ospite_id)
         except Ospite.DoesNotExist:
+            # Restituisce un errore se l'ospite non viene trovato
             return Response(
                 {"error": "Ospite non trovato"}, status=status.HTTP_404_NOT_FOUND
             )
 
+        # Prepara il prefetch delle presenze per l'ospite specificato
         presenze_prefetch = Prefetch(
             "presenze",
             queryset=Presenza.objects.filter(ospite=ospite).select_related("servizio"),
         )
+
+        # Recupera i tavoli assegnati all'ospite
         tavoli = (
             Tavolo.objects.filter(presenze__ospite=ospite)
             .distinct()
@@ -78,17 +87,22 @@ class TavoliAssegnatiAPI(APIView):
             if not presenze:
                 continue
 
+            # Ordina le presenze per data e pasto
             presenze.sort(key=lambda p: (p.servizio.data, p.servizio.pasto))
             current_period = []
 
+            # Il tavolo assegnato in più righe se i servizi non sono contigui
             for presenza in presenze:
                 if not current_period:
+                    # Se non ho un periodo corrente, lo creo
                     current_period.append(presenza)
                 else:
                     last_servizio = current_period[-1].servizio
+                    # Verifica se il servizio corrente è contiguo all'ultimo servizio del periodo corrente
                     if self.are_contiguous(last_servizio, presenza.servizio, ospite):
                         current_period.append(presenza)
                     else:
+                        # Crea una stringa di periodo per il gruppo corrente di presenze
                         period_string = self.get_period_string(current_period, ospite)
                         response_data.append(
                             self.build_response(tavolo, period_string, current_period)
@@ -96,17 +110,19 @@ class TavoliAssegnatiAPI(APIView):
                         current_period = [presenza]
 
             if current_period:
+                # Gestisce l'ultimo gruppo di presenze
                 period_string = self.get_period_string(current_period, ospite)
                 response_data.append(
                     self.build_response(tavolo, period_string, current_period)
                 )
 
-        # Ordina la risposta in base alle regole specificate
+        # Ordina la risposta in base alle regole specificate in sort_key
         response_data.sort(key=self.sort_key)
 
         return Response(response_data, status=status.HTTP_200_OK)
 
     def are_contiguous(self, last_servizio, current_servizio, ospite):
+        # Verifica se i servizi sono contigui in base al trattamento dell'ospite
         if ospite.trattamento == Ospite.BB:
             return (
                 current_servizio.pasto == Servizio.COLAZIONE
@@ -147,9 +163,11 @@ class TavoliAssegnatiAPI(APIView):
         return False
 
     def get_period_string(self, period, ospite):
+        # Ottiene i servizi di inizio e fine del periodo
         start_servizio = period[0].servizio
         end_servizio = period[-1].servizio
 
+        # Verifica se il periodo copre l'intero soggiorno dell'ospite e componi la stringa che rappresenterà il periodo
         if (
             start_servizio == ospite.servizio_arrivo
             and end_servizio == ospite.servizio_partenza
@@ -159,8 +177,10 @@ class TavoliAssegnatiAPI(APIView):
             return f"{start_servizio.str_short} - {end_servizio.str_short}"
 
     def build_response(self, tavolo, period_string, period):
+        # Costruisce la risposta per ogni tavolo assegnato, includendo gli ID delle presenze dela singola riga
         start_servizio_str = str(period[0].servizio)
         end_servizio_str = str(period[-1].servizio)
+        presenza_ids = [presenza.id for presenza in period]
         return {
             "id": tavolo.id,
             "sala_sigla": tavolo.sala.sigla,
@@ -169,39 +189,45 @@ class TavoliAssegnatiAPI(APIView):
             "periodo": period_string,
             "start_servizio": start_servizio_str,
             "end_servizio": end_servizio_str,
+            "presenza_ids": presenza_ids,
         }
 
     def pasto_str_to_num(self, str):
-        if str == "Colazione":
+        # Converte il nome del pasto in un numero per l'ordinamento
+        if str == "Col":
             return 1
-        elif str == "Pranzo":
+        elif str == "Pra":
             return 2
-        elif str == "Cena":
+        elif str == "Cen":
             return 3
 
     def sort_key(self, item):
-        # elimino eventuali " bis" dal codice del tavolo
+        # Elimina eventuali " bis" dal codice del tavolo
         codice = item["codice"].split()[0]
 
+        # Disponi in cima i tavoli assegnati per all'intero soggiorno, ordinati per codice
         if item["periodo"] == "Intero soggiorno":
-            return (0, None, None)
+            return (0, int(codice))
+
+        # Definisci i criteri di ordinamento per i rimanenti tavoli
 
         # Estrai la data e il pasto dal periodo
         period_parts = item["periodo"].split(" - ")
         start_servizio_parts = period_parts[0].split(" ")
         end_servizio_parts = period_parts[-1].split(" ")
 
-        # Prendi la data e il pasto dal periodo di inizio e fine
+        # Prendi la data e il pasto (convertito in numero) dal periodo di inizio e fine
         start_data = start_servizio_parts[1]
         start_pasto = self.pasto_str_to_num(start_servizio_parts[-1][1:-1])
         end_data = end_servizio_parts[1]
         end_pasto = self.pasto_str_to_num(end_servizio_parts[-1][1:-1])
 
+        # Restituisci i criteri di ordinamento
         return (
             1,
             start_data,
             start_pasto,
             end_data,
             end_pasto,
-            codice,
+            int(codice),
         )

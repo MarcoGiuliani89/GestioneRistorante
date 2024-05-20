@@ -43,7 +43,14 @@ function popola_tavoli_assegnati_ospite(tavoli) {
         // Aggiungi le celle alla riga
         row.innerHTML = `
             <td class="text-danger-emphasis">
-                <div class="my-1 ms-2">${trash_icon}</div>
+                <form action="/tavoli/elimina-presenze-tavolo-periodo/" method="POST">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="${csrftoken}">          
+                    <button type="submit" class="btn btn-link text-danger-emphasis my-1 ms-2">${trash_icon}</button>
+                    <input type="hidden" name="id_tavolo" value="${tavolo.id}">
+                    <input type="hidden" name="id_ospite" value="${ospite_pk}">
+                    <input type="hidden" name="presenza_ids" value="${tavolo.presenza_ids}">
+                    <input type="hidden" name="periodo" value="${tavolo.periodo}">
+                </form>
             </td>
             <td>
                 <span class="badge rounded-pill text-bg-secondary position-relative fs-6 my-1">
@@ -56,6 +63,7 @@ function popola_tavoli_assegnati_ospite(tavoli) {
 
         // Aggiungi la riga al tbody
         tbody.appendChild(row);
+        console.log(tavolo)
     });
 
 }
