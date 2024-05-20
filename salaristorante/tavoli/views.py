@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.db.models import Prefetch
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.generic.edit import FormView
@@ -152,3 +153,39 @@ class AssegnaPresenzeTavoli(View):
 
         # Reindirizza alla pagina assegna_tavoli dell'ospite corrispondente
         return redirect("assegna_tavoli", pk=ospite_id)
+
+
+def togliPresenzeOspite(request, id_ospite):
+    """
+    Togli tutte le presenze di un ospite da tutti i tavoli.
+    """
+    try:
+        # Recupera l'ospite corrispondente all'ID fornito
+        ospite = get_object_or_404(Ospite, id=id_ospite)
+
+        # Recupera tutte le presenze dell'ospite
+        presenze_ospite = ospite.presenze.all()
+
+        if presenze_ospite.exists():
+            # Prefetch tutte le presenze dell'ospite nei tavoli
+            tavoli = Tavolo.objects.prefetch_related(
+                Prefetch("presenze", queryset=presenze_ospite)
+            )
+
+            # Rimuove le presenze dell'ospite da tutti i tavoli
+            for tavolo in tavoli:
+                tavolo.presenze.remove(*presenze_ospite)
+
+        # Crea il messaggio di successo
+        messages.success(
+            request,
+            f"Tutte le presenze di {ospite} sono state rimosse da tutti i tavoli.",
+        )
+
+        # Reindirizza alla pagina assegna_tavoli dell'ospite corrispondente
+        return redirect("assegna_tavoli", pk=id_ospite)
+
+    except Exception as e:
+        # Se si verifica un'eccezione, ritorna una risposta con errore
+        messages.error(request, f"Errore: {str(e)}")
+        return redirect("assegna_tavoli", pk=id_ospite)

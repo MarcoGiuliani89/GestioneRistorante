@@ -1,3 +1,4 @@
+{% load bootstrap_icons %}
 <div class="row">
     <div class="col">
             <div class="table-responsive">
@@ -18,7 +19,16 @@
                             </td>
                         </tr>
                     </tbody>
-                </table>
+                </table>                
             </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <a href="{% url 'togli_presenze_ospite' ospite.id %}" class="btn btn-dark  text-danger-emphasis">
+            <span class="me-1">
+                {% bs_icon 'trash' %}
+            </span>Elimina tutti            
+        </a>
     </div>
 </div>
