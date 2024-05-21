@@ -1,29 +1,25 @@
 from datetime import datetime, timedelta
 from django.conf import settings
+from django.core.cache import cache
 
 from .models import Servizio, Presenza
 from ospiti.models import Ospite
 
 
-def prossimoPasto(p):
-    return (p % 3) + 1
+def set_selected_servizio(user_id, servizio_id):
+    cache_key = f"servizio_selezionato_{user_id}"
+    cache.set(
+        cache_key, servizio_id, timeout=86400
+    )  # Imposta un timeout di 24 ore (86400 secondi)
 
 
-def precedentePasto(p):
-    return (p - 1) if p > 1 else 3
-
-
-# Precalcolo degli orari di inizio dei pasti all'avvio del server (in questo modo evito di doverli ricarlcolare ogni volta che chiamo il metodo get_current_servizio_id)
-COLAZIONE_START = datetime.strptime(
-    settings.ORARI_SERVIZIO_INIZIO["COLAZIONE"], "%H:%M"
-).time()
-PRANZO_START = datetime.strptime(
-    settings.ORARI_SERVIZIO_INIZIO["PRANZO"], "%H:%M"
-).time()
-CENA_START = datetime.strptime(settings.ORARI_SERVIZIO_INIZIO["CENA"], "%H:%M").time()
+def get_selected_servizio(user_id):
+    cache_key = f"servizio_selezionato_{user_id}"
+    return cache.get(cache_key)
 
 
 def get_current_servizio_id():
+    # Ottieni l'id del servizio corrente in base a data e ora attuali
     now = datetime.now()
     current_time = now.time()
     today = now.date()
@@ -43,6 +39,24 @@ def get_current_servizio_id():
 
     servizio = Servizio.objects.filter(data=selected_data, pasto=selected_pasto).first()
     return servizio.id if servizio else None
+
+
+def prossimoPasto(p):
+    return (p % 3) + 1
+
+
+def precedentePasto(p):
+    return (p - 1) if p > 1 else 3
+
+
+# Precalcolo degli orari di inizio dei pasti all'avvio del server (in questo modo evito di doverli ricarlcolare ogni volta che chiamo il metodo get_current_servizio_id)
+COLAZIONE_START = datetime.strptime(
+    settings.ORARI_SERVIZIO_INIZIO["COLAZIONE"], "%H:%M"
+).time()
+PRANZO_START = datetime.strptime(
+    settings.ORARI_SERVIZIO_INIZIO["PRANZO"], "%H:%M"
+).time()
+CENA_START = datetime.strptime(settings.ORARI_SERVIZIO_INIZIO["CENA"], "%H:%M").time()
 
 
 def aggiorna_presenze_per_ospite(ospite, nuovo_arrivo, nuova_partenza):

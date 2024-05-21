@@ -1,5 +1,11 @@
 from django.urls import path
-from .views import InizializzaServiziView
+from .views import (
+    InizializzaServiziView,
+    ServizioPrecedente,
+    ServizioAttuale,
+    ServizioSuccessivo,
+    SelezionaServizioManuale,
+)
 from .api import ServiziPresenzeOspiteAPI
 
 urlpatterns = [
@@ -8,6 +14,18 @@ urlpatterns = [
         "inizializza-servizi/",
         InizializzaServiziView.as_view(),
         name="inizializza_servizi",
+    ),
+    path(
+        "servizio-precedente/", ServizioPrecedente.as_view(), name="servizio_precedente"
+    ),
+    path("servizio-attuale/", ServizioAttuale.as_view(), name="servizio_attuale"),
+    path(
+        "servizio-successivo/", ServizioSuccessivo.as_view(), name="servizio_successivo"
+    ),
+    path(
+        "seleziona-servizio-manuale/",
+        SelezionaServizioManuale.as_view(),
+        name="seleziona_servizio_manuale",
     ),
     # API
     path(

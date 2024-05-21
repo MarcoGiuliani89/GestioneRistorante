@@ -1,12 +1,32 @@
 {% extends 'base.html' %}
+{% load bootstrap_icons %}
 
 {% block title %}Pianotavoli{% endblock title %}
 
 {% block content %}
 
-<div class="row mb-4">
+<div class="row mb-2">
     <div class="col">
         <h3>Pianotavoli di: {{servizio_selezionato}}</h3>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12"><h4>Cambia servizio visualizzato:</h4></div>
+    <div class="col seleziona_servizi">
+        <div class="btn-group btn-group-lg me-3" role="group" aria-label="Segli servizio">
+            <a type="button" class="btn btn-primary" title="Vai al servizio precedente" href="{% url 'servizio_precedente' %}">
+                {% bs_icon 'arrow-left-circle-fill' size='1.1em' %}
+            </a>
+            <a type="button" class="btn btn-primary" title="Vai al servizio attuale" href="{% url 'servizio_attuale' %}">
+                {% bs_icon 'watch' size='1.1em' %}
+            </a>
+            <a type="button" class="btn btn-primary" title="Vai al servizio successivo" href="{% url 'servizio_successivo' %}">
+                {% bs_icon 'arrow-right-circle-fill' size='1.1em' %}
+            </a>
+        </div>
+        <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#selzionaServizio">
+            {% bs_icon 'calendar2-date' size='1.1em' %}           
+        </button>
     </div>
 </div>
 
@@ -19,7 +39,7 @@
             aria-selected="{% if forloop.counter == 1 %}true{% else %}false{% endif %}">{{sala}}</button>
         {% empty %}
         <p>Non ci ancora sono sale ristorante da visualizzare.
-            <br><a href="{% url 'lista_sale'%}">Vai alla lista Sale</a>.
+            <br><a href="#">Vai alla lista Sale</a>.
         </p>
         {% endfor %}
     </div>
@@ -38,7 +58,42 @@
     </div>
     {% endfor %}
 </div>  
-    
+
+<!-- Modal -->
+<form action="{% url 'seleziona_servizio_manuale' %}" method="post">
+    {% csrf_token %}
+<div class="modal fade" id="selzionaServizio" tabindex="-1" aria-labelledby="selzionaServizioLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="selzionaServizioLabel">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-12 col-sm-6">
+                    <label for="data" class="form-label">Seleziona la data:</label>
+                    <input type="date" name="data" id="data" class="form-control" required>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <label for="pasto" class="form-label">Pasto:</label>
+                    <select name="pasto" class="form-select" id="pasto">
+                        <option value="1">Colazione</option>
+                        <option value="2">Pranzo</option>
+                        <option value="3" selected="">Cena</option>
+                      </select>
+                </div>
+            </div>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+          <button type="submit" class="btn btn-primary">Seleziona servizio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+ </form>   
 {% endblock %}
 
 
