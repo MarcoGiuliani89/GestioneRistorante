@@ -44,7 +44,7 @@ class OspiteForm(forms.ModelForm):
             )
         elif (
             servizio_arrivo.data == servizio_partenza.data
-            and servizio_arrivo.pasto >= servizio_partenza.pasto
+            and servizio_arrivo.pasto > servizio_partenza.pasto
         ):
             self.add_error(
                 "servizio_arrivo",

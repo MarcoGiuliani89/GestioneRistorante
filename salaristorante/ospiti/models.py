@@ -3,12 +3,12 @@ from servizi.models import Servizio
 
 
 class Ospite(models.Model):
-    PRIVATI = 1
+    INDIVIDUALI = 1
     GRUPPO = 2
     ESTERNI = 3
 
     TIPOLOGIA_CHOICHES = [
-        (PRIVATI, "Privati"),
+        (INDIVIDUALI, "Individuali"),
         (GRUPPO, "Gruppo"),
         (ESTERNI, "Esterni"),
     ]
@@ -29,7 +29,7 @@ class Ospite(models.Model):
 
     nome = models.CharField(max_length=100)
     tipologia = models.PositiveSmallIntegerField(
-        choices=TIPOLOGIA_CHOICHES, default=PRIVATI
+        choices=TIPOLOGIA_CHOICHES, default=INDIVIDUALI
     )
     servizio_arrivo = models.ForeignKey(
         Servizio, on_delete=models.RESTRICT, related_name="arrivo"

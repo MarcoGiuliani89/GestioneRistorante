@@ -26,6 +26,7 @@ Ospiti
                         <th scope="col"></th>
                         <th scope="col"></th>
                         <th scope="col">Ospite</th>
+                        <th scope="col"></th>
                         <th scope="col">Tipologia</th>
                         <th scope="col">In</th>
                         <th scope="col">Out</th>
@@ -53,26 +54,42 @@ Ospiti
                             </a>
                         </td>
                         <td><strong>{{ ospite }}</strong></td>
-                        <td>{{ ospite.get_tipologia_display }}</br>
+                        <td class="text-center">
                             <span class="badge 
                             
                             {% if ospite.trattamento == 'BB' %}
-                                text-bg-warning
+                                text-bg-light
 
                             {% elif ospite.trattamento == 'HB' %}
-                                text-bg-info
+                                text-bg-primary
                                 
                             {% elif ospite.trattamento == 'FB' %}
-                                text-bg-light
+                                text-bg-success
                                 
                             {% elif ospite.trattamento == 'HBB' %}
-                                text-bg-primary
+                                text-bg-warning
                                 
                             {% elif ospite.trattamento == 'FBB' %}
                                 text-bg-danger                                
                             {% endif %}                                
                             ">
                                 {{ ospite.trattamento }}
+                            </span>                            
+                        </td>
+                        <td class="text-center">
+                            <span class="badge rounded-pill
+                            
+                            {% if ospite.get_tipologia_display == 'Individuali' %}
+                                text-bg-primary
+
+                            {% elif ospite.get_tipologia_display == 'Gruppo' %}
+                                text-bg-secondary
+                                
+                            {% elif ospite.get_tipologia_display == 'Esterni' %}
+                                text-bg-danger                                
+                            {% endif %}                                
+                            ">
+                                {{ ospite.get_tipologia_display }}
                             </span>                            
                         </td>
                         <td class="text-nowrap pe-4">
