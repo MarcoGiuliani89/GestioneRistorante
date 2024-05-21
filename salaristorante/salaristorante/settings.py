@@ -136,6 +136,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static_root/")
 
 LOGIN_REDIRECT_URL = "/"
 
+# Orari di default per mostrare il servizio scelto in automatico
+# (potranno poi essere sovrascritti da local_settings.py)
+# Sono impostati per mostrare già nelle ore di preparazione della sala il servizio successivo
+ORARI_SERVIZIO_INIZIO = {
+    "COLAZIONE": "04:00",
+    "PRANZO": "12:00",
+    "CENA": "15:00",
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

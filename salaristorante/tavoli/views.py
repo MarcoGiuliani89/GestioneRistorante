@@ -8,17 +8,32 @@ from .forms import MultipleTavoliForm
 from .methods import ordinaTavoli
 from .models import Sala, Tavolo
 from ospiti.models import Ospite
+from servizi.methods import get_current_servizio_id
 from servizi.models import Servizio, Presenza
 
 
 def homepage(request):
+    # Recupera tutte le sale con i tavoli prefetchati
     sale = Sala.objects.all().prefetch_related("tavoli")
 
+    # Ordina i tavoli per ciascuna sala
     for sala in sale:
         sala.tavoli_ordinati = ordinaTavoli(sala.tavoli.all())
 
-    context = {"sale": sale}
+    # Ottieni il servizio selezionato corrente o il primo servizio disponibile
+    servizio_selezionato_id = get_current_servizio_id()
+    servizio_selezionato = (
+        Servizio.objects.filter(id=servizio_selezionato_id).first()
+        or Servizio.objects.order_by("data", "pasto").first()
+    )
 
+    # Prepara il contesto per il template
+    context = {
+        "sale": sale,
+        "servizio_selezionato": servizio_selezionato,
+    }
+
+    # Renderizza la pagina homepage con il contesto
     return render(request, "tavoli/homepage.html", context)
 
 

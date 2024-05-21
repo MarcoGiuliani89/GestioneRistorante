@@ -1,4 +1,6 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
+from django.conf import settings
+
 from .models import Servizio, Presenza
 from ospiti.models import Ospite
 
@@ -9,6 +11,38 @@ def prossimoPasto(p):
 
 def precedentePasto(p):
     return (p - 1) if p > 1 else 3
+
+
+# Precalcolo degli orari di inizio dei pasti all'avvio del server (in questo modo evito di doverli ricarlcolare ogni volta che chiamo il metodo get_current_servizio_id)
+COLAZIONE_START = datetime.strptime(
+    settings.ORARI_SERVIZIO_INIZIO["COLAZIONE"], "%H:%M"
+).time()
+PRANZO_START = datetime.strptime(
+    settings.ORARI_SERVIZIO_INIZIO["PRANZO"], "%H:%M"
+).time()
+CENA_START = datetime.strptime(settings.ORARI_SERVIZIO_INIZIO["CENA"], "%H:%M").time()
+
+
+def get_current_servizio_id():
+    now = datetime.now()
+    current_time = now.time()
+    today = now.date()
+
+    if COLAZIONE_START <= current_time < PRANZO_START:
+        selected_pasto = Servizio.COLAZIONE
+        selected_data = today
+    elif PRANZO_START <= current_time < CENA_START:
+        selected_pasto = Servizio.PRANZO
+        selected_data = today
+    else:
+        # CENA, con data di oggi, oppure di ieri se siamo tra mezzanote e COLAZIONE_START
+        selected_pasto = Servizio.CENA
+        selected_data = (
+            today if current_time >= CENA_START else today - timedelta(days=1)
+        )
+
+    servizio = Servizio.objects.filter(data=selected_data, pasto=selected_pasto).first()
+    return servizio.id if servizio else None
 
 
 def aggiorna_presenze_per_ospite(ospite, nuovo_arrivo, nuova_partenza):
