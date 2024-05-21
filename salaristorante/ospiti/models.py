@@ -46,6 +46,10 @@ class Ospite(models.Model):
         max_length=4, choices=TRATTAMENTO_CHOICES, default=HB
     )
 
+    @property
+    def presenze_in_piedi(self):
+        return self.presenze.filter(tavoli__isnull=True).exists()
+
     def __str__(self):
         return f"{self.nome}"
 

@@ -13,38 +13,58 @@
 <div class="row mt-2 mb-5">
     <div class="col-12">
         <div class="card h-100">
-            <div class="card-header d-flex">
-                <div class="me-auto d-flex">                    
-                    <h4 class="card-title">
-                        <span class="badge fs-4 me-2
-                            
-                            {% if ospite.trattamento == 'BB' %}
-                                text-bg-warning
+            <div class="card-header">
+                <div class="row">
+                    <div class="col">
+                        <h4 class="card-title">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-auto">
+                                    <span class="badge fs-4 me-2
+                                        
+                                        {% if ospite.trattamento == 'BB' %}
+                                            text-bg-warning
 
-                            {% elif ospite.trattamento == 'HB' %}
-                                text-bg-info
-                                
-                            {% elif ospite.trattamento == 'FB' %}
-                                text-bg-light
-                                
-                            {% elif ospite.trattamento == 'HBB' %}
-                                text-bg-primary
-                                
-                            {% elif ospite.trattamento == 'FBB' %}
-                                text-bg-danger                                
-                            {% endif %}                                
-                            ">
-                                {{ ospite.trattamento }}
-                        </span>   
-                        
-                        {{ospite}} <span class="text-muted"> ({{ospite.get_tipologia_display}})</span>
-                    </h4>
-                </div>                
-                <div class="d-flex">
-                    <a class="btn btn-link p-1 me-2" href="{% url 'aggiorna_ospite' ospite.id %}" title="Modifica {{ospite}}">
-                            {% bs_icon 'pencil' %}
-                    </a>                    
-                </div>              
+                                        {% elif ospite.trattamento == 'HB' %}
+                                            text-bg-info
+                                            
+                                        {% elif ospite.trattamento == 'FB' %}
+                                            text-bg-light
+                                            
+                                        {% elif ospite.trattamento == 'HBB' %}
+                                            text-bg-primary
+                                            
+                                        {% elif ospite.trattamento == 'FBB' %}
+                                            text-bg-danger                                
+                                        {% endif %}                                
+                                        ">
+                                            {{ ospite.trattamento }}
+                                    </span>
+                                </div>                            
+                                <div class="col">{{ospite}}</div>
+                                <div class="col-auto">
+                                    <span class="badge rounded-pill
+                                        {% if ospite.get_tipologia_display == 'Individuali' %}
+                                        text-bg-primary
+
+                                        {% elif ospite.get_tipologia_display == 'Gruppo' %}
+                                            text-bg-secondary
+                                            
+                                        {% elif ospite.get_tipologia_display == 'Esterni' %}
+                                            text-bg-danger
+                                        {% endif %}
+                                    ">
+                                        {{ospite.get_tipologia_display}}
+                                    </span>
+                                </div>
+                            </div>
+                        </h4>
+                    </div>
+                    <div class="col-auto">
+                        <a class="btn btn-link p-1 me-2" href="{% url 'aggiorna_ospite' ospite.id %}" title="Modifica {{ospite}}">
+                                {% bs_icon 'pencil' %}
+                        </a>
+                    </div>
+                </div>                    
             </div>
             <div class="card-body">
                 <div class="row mb-4">
