@@ -36,8 +36,8 @@ function API_tavoli_assegnati_ospite() {
             popola_tavoli_assegnati_ospite(response.value)
         },
         error: (response) => {
-            console.log(`Errore! STATUS: ${response.status}`)
-            console.log(response.statusText)
+            console.error(`Errore! STATUS: ${response.status}`)
+            console.error(response.statusText)
             mostraMessaggio("alert-danger", response.statusText, true)
 
         }
@@ -112,8 +112,8 @@ function API_servizi_in_piedi_ospite() {
             popola_servizi_in_piedi(response.value.periodi_non_assegnati)
         },
         error: (response) => {
-            console.log(`Errore! STATUS: ${response.status}`)
-            console.log(response.statusText)
+            console.error(`Errore! STATUS: ${response.status}`)
+            console.error(response.statusText)
             mostraMessaggio("alert-danger", response.statusText, true)
         }
     })
@@ -187,8 +187,8 @@ function API_servizi_presenze_ospite(pk) {
             popola_select_servizi(response.value)
         },
         error: (response) => {
-            console.log(`Errore! STATUS: ${response.status}`)
-            console.log(response.statusText)
+            console.error(`Errore! STATUS: ${response.status}`)
+            console.error(response.statusText)
             mostraMessaggio("alert-danger", response.statusText, true)
         }
     })
@@ -280,8 +280,8 @@ function API_tavoli_liberi(servizio_inizio_id, servizio_fine_id) {
 
         },
         error: (response) => {
-            console.log(`Errore! STATUS: ${response.status}`)
-            console.log(response.statusText)
+            console.error(`Errore! STATUS: ${response.status}`)
+            console.error(response.statusText)
             mostraMessaggio("alert-danger", response.statusText, true)
         }
 

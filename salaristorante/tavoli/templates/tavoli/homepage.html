@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load bootstrap_icons %}
 
+{% load static %}
+
 {% block title %}Pianotavoli{% endblock title %}
 
 {% block content %}
@@ -90,7 +92,7 @@
                 </thead>
                 <tbody>
                     {% for tavolo in sala.tavoli_ordinati %}
-                    <tr>
+                    <tr data-tavoloid="{{tavolo.id}}">
                         <td>{{tavolo}}</td>
                         <td></td>
                         <td></td>
@@ -154,7 +156,11 @@
 
 
 {% block extra_js %}
-
-    
+<script>
+    const csrftoken = '{{csrf_token}}';
+</script>
+<script src="{% static 'js/simpleAjax.js' %}"></script>
+<script src="{% static 'js/methods.js' %}"></script>
+<script src="{% static 'js/homepage.js' %}"></script>
 {% endblock extra_js %}
     

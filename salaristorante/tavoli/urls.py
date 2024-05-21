@@ -12,6 +12,7 @@ from .api import (
     TavoliDisponibiliAPI,
     TavoliAssegnatiAPI,
     PeriodiInPiediOspite,
+    DatiTavoloServizioAPI,
 )
 
 
@@ -49,5 +50,10 @@ urlpatterns = [
         "api/periodi-in-piedi-ospite/",
         PeriodiInPiediOspite.as_view(),
         name="api_periodi_in_piedi_ospite",
+    ),
+    path(
+        "api/dati-tavolo-servizio/<int:tavolo_id>/",
+        DatiTavoloServizioAPI.as_view(),
+        name="api_dati_tavolo_servizio",
     ),
 ]

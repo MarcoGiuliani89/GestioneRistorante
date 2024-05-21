@@ -8,7 +8,11 @@ from .methods import ordinaTavoli
 from .models import Tavolo
 from .serializers import AssegnaTavoloSerializer
 from ospiti.models import Ospite
-from servizi.methods import are_contiguous
+from servizi.methods import (
+    are_contiguous,
+    get_selected_servizio,
+    get_current_servizio_id,
+)
 from servizi.models import Servizio, Presenza
 
 
@@ -202,7 +206,6 @@ class PeriodiInPiediOspite(APIView):
 
     def get(self, request):
         id_ospite = request.query_params.get("id_ospite")
-        print(f"GET PERIODI IN PIEDI OSPITE {id_ospite}")
         ospite = get_object_or_404(Ospite, id=id_ospite)
         trattamento = ospite.trattamento
 
@@ -262,3 +265,55 @@ class PeriodiInPiediOspite(APIView):
         return Response(
             {"periodi_non_assegnati": response_data}, status=status.HTTP_200_OK
         )
+
+
+class DatiTavoloServizioAPI(APIView):
+
+    def get(self, request, tavolo_id):
+        user_id = request.user.id
+
+        # Recupera il servizio selezionato dalla cache
+        servizio_selezionato_id = get_selected_servizio(user_id)
+
+        # Se non c'è un servizio selezionato, utilizza get_current_servizio_id
+        if not servizio_selezionato_id:
+            servizio_selezionato_id = get_current_servizio_id()
+
+        # Recupera il tavolo
+        tavolo = get_object_or_404(Tavolo, id=tavolo_id)
+
+        # Recupera la presenza per il servizio selezionato
+        presenza = (
+            tavolo.presenze.filter(servizio_id=servizio_selezionato_id)
+            .select_related("ospite")
+            .first()
+        )
+
+        if presenza:
+            data = {
+                "ospite": presenza.ospite.nome,
+                "tipologia": presenza.ospite.get_tipologia_display(),
+                "trattamento": presenza.ospite.get_trattamento_display(),
+                "adulti": presenza.adulti,
+                "bambini": presenza.bambini,
+                "infant": presenza.infant,
+                "note_servizio": presenza.note,
+                "utilizzabile": tavolo.utilizzabile,
+                "max_posti": tavolo.max_posti,
+                "note_tavolo": tavolo.note,
+            }
+        else:
+            data = {
+                "ospite": None,
+                "tipologia": None,
+                "trattamento": None,
+                "adulti": None,
+                "bambini": None,
+                "infant": None,
+                "note_servizio": None,
+                "utilizzabile": tavolo.utilizzabile,
+                "max_posti": tavolo.max_posti,
+                "note_tavolo": tavolo.note,
+            }
+
+        return Response(data, status=status.HTTP_200_OK)
