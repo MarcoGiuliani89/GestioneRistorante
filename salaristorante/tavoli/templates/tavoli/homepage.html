@@ -30,6 +30,29 @@
     </div>
 </div>
 
+<!-- TODO -->
+<div class="alert alert-warning" role="alert">
+    <strong>TO DO: </strong><br>
+    <ul>
+        <li>API per recuperare i dati del tavolo nel servizio selezionato</li>
+        <li>Rendere editabili le colonne: 
+            <ul>
+                <li>Utilizzabile</li>
+                <li>Max posti</li>
+                <li>Adulti</li>
+                <li>Bambini</li>
+                <li>Infant</li>
+                <li>Note servizio (presenza)</li>
+                <li>Note tavolo</li>
+            </ul>
+        </li>
+        <li>Realizzare API per editare i relativi oggetti nel DB quando viene modificata una cella editabile</li>
+        <li>Realizzare API per totale presenze del servizio</li>
+        <li>Mostrare presenze totali</li>
+    </ul>
+</div>
+
+
 <nav>
     <div class="nav nav-underline mt-2" id="nav-tab" role="tablist">
         {% for sala in sale %}
@@ -48,13 +71,46 @@
     {% for sala in sale %}
     <div class="sala-tab tab-pane fade {% if forloop.counter == 1 %}show active{% endif %}" id="nav-{{sala.id}}"
         role="tabpanel" data-salaid="{{sala.id}}" aria-labelledby="nav-{{sala.id}}-tab">
-        <p>Questa è la tab di sala: {{sala}}</p>
-        
-        {% for tavolo in sala.tavoli_ordinati %}
-        <p>Tavolo {{tavolo}}</p>
-            
-        {% endfor %}
-            
+
+        <div class="table-responsive">
+            <table class="table table-sm table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col"></th><!-- Utilizzabile editabile -->
+                        <th scope="col"></th><!-- Max_posti editabile -->
+                        <th scope="col">Ospite</th>
+                        <th scope="col"></th><!-- Tipologia -->
+                        <th scope="col"></th><!-- Trattamento -->
+                        <th scope="col">A.</th><!-- Adulti -->
+                        <th scope="col">B.</th><!-- Bambini -->
+                        <th scope="col">I.</th><!-- Infant -->
+                        <th scope="col">Note servizio</th><!-- editabile -->
+                        <th scope="col">Note tavolo</th><!-- editabile -->
+                </thead>
+                <tbody>
+                    {% for tavolo in sala.tavoli_ordinati %}
+                    <tr>
+                        <td>{{tavolo}}</td>
+                        <td></td>
+                        <td></td>
+                        <td>{% include 'partials/loading_spinner.html' %}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>                        
+                    {% empty %}
+                    <tr>
+                        <td colspan="11">Non ci sono tavoli in questa sala</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>            
     </div>
     {% endfor %}
 </div>  
