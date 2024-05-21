@@ -8,7 +8,11 @@ from .views import (
     togliPresenzeOspite,
 )
 
-from .api import TavoliDisponibiliAPI, TavoliAssegnatiAPI
+from .api import (
+    TavoliDisponibiliAPI,
+    TavoliAssegnatiAPI,
+    PeriodiInPiediOspite,
+)
 
 
 urlpatterns = [
@@ -40,5 +44,10 @@ urlpatterns = [
         "api/tavoli-assegnati/<int:ospite_id>/",
         TavoliAssegnatiAPI.as_view(),
         name="api_tavoli_assegnati",
+    ),
+    path(
+        "api/periodi-in-piedi-ospite/",
+        PeriodiInPiediOspite.as_view(),
+        name="api_periodi_in_piedi_ospite",
     ),
 ]

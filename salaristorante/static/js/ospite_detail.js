@@ -1,15 +1,29 @@
 const table_tavoli_assegnati = document.getElementById('tavoli_assegnati')
+
+const table_presenze_in_piedi = document.getElementById('presenze_in_piedi')
+const presenze_in_piedi_triangle = document.getElementById('presenze_in_piedi_triangle')
+
 const container_tavoli_liberi = document.getElementById('tavoli_disponibili')
 
 const select_inizio = document.querySelector('#inizio_periodo')
 const select_fine = document.querySelector('#fine_periodo')
 const verifica_tavoli_btn = document.querySelector('#verifica_tavoli_btn')
 const alert_inizio_fine = document.querySelector('#alert_inizio_fine')
-
 const saveTavoliBtn = document.querySelector('#assegna_tavoli')
 
 
 const trash_icon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"></path><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"></path></svg>`
+
+const calendar_icon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar4-week" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/><path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-2 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/></svg>`
+
+
+
+
+
+
+
+
+
 
 // ------------------------------------------------------------ //
 // ---------------------- TAVOLI LIBERI ----------------------- //
@@ -74,6 +88,92 @@ function popola_tavoli_assegnati_ospite(tavoli) {
     });
 
 }
+
+
+
+
+
+
+
+
+
+
+
+// ------------------------------------------------------------ //
+// ----------------- PERIODI OSPITE IN PIEDI ------------------ //
+// ------------------------------------------------------------ //
+
+function API_servizi_in_piedi_ospite() {
+    ajax(`/tavoli/api/periodi-in-piedi-ospite/`, {
+        method: 'GET',
+        headers: { 'X-CSRFToken': csrftoken },
+        data: { 'id_ospite': ospite_pk },
+        success: (response) => {
+            popola_servizi_in_piedi(response.value.periodi_non_assegnati)
+        },
+        error: (response) => {
+            console.log(`Errore! STATUS: ${response.status}`)
+            console.log(response.statusText)
+            mostraMessaggio("alert-danger", response.statusText, true)
+        }
+    })
+}
+
+API_servizi_in_piedi_ospite()
+
+function popola_servizi_in_piedi(periodi_list) {
+    const tbody = table_presenze_in_piedi.querySelector('tbody')
+    tbody.innerHTML = ''
+
+    // Se non ci sono periodi con l'ospite in piedi, mostro un messaggio
+    if (periodi_list.length === 0) {
+        const noDataRow = document.createElement('tr');
+        noDataRow.innerHTML = `
+            <td colspan="2"><span class="ps-2 text-success-emphasis">Tutte le presenze ai pasti di questo ospite sono assegnate ad almeno un tavolo!</span></td>
+        `;
+        tbody.appendChild(noDataRow);
+        return;
+    }
+
+    // Se ci sono periodi, mostro il triangolo di notifica
+    presenze_in_piedi_triangle.classList.remove('d-none')
+
+    // Per ogni periodo, mostro una riga della tabella
+    periodi_list.forEach((periodo, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><button type="button" class="btn btn-link text-danger-emphasis seleziona_periodo" data-servizio-iniziale="${periodo.servizio_iniziale}" data-servizio-finale="${periodo.servizio_finale}"><span class="me-1">${calendar_icon}</span>Seleziona periodo</button></td>
+            <td>${periodo.descrizione}</td>`;
+        tbody.appendChild(row);
+    });
+
+    // Aggiungi gli event listener ai bottoni
+    const pointer_periodo = document.querySelectorAll('.seleziona_periodo');
+    pointer_periodo.forEach(bottone => bottone.addEventListener('click', (e) => {
+        const servizio_iniziale = e.currentTarget.getAttribute('data-servizio-iniziale');
+        const servizio_finale = e.currentTarget.getAttribute('data-servizio-finale');
+
+        // Sfrutto le select e il bottone della modale per impostare i valori su cui cercare i tavoli liberi. Non mi occorre mostrare la modale.
+        select_inizio.value = servizio_iniziale
+        select_fine.value = servizio_finale
+
+        const flush_collapseThree = document.querySelector('[data-bs-target="#flush-collapseThree"]')
+
+        // apro il panel dell'accordion con i risultati dei tavoli liberi
+        flush_collapseThree.click()
+        // uso il bottone della modale per aggiornare il periodo di ricerca e chiamare API_tavoli_liberi
+        verifica_tavoli_btn.click()
+    }));
+}
+
+
+
+
+
+
+
+
+
 
 // ------------------------------------------------------------ //
 // ----------------- SERVIZI PRESENZE OSPITE ------------------ //
@@ -157,11 +257,16 @@ verifica_tavoli_btn.addEventListener('click', () => {
 
 
 
+
+
+
+
+
+
+
 // ------------------------------------------------------------ //
 // -------------------- TAVOLI DISPONIBILI -------------------- //
 // ------------------------------------------------------------ //
-
-
 function API_tavoli_liberi(servizio_inizio_id, servizio_fine_id) {
     ajax(`/tavoli/api/tavoli-disponibili/`, {
         method: 'GET',

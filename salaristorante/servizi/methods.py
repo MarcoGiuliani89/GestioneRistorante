@@ -1,3 +1,4 @@
+from datetime import timedelta
 from .models import Servizio, Presenza
 from ospiti.models import Ospite
 
@@ -81,3 +82,45 @@ def aggiorna_presenze_per_ospite(ospite, nuovo_arrivo, nuova_partenza):
                 "infant": ospite.default_infant,
             },
         )
+
+
+def are_contiguous(last_servizio, current_servizio, trattamento):
+    # Verifica se 2 servizi sono contigui in base al trattamento dell'ospite
+    if trattamento == Ospite.BB:
+        return (
+            current_servizio.pasto == Servizio.COLAZIONE
+            and last_servizio.data == current_servizio.data - timedelta(days=1)
+        )
+    elif trattamento in [Ospite.HB, Ospite.HBB]:
+        if (
+            last_servizio.pasto == Servizio.CENA
+            and current_servizio.pasto == Servizio.COLAZIONE
+            and last_servizio.data == current_servizio.data - timedelta(days=1)
+        ):
+            return True
+        elif (
+            last_servizio.pasto == Servizio.COLAZIONE
+            and current_servizio.pasto == Servizio.CENA
+            and last_servizio.data == current_servizio.data
+        ):
+            return True
+    elif trattamento in [Ospite.FB, Ospite.FBB]:
+        if (
+            last_servizio.pasto == Servizio.CENA
+            and current_servizio.pasto == Servizio.COLAZIONE
+            and last_servizio.data == current_servizio.data - timedelta(days=1)
+        ):
+            return True
+        elif (
+            last_servizio.pasto == Servizio.COLAZIONE
+            and current_servizio.pasto == Servizio.PRANZO
+            and last_servizio.data == current_servizio.data
+        ):
+            return True
+        elif (
+            last_servizio.pasto == Servizio.PRANZO
+            and current_servizio.pasto == Servizio.CENA
+            and last_servizio.data == current_servizio.data
+        ):
+            return True
+    return False

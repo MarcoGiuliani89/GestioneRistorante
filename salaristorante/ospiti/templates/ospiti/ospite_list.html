@@ -16,29 +16,29 @@ Ospiti
     {% include 'partials/pagination.html' %}
 {% endif %}
 
-<div class="row">
+<div class="row mb-3">
     <div class="col">
         <div class="table-responsive">
-            <table class="table table-sm table-striped">
+            <table class="table table-sm table-striped align-middle">
                 <thead>
                     <tr>
-                        <th scope="col"></th>
+                        <th scope="col">#</th>
                         <th scope="col"></th>
                         <th scope="col"></th>
                         <th scope="col">Ospite</th>
                         <th scope="col">Tipologia</th>
                         <th scope="col">In</th>
                         <th scope="col">Out</th>
-                        <th scope="col">Adulti</th>
-                        <th scope="col">Bambini</th>
-                        <th scope="col">Infant</th>                        
+                        <th scope="col">A.</th>
+                        <th scope="col">B.</th>
+                        <th scope="col">I.</th>                        
                         <th scope="col">Note</th>
                 </thead>
                 <tbody>
                     {% for ospite in ospiti %}
                     <tr>
                         <td>
-                            <button class="btn btn-link p-1" data-pkospite="{{ ospite.id }}" data-nome="{{ ospite.nome }}" data-bs-toggle="modal" data-bs-target="#deleteModal" title="Elimina {{ospite}}">
+                            <button class="btn btn-link text-danger-emphasis p-1" data-pkospite="{{ ospite.id }}" data-nome="{{ ospite.nome }}" data-bs-toggle="modal" data-bs-target="#deleteModal" title="Elimina {{ospite}}">
                                 {% bs_icon 'trash' %}
                             </button>
                         </td>
@@ -52,7 +52,7 @@ Ospiti
                                 {% bs_icon 'pin-angle-fill' %}
                             </a>
                         </td>
-                        <td>{{ ospite }}</td>
+                        <td><strong>{{ ospite }}</strong></td>
                         <td>{{ ospite.get_tipologia_display }}</br>
                             <span class="badge 
                             
@@ -76,15 +76,25 @@ Ospiti
                             </span>                            
                         </td>
                         <td class="text-nowrap pe-4">
-                            {{ ospite.servizio_arrivo }}
+                            {{ ospite.servizio_arrivo.str_short }}
                         </td>
                         <td class="text-nowrap pe-4">
-                            {{ ospite.servizio_partenza }}
+                            {{ ospite.servizio_partenza.str_short }}
                         </td>
                         <td>{{ ospite.default_adulti }}</td>
                         <td>{{ ospite.default_bambini }}</td>
                         <td>{{ ospite.default_infant }}</td>
-                        <td>{{ ospite.note|default_if_none:"" }}</td>
+                        <td>
+                            
+                            {% if ospite.note %}
+                                <a  tabindex="0" type="button" class="btn btn-link text-primary-emphasis p-1" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="left"  data-bs-trigger="focus" data-bs-title="Note ospite: {{ospite}}" data-bs-content="{{ ospite.note }}">
+                                    {% bs_icon 'info-circle-fill' %}
+                                </a>
+                                
+                            {% endif %}
+                                
+                            
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
@@ -121,6 +131,10 @@ Ospiti
 {% endblock %}
 
 
-{% block extra_js %}    
+{% block extra_js %}
+    <script>
+        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+    </script>    
     <script src="{% static 'js/lista_ospiti.js' %}"></script>
 {% endblock %}

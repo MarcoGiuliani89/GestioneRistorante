@@ -1,5 +1,5 @@
-from datetime import timedelta
 from django.db.models import Q, Prefetch
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,6 +8,7 @@ from .methods import ordinaTavoli
 from .models import Tavolo
 from .serializers import AssegnaTavoloSerializer
 from ospiti.models import Ospite
+from servizi.methods import are_contiguous
 from servizi.models import Servizio, Presenza
 
 
@@ -99,7 +100,9 @@ class TavoliAssegnatiAPI(APIView):
                 else:
                     last_servizio = current_period[-1].servizio
                     # Verifica se il servizio corrente è contiguo all'ultimo servizio del periodo corrente
-                    if self.are_contiguous(last_servizio, presenza.servizio, ospite):
+                    if are_contiguous(
+                        last_servizio, presenza.servizio, ospite.trattamento
+                    ):
                         current_period.append(presenza)
                     else:
                         # Crea una stringa di periodo per il gruppo corrente di presenze
@@ -120,47 +123,6 @@ class TavoliAssegnatiAPI(APIView):
         response_data.sort(key=self.sort_key)
 
         return Response(response_data, status=status.HTTP_200_OK)
-
-    def are_contiguous(self, last_servizio, current_servizio, ospite):
-        # Verifica se i servizi sono contigui in base al trattamento dell'ospite
-        if ospite.trattamento == Ospite.BB:
-            return (
-                current_servizio.pasto == Servizio.COLAZIONE
-                and last_servizio.data == current_servizio.data - timedelta(days=1)
-            )
-        elif ospite.trattamento in [Ospite.HB, Ospite.HBB]:
-            if (
-                last_servizio.pasto == Servizio.CENA
-                and current_servizio.pasto == Servizio.COLAZIONE
-                and last_servizio.data == current_servizio.data - timedelta(days=1)
-            ):
-                return True
-            elif (
-                last_servizio.pasto == Servizio.COLAZIONE
-                and current_servizio.pasto == Servizio.CENA
-                and last_servizio.data == current_servizio.data
-            ):
-                return True
-        elif ospite.trattamento in [Ospite.FB, Ospite.FBB]:
-            if (
-                last_servizio.pasto == Servizio.CENA
-                and current_servizio.pasto == Servizio.COLAZIONE
-                and last_servizio.data == current_servizio.data - timedelta(days=1)
-            ):
-                return True
-            elif (
-                last_servizio.pasto == Servizio.COLAZIONE
-                and current_servizio.pasto == Servizio.PRANZO
-                and last_servizio.data == current_servizio.data
-            ):
-                return True
-            elif (
-                last_servizio.pasto == Servizio.PRANZO
-                and current_servizio.pasto == Servizio.CENA
-                and last_servizio.data == current_servizio.data
-            ):
-                return True
-        return False
 
     def get_period_string(self, period, ospite):
         # Ottiene i servizi di inizio e fine del periodo
@@ -230,4 +192,73 @@ class TavoliAssegnatiAPI(APIView):
             end_data,
             end_pasto,
             int(codice),
+        )
+
+
+class PeriodiInPiediOspite(APIView):
+    """
+    API per ottenere tutti i periodi consecutivi in cui un ospite non è assegnato a nessun tavolo.
+    """
+
+    def get(self, request):
+        id_ospite = request.query_params.get("id_ospite")
+        print(f"GET PERIODI IN PIEDI OSPITE {id_ospite}")
+        ospite = get_object_or_404(Ospite, id=id_ospite)
+        trattamento = ospite.trattamento
+
+        # Recupera tutte le presenze dell'ospite che non sono assegnate a nessun tavolo
+        presenze = (
+            Presenza.objects.filter(ospite=ospite)
+            .exclude(tavoli__isnull=False)
+            .order_by("servizio__data", "servizio__pasto")
+        )
+
+        if not presenze:
+            return Response({"periodi_non_assegnati": []}, status=status.HTTP_200_OK)
+
+        periodi_non_assegnati = []
+        current_periodo = []
+        last_presenza = None
+
+        for presenza in presenze:
+            if not current_periodo:
+                current_periodo.append(presenza)
+            else:
+                last_servizio = last_presenza.servizio
+                current_servizio = presenza.servizio
+                if are_contiguous(last_servizio, current_servizio, trattamento):
+                    current_periodo.append(presenza)
+                else:
+                    periodi_non_assegnati.append(current_periodo)
+                    current_periodo = [presenza]
+
+            last_presenza = presenza
+
+        if current_periodo:
+            periodi_non_assegnati.append(current_periodo)
+
+        # Formatta la risposta
+        response_data = []
+        for periodo in periodi_non_assegnati:
+            servizio_iniziale = periodo[0].servizio
+            servizio_finale = periodo[-1].servizio
+            if (
+                servizio_iniziale == ospite.servizio_arrivo
+                and servizio_finale == ospite.servizio_partenza
+            ):
+                periodo_descrizione = "Intero soggiorno"
+            else:
+                periodo_descrizione = (
+                    f"{servizio_iniziale.str_short} - {servizio_finale.str_short}"
+                )
+            response_data.append(
+                {
+                    "servizio_iniziale": servizio_iniziale.pk,
+                    "servizio_finale": servizio_finale.pk,
+                    "descrizione": periodo_descrizione,
+                }
+            )
+
+        return Response(
+            {"periodi_non_assegnati": response_data}, status=status.HTTP_200_OK
         )
