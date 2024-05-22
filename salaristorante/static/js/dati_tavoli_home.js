@@ -2,6 +2,19 @@ const rows = document.querySelectorAll('tr[data-tavoloid]');
 
 const info_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/></svg>`;
 
+const check_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="text-success-emphasis bi bi-check-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/></svg>`
+
+const ban_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="text-danger-emphasis bi bi-ban" viewBox="0 0 16 16"><path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/></svg>`
+
+const loader = `<div class="spinner-border spinner-border-sm" role="status">
+    <span class="visually-hidden">Loading...</span></div>`
+
+
+
+
+
+
+
 
 rows.forEach(row => {
     // Recupero gli id dei tavoli
@@ -36,7 +49,7 @@ function API_scarica_dati_tavolo(tavolo_id, row) {
 }
 
 function popola_tabella(dati, row) {
-    row.children[1].innerHTML = dati.utilizzabile ? "Si" : "No";
+    row.children[1].appendChild(utilizzabile_btn(dati.utilizzabile, dati.tavolo_id));
     row.children[2].innerHTML = badge_posti(dati.max_posti);
     row.children[3].innerHTML = scrivi_ospite(dati.ospite, dati.note_ospite);
     row.children[4].innerHTML = scrivi_camere(dati.ospite, dati.rooms);
@@ -45,8 +58,23 @@ function popola_tabella(dati, row) {
     row.children[7].innerHTML = dati.adulti;
     row.children[8].innerHTML = dati.bambini;
     row.children[9].innerHTML = dati.infant;
-    row.children[10].innerHTML = dati.note_servizio;
-    row.children[11].innerHTML = dati.note_tavolo;
+    row.children[10].innerHTML = popover_note(dati.note_servizio);
+    row.children[11].innerHTML = popover_note(dati.note_tavolo);
+}
+
+function utilizzabile_btn(value, tavolo_id) {
+    const div = document.createElement('div');
+    div.setAttribute('role', 'button');
+    div.classList.add('toggle_utilizzabile');
+    div.setAttribute('data-tavoloid', tavolo_id);
+    div.innerHTML = value ? check_svg : ban_svg;
+
+    // Aggiungi l'event listener
+    div.addEventListener('click', () => {
+        toggleUtilizzabile(tavolo_id, div);
+    });
+
+    return div;
 }
 
 function scrivi_ospite(ospite, note_ospite) {
@@ -65,10 +93,13 @@ function scrivi_ospite(ospite, note_ospite) {
     }
 }
 
+function badge_posti(posti) {
+    return posti ? `<span class="badge rounded-pill text-bg-warning">${posti}</span>` : ""
+}
+
 function scrivi_camere(ospite, camere) {
     if (ospite && camere) {
         const camere_list = camere.split(",");
-        console.log(camere_list);
         if (camere_list.length > 1) {
             let html_rooms = `
                 <a tabindex="0" type="button" class="btn btn-link text-success-emphasis px-0" 
@@ -78,7 +109,6 @@ function scrivi_camere(ospite, camere) {
                     #${camere_list.length}
                 </a>
             `;
-            console.log(html_rooms);
             return html_rooms;
         } else {
             return camere;
@@ -88,9 +118,6 @@ function scrivi_camere(ospite, camere) {
     }
 }
 
-function badge_posti(posti) {
-    return posti ? `<span class="badge rounded-pill text-bg-warning">${posti}</span>` : ""
-}
 function badge_tipologia(tipologia) {
     html_badge = ""
     if (tipologia) {
@@ -140,6 +167,23 @@ function badge_trattamento(trattamento) {
         html_badge += `">${trattamento}</span>`
     }
     return html_badge
+}
+
+function popover_note(note) {
+    if (note && note.length > 12) {
+        const shortened_note = note.substring(0, 10) + "...";
+        const html_note = `
+            <a tabindex="0" type="button" class="btn btn-link text-success-emphasis px-0" 
+            data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" 
+            data-bs-trigger="focus" data-bs-title="Note:" 
+            data-bs-content="${note}">
+            ${shortened_note}
+            </a>
+        `;
+        return html_note;
+    } else {
+        return note;
+    }
 }
 
 function inizializza_popovers() {

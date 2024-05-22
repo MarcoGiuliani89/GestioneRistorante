@@ -291,6 +291,7 @@ class DatiTavoloServizioAPI(APIView):
 
         if presenza:
             data = {
+                "tavolo_id": tavolo_id,
                 "ospite": presenza.ospite.nome,
                 "tipologia": presenza.ospite.get_tipologia_display(),
                 "trattamento": presenza.ospite.trattamento,
@@ -306,6 +307,7 @@ class DatiTavoloServizioAPI(APIView):
             }
         else:
             data = {
+                "tavolo_id": tavolo_id,
                 "ospite": None,
                 "tipologia": None,
                 "trattamento": None,
@@ -319,5 +321,17 @@ class DatiTavoloServizioAPI(APIView):
                 "max_posti": tavolo.max_posti,
                 "note_tavolo": tavolo.note,
             }
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class ToggleTavoloUtilizzabileAPI(APIView):
+
+    def post(self, request, tavolo_id):
+        tavolo = get_object_or_404(Tavolo, id=tavolo_id)
+        tavolo.utilizzabile = not tavolo.utilizzabile
+        tavolo.save()
+
+        data = {"tavolo_id": tavolo_id, "utilizzabile": tavolo.utilizzabile}
 
         return Response(data, status=status.HTTP_200_OK)

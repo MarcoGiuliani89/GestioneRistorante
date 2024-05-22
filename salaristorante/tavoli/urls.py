@@ -13,6 +13,7 @@ from .api import (
     TavoliAssegnatiAPI,
     PeriodiInPiediOspite,
     DatiTavoloServizioAPI,
+    ToggleTavoloUtilizzabileAPI,
 )
 
 
@@ -55,5 +56,10 @@ urlpatterns = [
         "api/dati-tavolo-servizio/<int:tavolo_id>/",
         DatiTavoloServizioAPI.as_view(),
         name="api_dati_tavolo_servizio",
+    ),
+    path(
+        "api/toggle-tavolo-utilizzabile/<int:tavolo_id>/",
+        ToggleTavoloUtilizzabileAPI.as_view(),
+        name="api_toggle_tavolo_utilizzabile",
     ),
 ]
