@@ -36,7 +36,8 @@
 <div class="alert alert-warning" role="alert">
     <strong>TO DO: </strong><br>
     <ul>
-        <li>API per recuperare i dati del tavolo nel servizio selezionato</li>
+        <li><del>API per recuperare i dati del tavolo nel servizio selezionato</del></li>
+        <li>Mostrare dati tavolo recuperati (manca decidere se abbreviare le note)</li>
         <li>Rendere editabili le colonne: 
             <ul>
                 <li>Utilizzabile</li>
@@ -75,39 +76,45 @@
         role="tabpanel" data-salaid="{{sala.id}}" aria-labelledby="nav-{{sala.id}}-tab">
 
         <div class="table-responsive">
-            <table class="table table-sm table-striped align-middle">
+            <table class="table table-sm table-striped align-middle table_tavoli_servizio">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col"></th><!-- Utilizzabile editabile -->
-                        <th scope="col"></th><!-- Max_posti editabile -->
+                        <th scope="col">
+                            {% include 'partials/svg_icon_sedia.html' %}
+                        </th><!-- Max_posti editabile -->
                         <th scope="col">Ospite</th>
+                        <th scope="col">{% bs_icon '123' %}</th><!-- Rooms -->
                         <th scope="col"></th><!-- Tipologia -->
                         <th scope="col"></th><!-- Trattamento -->
-                        <th scope="col">A.</th><!-- Adulti -->
-                        <th scope="col">B.</th><!-- Bambini -->
-                        <th scope="col">I.</th><!-- Infant -->
+                        <th scope="col">A.</th><!-- Adulti editabile -->
+                        <th scope="col">B.</th><!-- Bambini editabile -->
+                        <th scope="col">I.</th><!-- Infant editabile -->
                         <th scope="col">Note servizio</th><!-- editabile -->
                         <th scope="col">Note tavolo</th><!-- editabile -->
                 </thead>
                 <tbody>
                     {% for tavolo in sala.tavoli_ordinati %}
                     <tr data-tavoloid="{{tavolo.id}}">
-                        <td>{{tavolo}}</td>
-                        <td></td>
-                        <td></td>
-                        <td>{% include 'partials/loading_spinner.html' %}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td class="text-nowrap">{{tavolo}}</td>
+                        <td></td><!-- Utilizzabile editabile -->
+                        <td></td><!-- Max_posti editabile -->
+                        <td class="text-nowrap"><!-- Ospite -->
+                            {% include 'partials/loading_spinner.html' %}
+                        </td>
+                        <td></td><!-- Rooms -->
+                        <td></td><!-- Tipologia -->
+                        <td></td><!-- Trattamento -->
+                        <td></td><!-- Adulti editabile -->
+                        <td></td><!-- Bambini editabile -->
+                        <td></td><!-- Infant editabile -->
+                        <td class="text-nowrap"></td><!-- Note servizio editabile -->
+                        <td class="text-nowrap"></td><!-- Note tavolo editabile -->
                     </tr>                        
                     {% empty %}
                     <tr>
-                        <td colspan="11">Non ci sono tavoli in questa sala</td>
+                        <td colspan="12">Non ci sono tavoli in questa sala</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -158,7 +165,7 @@
 {% block extra_js %}
 <script>
     const csrftoken = '{{csrf_token}}';
-</script>
+</script> 
 <script src="{% static 'js/simpleAjax.js' %}"></script>
 <script src="{% static 'js/methods.js' %}"></script>
 <script src="{% static 'js/homepage.js' %}"></script>

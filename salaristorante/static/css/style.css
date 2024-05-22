@@ -18,3 +18,7 @@ h6,
 .seleziona_servizi svg {
     vertical-align: sub;
 }
+
+.table_tavoli_servizio svg {
+    vertical-align: baseline;
+}
