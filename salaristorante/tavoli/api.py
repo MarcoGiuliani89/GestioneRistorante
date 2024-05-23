@@ -292,6 +292,7 @@ class DatiTavoloServizioAPI(APIView):
         if presenza:
             data = {
                 "tavolo_id": tavolo_id,
+                "presenza_id": presenza.id,
                 "ospite": presenza.ospite.nome,
                 "tipologia": presenza.ospite.get_tipologia_display(),
                 "trattamento": presenza.ospite.trattamento,
@@ -308,6 +309,7 @@ class DatiTavoloServizioAPI(APIView):
         else:
             data = {
                 "tavolo_id": tavolo_id,
+                "presenza_id": None,
                 "ospite": None,
                 "tipologia": None,
                 "trattamento": None,
@@ -333,5 +335,34 @@ class ToggleTavoloUtilizzabileAPI(APIView):
         tavolo.save()
 
         data = {"tavolo_id": tavolo_id, "utilizzabile": tavolo.utilizzabile}
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class EditMaxPostiTavoloAPI(APIView):
+
+    def post(self, request):
+        tavolo_id = request.data.get("tavolo_id")
+        max_posti = request.data.get("max_posti")
+
+        # Verifica che max_posti sia un intero
+        try:
+            if max_posti == "":
+                max_posti = None
+            else:
+                max_posti = int(max_posti)
+        except (ValueError, TypeError):
+            return Response(
+                {
+                    "error": "max_posti deve essere un numero intero o una stringa vuota."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        tavolo = get_object_or_404(Tavolo, id=tavolo_id)
+        tavolo.max_posti = max_posti
+        tavolo.save()
+
+        data = {"tavolo_id": tavolo_id, "max_posti": tavolo.max_posti}
 
         return Response(data, status=status.HTTP_200_OK)

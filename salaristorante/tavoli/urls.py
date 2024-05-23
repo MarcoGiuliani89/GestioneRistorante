@@ -14,6 +14,7 @@ from .api import (
     PeriodiInPiediOspite,
     DatiTavoloServizioAPI,
     ToggleTavoloUtilizzabileAPI,
+    EditMaxPostiTavoloAPI,
 )
 
 
@@ -61,5 +62,10 @@ urlpatterns = [
         "api/toggle-tavolo-utilizzabile/<int:tavolo_id>/",
         ToggleTavoloUtilizzabileAPI.as_view(),
         name="api_toggle_tavolo_utilizzabile",
+    ),
+    path(
+        "api/edit-max-posti-tavolo/",
+        EditMaxPostiTavoloAPI.as_view(),
+        name="api_edit_max_posti_tavolo",
     ),
 ]

@@ -6,7 +6,12 @@ from .views import (
     ServizioSuccessivo,
     SelezionaServizioManuale,
 )
-from .api import ServiziPresenzeOspiteAPI
+from .api import (
+    ServiziPresenzeOspiteAPI,
+    EditAdultiPresenza,
+    EditBambiniPresenza,
+    EditInfantPresenza,
+)
 
 urlpatterns = [
     # VIEWS
@@ -32,5 +37,20 @@ urlpatterns = [
         "api/servizi-presenze/<int:pk>/",
         ServiziPresenzeOspiteAPI.as_view(),
         name="api_servizi_presenze_ospite",
+    ),
+    path(
+        "api/edit-adulti-presenza/",
+        EditAdultiPresenza.as_view(),
+        name="api_edit_adulti_presenza",
+    ),
+    path(
+        "api/edit-bambini-presenza/",
+        EditBambiniPresenza.as_view(),
+        name="api_edit_bambini_presenza",
+    ),
+    path(
+        "api/edit-infant-presenza/",
+        EditInfantPresenza.as_view(),
+        name="api_edit_infant_presenza",
     ),
 ]

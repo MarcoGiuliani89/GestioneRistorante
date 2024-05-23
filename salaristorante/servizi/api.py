@@ -25,3 +25,60 @@ class ServiziPresenzeOspiteAPI(APIView):
         ]
 
         return Response(response_data, status=status.HTTP_200_OK)
+
+
+class BaseEditPresenzaFieldAPI(APIView):
+    """
+    Classe base per modificare adulti, bambini e infant di una Presenza
+    """
+
+    field_name = None
+    default_field_name = None
+
+    def post(self, request):
+        presenza_id = request.data.get("presenza_id")
+        field_value = request.data.get(self.field_name)
+
+        presenza = get_object_or_404(
+            Presenza.objects.select_related("ospite"), id=presenza_id
+        )
+
+        try:
+            if field_value == "":
+                # se il campo è vuoto, imposto il valore di default dell'ospite
+                field_value = getattr(presenza.ospite, self.default_field_name)
+            else:
+                field_value = int(field_value)
+                if field_value < 0:
+                    raise ValueError(
+                        f"Il numero di {self.field_name} deve essere positivo o zero."
+                    )
+        except (ValueError, TypeError):
+            return Response(
+                {
+                    "error": f"{self.field_name} deve essere un numero intero positivo o una stringa vuota."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        setattr(presenza, self.field_name, field_value)
+        presenza.save()
+
+        data = {"presenza_id": presenza_id, self.field_name: field_value}
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class EditAdultiPresenza(BaseEditPresenzaFieldAPI):
+    field_name = "adulti"
+    default_field_name = "default_adulti"
+
+
+class EditBambiniPresenza(BaseEditPresenzaFieldAPI):
+    field_name = "bambini"
+    default_field_name = "default_bambini"
+
+
+class EditInfantPresenza(BaseEditPresenzaFieldAPI):
+    field_name = "infant"
+    default_field_name = "default_infant"

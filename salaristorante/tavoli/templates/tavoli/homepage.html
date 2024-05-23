@@ -37,19 +37,18 @@
     <strong>TO DO: </strong><br>
     <ul>
         <li><del>API per recuperare i dati del tavolo nel servizio selezionato</del></li>
-        <li>Mostrare dati tavolo recuperati (manca decidere se abbreviare le note)</li>
-        <li>Rendere editabili le colonne: 
+        <li><del>Mostrare dati tavolo recuperati (manca decidere se abbreviare le note)</del></li>
+        <li>Rendere editabili le colonne e realizzare API per il salvataggio dei nuovi dati inseriti: 
             <ul>
-                <li>Utilizzabile</li>
-                <li>Max posti</li>
-                <li>Adulti</li>
-                <li>Bambini</li>
-                <li>Infant</li>
+                <li><del>Utilizzabile</del></li>
+                <li><del>Max posti</del></li>
+                <li><del>Adulti</del></li>
+                <li><del>Bambini</del></li>
+                <li><del>Infant</del></li>
                 <li>Note servizio (presenza)</li>
                 <li>Note tavolo</li>
             </ul>
         </li>
-        <li>Realizzare API per editare i relativi oggetti nel DB quando viene modificata una cella editabile</li>
         <li>Realizzare API per totale presenze del servizio</li>
         <li>Mostrare presenze totali</li>
     </ul>
@@ -80,7 +79,7 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col"></th><!-- Utilizzabile editabile -->
+                        <th scope="col"></th><!-- Utilizzabile toggle -->
                         <th scope="col">
                             {% include 'partials/svg_icon_sedia.html' %}
                         </th><!-- Max_posti editabile -->
@@ -99,16 +98,16 @@
                     <tr data-tavoloid="{{tavolo.id}}">
                         <td class="text-nowrap">{{tavolo}}</td>
                         <td></td><!-- Utilizzabile editabile -->
-                        <td></td><!-- Max_posti editabile -->
+                        <td ></td><!-- Max_posti editabile -->
                         <td class="text-nowrap"><!-- Ospite -->
                             {% include 'partials/loading_spinner.html' %}
                         </td>
                         <td></td><!-- Rooms -->
                         <td></td><!-- Tipologia -->
                         <td></td><!-- Trattamento -->
-                        <td></td><!-- Adulti editabile -->
-                        <td></td><!-- Bambini editabile -->
-                        <td></td><!-- Infant editabile -->
+                        <td ></td><!-- Adulti editabile -->
+                        <td ></td><!-- Bambini editabile -->
+                        <td ></td><!-- Infant editabile -->
                         <td class="text-nowrap"></td><!-- Note servizio editabile -->
                         <td class="text-nowrap"></td><!-- Note tavolo editabile -->
                     </tr>                        
@@ -124,7 +123,7 @@
     {% endfor %}
 </div>  
 
-<!-- Modal -->
+<!-- Modal Seleziona Servizio Manualmente -->
 <form action="{% url 'seleziona_servizio_manuale' %}" method="post">
     {% csrf_token %}
 <div class="modal fade" id="selzionaServizio" tabindex="-1" aria-labelledby="selzionaServizioLabel" aria-hidden="true">
@@ -159,6 +158,28 @@
     </div>
   </div>
  </form>   
+
+<!-- Modal Modifica Nota -->
+<div class="modal fade" id="modificaNota" tabindex="-1" aria-labelledby="modificaNotaLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modificaNotaLabel">Modifica nota:</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="modifica_nota" aria-describedby="modifica_nota">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-primary" id = "salva_nota">
+                    Salva
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 
@@ -169,6 +190,5 @@
 <script src="{% static 'js/simpleAjax.js' %}"></script>
 <script src="{% static 'js/methods.js' %}"></script>
 <script src="{% static 'js/dati_tavoli_home.js' %}"></script>
-<script src="{% static 'js/dati_tavoli_home_edit.js' %}"></script>
 {% endblock extra_js %}
     
