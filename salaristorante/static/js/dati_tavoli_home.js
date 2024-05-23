@@ -27,7 +27,6 @@ function recuperaDati(tavoloId, riga) {
         headers: { 'X-CSRFToken': csrftoken },
         success: response => {
             popolaTabella(response.value, riga);
-            inizializzaPopovers();
         },
         error: response => {
             console.error(`Errore! STATUS: ${response.status}`);
@@ -39,17 +38,27 @@ function recuperaDati(tavoloId, riga) {
 
 // Funzione per popolare la tabella con i dati
 function popolaTabella(dati, riga) {
-    riga.children[1].appendChild(creaBottoneUtilizzabile(dati.utilizzabile, dati.tavolo_id));
-    riga.children[2].innerHTML = dati.max_posti;
-    riga.children[3].innerHTML = formattaOspite(dati.ospite, dati.note_ospite);
-    riga.children[4].innerHTML = formattaCamere(dati.ospite, dati.camere);
-    riga.children[5].innerHTML = creaBadge(dati.tipologia, 'tipologia');
-    riga.children[6].innerHTML = creaBadge(dati.trattamento, 'trattamento');
-    riga.children[7].innerHTML = dati.adulti;
-    riga.children[8].innerHTML = dati.bambini;
-    riga.children[9].innerHTML = dati.infant;
-    riga.children[10].innerHTML = formattaNotaPopover(dati.note_servizio, 'notaServizio', dati.presenza_id, dati.tavolo_id);
-    riga.children[11].innerHTML = formattaNotaPopover(dati.note_tavolo, 'notaTavolo', dati.presenza_id, dati.tavolo_id);
+    const children = riga.children;
+
+    const bottoneUtilizzabile = creaBottoneUtilizzabile(dati.utilizzabile, dati.tavolo_id);
+    const formattedOspite = formattaOspite(dati.ospite, dati.note_ospite);
+    const formattedCamere = formattaCamere(dati.ospite, dati.rooms);
+    const tipologiaBadge = creaBadge(dati.tipologia, 'tipologia');
+    const trattamentoBadge = creaBadge(dati.trattamento, 'trattamento');
+    const notaServizioPopover = formattaNotaPopover(dati.note_servizio, 'notaServizio', dati.presenza_id, dati.tavolo_id);
+    const notaTavoloPopover = formattaNotaPopover(dati.note_tavolo, 'notaTavolo', dati.presenza_id, dati.tavolo_id);
+
+    children[1].appendChild(bottoneUtilizzabile);
+    children[2].innerHTML = dati.max_posti;
+    children[3].innerHTML = formattedOspite;
+    children[4].innerHTML = formattedCamere;
+    children[5].innerHTML = tipologiaBadge;
+    children[6].innerHTML = trattamentoBadge;
+    children[7].innerHTML = dati.adulti;
+    children[8].innerHTML = dati.bambini;
+    children[9].innerHTML = dati.infant;
+    children[10].innerHTML = notaServizioPopover;
+    children[11].innerHTML = notaTavoloPopover;
 
     rendiRigaEditabile(riga, dati);
 }
@@ -59,51 +68,71 @@ function rendiRigaEditabile(riga, dati) {
     const celleEditabili = [riga.children[2], riga.children[7], riga.children[8], riga.children[9]];
 
     celleEditabili.forEach(cella => {
-        cella.contentEditable = 'true';
-        cella.addEventListener('focus', () => selezionaTesto(cella));
-        cella.addEventListener('input', () => cella.textContent = cella.textContent.replace(/[^0-9]/g, ''));
-        cella.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                cella.blur();
-            }
-        });
-        cella.addEventListener('blur', () => aggiornaDati(cella, dati));
+        rendiCellaEditabile(cella, dati);
     });
 }
 
+function rendiCellaEditabile(cella, dati) {
+    cella.contentEditable = 'true';
+    cella.addEventListener('focus', () => selezionaTesto(cella));
+    cella.addEventListener('input', () => filtraContenutoNumerico(cella));
+    cella.addEventListener('keydown', gestisciEnter);
+    cella.addEventListener('blur', () => aggiornaDati(cella, dati));
+}
+
+function selezionaTesto(el) {
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const selezione = window.getSelection();
+    selezione.removeAllRanges();
+    selezione.addRange(range);
+}
+
+function filtraContenutoNumerico(cella) {
+    cella.textContent = cella.textContent.replace(/[^0-9]/g, '');
+}
+
+function gestisciEnter(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        event.target.blur();
+    }
+}
+
 // Funzione per aggiornare i dati tramite chiamata API
+const urlMap = {
+    2: "/tavoli/api/edit-max-posti-tavolo/",
+    7: "/servizi/api/edit-adulti-presenza/",
+    8: "/servizi/api/edit-bambini-presenza/",
+    9: "/servizi/api/edit-infant-presenza/"
+};
+const fieldMap = {
+    2: 'max_posti',
+    7: 'adulti',
+    8: 'bambini',
+    9: 'infant'
+};
 async function aggiornaDati(cella, dati) {
     const newValue = cella.textContent;
     cella.innerHTML = loader;
-    const urlMap = {
-        2: "/tavoli/api/edit-max-posti-tavolo/",
-        7: "/servizi/api/edit-adulti-presenza/",
-        8: "/servizi/api/edit-bambini-presenza/",
-        9: "/servizi/api/edit-infant-presenza/"
-    };
-    const fieldMap = {
-        2: 'max_posti',
-        7: 'adulti',
-        8: 'bambini',
-        9: 'infant'
-    };
+
 
     const fieldIndex = [...cella.parentElement.children].indexOf(cella);
     const fieldName = fieldMap[fieldIndex];
     const url = urlMap[fieldIndex];
 
+    if (!fieldName || !url) {
+        console.error("Cella non trovata");
+        return;
+    }
+
     // Verifica se c'è un presenza_id o se stiamo aggiornando max_posti
     if (dati.presenza_id || fieldIndex === 2) {
+        // aggiorno il payload con tavolo_id (per cella 2) o presenza_id (per altre celle)
         const payload = {
-            [fieldName]: newValue
+            [fieldName]: newValue,
+            ...(fieldIndex !== 2 ? { presenza_id: dati.presenza_id } : { tavolo_id: dati.tavolo_id })
         };
-
-        if (fieldIndex !== 2) {
-            payload['presenza_id'] = dati.presenza_id;
-        } else {
-            payload['tavolo_id'] = dati.tavolo_id;
-        }
 
         try {
             const response = await apiPost(url, payload);
@@ -112,9 +141,8 @@ async function aggiornaDati(cella, dati) {
             console.error(error);
         }
     } else {
-        // Se non c'è un presenza_id e il campo non è per max_posti, ripristina il valore originale della cella
         if (fieldIndex !== 2) {
-            cella.innerHTML = "";
+            cella.innerHTML = ""; // Ripristina la cella vuota se non c'è presenza_id
         }
     }
 }
@@ -122,45 +150,62 @@ async function aggiornaDati(cella, dati) {
 // Funzione per creare un pulsante per alternare l'utilizzabilità di un tavolo
 function creaBottoneUtilizzabile(valore, tavoloId) {
     const div = document.createElement('div');
+    const svg = valore ? check_svg : ban_svg;
+
     div.setAttribute('role', 'button');
     div.classList.add('toggle_utilizzabile');
     div.setAttribute('data-tavoloid', tavoloId);
-    div.innerHTML = valore ? check_svg : ban_svg;
+    div.innerHTML = svg;
+
     div.addEventListener('click', () => alternaUtilizzabile(tavoloId, div));
+
     return div;
 }
 
 // Funzione per formattare le informazioni dell'ospite
 function formattaOspite(ospite, notaOspite) {
-    if (ospite) {
-        let ospiteHtml = `<strong>${ospite}</strong>`;
-        if (notaOspite) {
-            ospiteHtml += `
-            <a tabindex="0" type="button" class="btn btn-link text-primary-emphasis p-1" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="left" data-bs-trigger="focus" data-bs-title="Note ospite: ${ospite}" data-bs-content="${notaOspite}">
+    if (!ospite) return "";
+
+    let ospiteHtml = `<strong>${ospite}</strong>`;
+    if (notaOspite) {
+        ospiteHtml += `
+            <a tabindex="0" type="button" class="btn btn-link text-primary-emphasis p-1" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="left" data-bs-trigger="focus" data-bs-title="${ospite}:" data-bs-content="${notaOspite}">
                 ${info_svg}
             </a>`;
-        }
-        return ospiteHtml;
-    } else {
-        return "";
     }
+    return ospiteHtml;
 }
 
 // Funzione per formattare le informazioni delle camere
 function formattaCamere(ospite, camere) {
-    if (ospite && camere) {
-        const listaCamere = camere.split(",");
-        if (listaCamere.length > 1) {
-            return `
-                <a tabindex="0" type="button" class="btn btn-link text-success-emphasis px-0" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-trigger="focus" data-bs-title="Camere: ${ospite}" data-bs-content="${camere}">
-                    #${listaCamere[0]},...
-                </a>`;
-        } else {
-            return `#${listaCamere[0]}`;
-        }
-    } else {
-        return "";
-    }
+    if (!ospite || !camere) return "";
+
+    const listaCamere = camere.split(",");
+    if (listaCamere.length === 1) return listaCamere[0];
+
+    const popover_title = `Camere di ${ospite}`;
+    const popover_content = camere;
+    const popover_innerHTML = `#${listaCamere.length}`;
+
+    return creaPopover(popover_title, popover_content, popover_innerHTML, "right");
+}
+
+function creaPopover(title, content, innerHTML, direction) {
+    const popoverButton = document.createElement('a');
+    popoverButton.setAttribute('tabindex', '0');
+    popoverButton.setAttribute('type', 'button');
+    popoverButton.classList.add('btn', 'btn-link', 'text-success-emphasis', 'px-0');
+    popoverButton.setAttribute('data-bs-container', 'body');
+    popoverButton.setAttribute('data-bs-toggle', 'popover');
+    popoverButton.setAttribute('data-bs-placement', direction);
+    popoverButton.setAttribute('data-bs-trigger', 'focus');
+    popoverButton.setAttribute('data-bs-title', title);
+    popoverButton.setAttribute('data-bs-content', content);
+    popoverButton.innerHTML = innerHTML;
+
+    inizializzaPopovers();
+
+    return popoverButton.outerHTML;
 }
 
 // Funzione per creare un badge colorato
@@ -183,7 +228,7 @@ function creaBadge(valore, tipo) {
     };
 
     if (!valore || !tipo || !badgeTypes[tipo][valore]) {
-        return ""; // Non creare il badge se il valore o il tipo sono nulli, o se non c'è corrispondenza nei badgeTypes
+        return ""; // Non creare il badge se il valore o il tipo sono nulli
     }
 
     const badgeClass = badgeTypes[tipo][valore];
@@ -192,24 +237,19 @@ function creaBadge(valore, tipo) {
 
 // Funzione per formattare le note nei popover
 function formattaNotaPopover(nota, tipoNota, presenzaId, tavoloId) {
-    let notaButton = `<button type="button" class="edit_nota btn btn-link text-primary-emphasis px-0" data-bs-toggle="modal" data-bs-target="#modificaNota" data-tipo="${tipoNota}" data-presenzaid="${presenzaId}" data-tavoloid="${tavoloId}" data-nota="${nota}">${pencil_svg}</button>`;
-    let notaPopover = '';
+    // NB: Note tavolo è sempre modificabile e avrà il bottone in ogni caso, Note servizio è modificabile solo se esiste la presenza di un ospite nel Servizio selezionato.
+    const [nota_rid, ridotto] = riduciTesto(nota);
+    const notaButton = `<button type="button" class="edit_nota btn btn-link text-primary-emphasis px-0 me-1" data-bs-toggle="modal" data-bs-target="#modificaNota" data-tipo="${tipoNota}" data-presenzaid="${presenzaId}" data-tavoloid="${tavoloId}" data-nota="${nota}">${pencil_svg}</button>`;
 
-    if (nota) {
-        const [nota_rid, ridotto] = riduciTesto(nota)
-        if (ridotto) {
-            notaPopover = `
-                <a tabindex="0" type="button" class="btn btn-link text-success-emphasis px-0" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-trigger="focus" data-bs-title="Note:" data-bs-content="${nota}">${nota_rid}</a>`;
-        } else notaPopover = " " + nota
+    if (!nota) {
+        return tipoNota === "notaTavolo" ? notaButton : "";
     }
 
-    if (tipoNota === "notaServizio") {
-        if (nota !== "" && presenzaId) {
-            return notaButton + notaPopover
-        } else return ""
-    } else {
-        return notaButton + notaPopover
+    if (!ridotto) {
+        return notaButton + nota;
     }
+
+    return notaButton + creaPopover("Note:", nota, nota_rid, "left");
 }
 
 function riduciTesto(testo) {
@@ -228,16 +268,11 @@ function inizializzaPopovers() {
     });
 }
 
+// Inizializzare la modale e il suo bottone
 modificaNotaModal._element.addEventListener('shown.bs.modal', handleModalShown);
 modificaNotaModal._element.addEventListener('hide.bs.modal', handleModalHide);
 save_btn.addEventListener('click', handleSaveButtonClick);
-modificaNotaModal._element.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-        modificaNotaModal.hide();
-    } else if (event.key === 'Enter') {
-        handleSaveButtonClick();
-    }
-})
+modificaNotaModal._element.addEventListener('keydown', handleModalKeyDown);
 
 let currentModalButton = null;
 
@@ -249,8 +284,16 @@ function handleModalShown(event) {
     input_note.select();
 }
 
-function handleModalHide(event) {
+function handleModalHide() {
     currentModalButton = null;
+}
+
+function handleModalKeyDown(event) {
+    if (event.key === 'Escape') {
+        modificaNotaModal.hide();
+    } else if (event.key === 'Enter') {
+        handleSaveButtonClick();
+    }
 }
 
 function handleSaveButtonClick() {
@@ -273,33 +316,41 @@ function handleSaveButtonClick() {
 }
 
 async function salvaNota(payload) {
-    const { tavolo_id: tavoloId, presenza_id: presenzaId, tipo } = payload;
-
-    const tipoConfig = {
-        notaServizio: { url: "/servizi/api/edit-note-presenza/", CellIndex: 10 },
-        notaTavolo: { url: "/tavoli/api/edit-note-tavolo/", CellIndex: 11 }
-    };
-
-    const config = tipoConfig[tipo];
+    const { tipo, presenza_id, tavolo_id } = payload;
+    const config = getConfig(tipo);
     if (!config) return;
 
     const { url, CellIndex } = config;
 
     try {
-        // Cerca quale riga ha il tavoloId corrispondente
-        const riga = document.querySelector(`tr[data-tavoloid="${tavoloId}"]`);
+        // Cerca quale riga ha il tavolo_id corrispondente
+        const riga = findTableRow(tavolo_id);
+        if (!riga) return;
+
         const cella = riga.children[CellIndex];
+        if (!cella) return;
 
         cella.innerHTML = loader;
 
         // Implementa la chiamata AJAX
         const response = await apiPost(url, payload);
-        cella.innerHTML = formattaNotaPopover(response.note, tipo, presenzaId, tavoloId);
-
+        cella.innerHTML = formattaNotaPopover(response.note, tipo, presenza_id, tavolo_id);
         inizializzaPopovers();
+
     } catch (error) {
         console.error("Errore durante la chiamata API:", error);
     }
+}
+function getConfig(tipo) {
+    const tipoConfig = {
+        notaServizio: { url: "/servizi/api/edit-note-presenza/", CellIndex: 10 },
+        notaTavolo: { url: "/tavoli/api/edit-note-tavolo/", CellIndex: 11 }
+    };
+    return tipoConfig[tipo];
+}
+
+function findTableRow(tavoloId) {
+    return document.querySelector(`tr[data-tavoloid="${tavoloId}"]`);
 }
 
 // Funzione per alternare lo stato di utilizzabilità
@@ -337,14 +388,6 @@ function apiPost(url, dati) {
     });
 }
 
-// Funzione per selezionare tutto il testo in un elemento contentEditable
-function selezionaTesto(elemento) {
-    const range = document.createRange();
-    range.selectNodeContents(elemento);
-    const selezione = window.getSelection();
-    selezione.removeAllRanges();
-    selezione.addRange(range);
-}
 
 // Inizializza le righe al caricamento della pagina
 document.addEventListener('DOMContentLoaded', inizializzaRighe);
