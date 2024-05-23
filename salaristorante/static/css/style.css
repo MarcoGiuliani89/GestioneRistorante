@@ -15,6 +15,12 @@ h6,
     font-weight: 700;
 }
 
+.btn:focus,
+.btn:active {
+    outline: none !important;
+    box-shadow: none;
+}
+
 .seleziona_servizi svg {
     vertical-align: sub;
 }

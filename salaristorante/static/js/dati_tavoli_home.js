@@ -196,10 +196,11 @@ function formattaNotaPopover(nota, tipoNota, presenzaId, tavoloId) {
     let notaPopover = '';
 
     if (nota) {
-        notaPopover = `
-                <a tabindex="0" type="button" class="btn btn-link text-success-emphasis px-0" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-trigger="focus" data-bs-title="Note:" data-bs-content="${nota}">
-                    ${riduciTesto(nota)}
-                </a>`;
+        const [nota_rid, ridotto] = riduciTesto(nota)
+        if (ridotto) {
+            notaPopover = `
+                <a tabindex="0" type="button" class="btn btn-link text-success-emphasis px-0" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-trigger="focus" data-bs-title="Note:" data-bs-content="${nota}">${nota_rid}</a>`;
+        } else notaPopover = " " + nota
     }
 
     if (tipoNota === "notaServizio") {
@@ -213,9 +214,9 @@ function formattaNotaPopover(nota, tipoNota, presenzaId, tavoloId) {
 
 function riduciTesto(testo) {
     if (testo && testo.length > 12) {
-        return testo.substring(0, 10) + '...';
+        return [testo.substring(0, 10) + '...', true];
     } else {
-        return testo
+        return [testo, false];
     }
 }
 
@@ -230,6 +231,13 @@ function inizializzaPopovers() {
 modificaNotaModal._element.addEventListener('shown.bs.modal', handleModalShown);
 modificaNotaModal._element.addEventListener('hide.bs.modal', handleModalHide);
 save_btn.addEventListener('click', handleSaveButtonClick);
+modificaNotaModal._element.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        modificaNotaModal.hide();
+    } else if (event.key === 'Enter') {
+        handleSaveButtonClick();
+    }
+})
 
 let currentModalButton = null;
 
@@ -251,32 +259,47 @@ function handleSaveButtonClick() {
     const tipo = currentModalButton.getAttribute('data-tipo');
     const presenzaId = currentModalButton.getAttribute('data-presenzaid');
     const tavoloId = currentModalButton.getAttribute('data-tavoloid');
-    const nota = input_note.value;
-    const url = "#";  // Aggiorna con l'URL appropriato
+    const note = input_note.value;
+    // Aggiorna con l'URL appropriato
     const payload = {
         'tipo': tipo,
-        'presenzaId': presenzaId,
-        'tavoloId': tavoloId,
-        'nota': nota
+        'presenza_id': presenzaId,
+        'tavolo_id': tavoloId,
+        'note': note
     };
 
-    salvaNota(url, payload);
+    salvaNota(payload);
     modificaNotaModal.hide();
 }
 
-function salvaNota(url, payload) {
-    console.log(payload);
-    const tavoloId = payload.tavoloId;
-    // Implementa la chiamata AJAX o fetch qui
+async function salvaNota(payload) {
+    const { tavolo_id: tavoloId, presenza_id: presenzaId, tipo } = payload;
 
-    //...
+    const tipoConfig = {
+        notaServizio: { url: "/servizi/api/edit-note-presenza/", CellIndex: 10 },
+        notaTavolo: { url: "/tavoli/api/edit-note-tavolo/", CellIndex: 11 }
+    };
 
-    // cerca quale riga ha il tavoloId corrispondente
+    const config = tipoConfig[tipo];
+    if (!config) return;
 
-    const riga = document.querySelector(`tr[data-tavoloid="${tavoloId}"]`);
-    console.log(riga.children[0].innerHTML);
+    const { url, CellIndex } = config;
 
+    try {
+        // Cerca quale riga ha il tavoloId corrispondente
+        const riga = document.querySelector(`tr[data-tavoloid="${tavoloId}"]`);
+        const cella = riga.children[CellIndex];
 
+        cella.innerHTML = loader;
+
+        // Implementa la chiamata AJAX
+        const response = await apiPost(url, payload);
+        cella.innerHTML = formattaNotaPopover(response.note, tipo, presenzaId, tavoloId);
+
+        inizializzaPopovers();
+    } catch (error) {
+        console.error("Errore durante la chiamata API:", error);
+    }
 }
 
 // Funzione per alternare lo stato di utilizzabilità

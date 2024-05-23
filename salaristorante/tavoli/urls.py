@@ -15,6 +15,7 @@ from .api import (
     DatiTavoloServizioAPI,
     ToggleTavoloUtilizzabileAPI,
     EditMaxPostiTavoloAPI,
+    EditNoteTavoloAPI,
 )
 
 
@@ -67,5 +68,10 @@ urlpatterns = [
         "api/edit-max-posti-tavolo/",
         EditMaxPostiTavoloAPI.as_view(),
         name="api_edit_max_posti_tavolo",
+    ),
+    path(
+        "api/edit-note-tavolo/",
+        EditNoteTavoloAPI.as_view(),
+        name="api_edit_note_tavolo",
     ),
 ]

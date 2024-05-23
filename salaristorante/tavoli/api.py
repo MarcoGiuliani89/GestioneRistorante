@@ -366,3 +366,18 @@ class EditMaxPostiTavoloAPI(APIView):
         data = {"tavolo_id": tavolo_id, "max_posti": tavolo.max_posti}
 
         return Response(data, status=status.HTTP_200_OK)
+
+
+class EditNoteTavoloAPI(APIView):
+
+    def post(self, request):
+        tavolo_id = request.data.get("tavolo_id")
+        note = request.data.get("note")
+
+        tavolo = get_object_or_404(Tavolo, id=tavolo_id)
+        tavolo.note = note
+        tavolo.save()
+
+        data = {"tavolo_id": tavolo_id, "note": tavolo.note}
+
+        return Response(data, status=status.HTTP_200_OK)
