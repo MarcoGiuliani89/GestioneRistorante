@@ -23,7 +23,6 @@ class Tavolo(models.Model):
     max_posti = models.PositiveSmallIntegerField(null=True, blank=True)
     utilizzabile = models.BooleanField(default=True)
     note = models.CharField(max_length=250, null=True, blank=True)
-
     presenze = models.ManyToManyField(Presenza, blank=True, related_name="tavoli")
 
     def __str__(self):

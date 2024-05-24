@@ -2,5 +2,8 @@ from django.apps import AppConfig
 
 
 class TavoliConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'tavoli'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "tavoli"
+
+    def ready(self):
+        from . import signals

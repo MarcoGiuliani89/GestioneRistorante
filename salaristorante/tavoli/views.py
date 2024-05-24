@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
@@ -169,8 +170,15 @@ class AssegnaPresenzeTavoli(View):
         )
 
         # Assegna le presenze filtrate ai tavoli specificati
-        for tavolo in tavoli:
-            tavolo.presenze.add(*presenze_da_assegnare)
+        try:
+            for tavolo in tavoli:
+                tavolo.presenze.add(*presenze_da_assegnare)
+        except ValidationError as e:
+            error_msg = "Errore nell'assegnare il tavolo: " + str(e).replace(
+                "['", ""
+            ).replace("']", "")
+            messages.error(request, error_msg)
+            return redirect("assegna_tavoli", pk=ospite_id)
 
         # Crea il messaggio di successo
         success_message = f'Le presenze di "{ospite}" nel periodo scelto sono state assegnate ai tavoli {", ".join([tavolo.codice for tavolo in tavoli])}.'
