@@ -16,6 +16,10 @@ class Servizio(models.Model):
     note = models.CharField(max_length=500, blank=True, null=True)
 
     @property
+    def presenze_in_piedi(self):
+        return self.presenze.filter(tavoli__isnull=True).exists()
+
+    @property
     def formatted_data(self):
         giorni_settimana = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
         mesi = [

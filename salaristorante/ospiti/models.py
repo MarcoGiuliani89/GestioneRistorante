@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from servizi.models import Servizio
 
 
@@ -51,6 +52,10 @@ class Ospite(models.Model):
     @property
     def presenze_in_piedi(self):
         return self.presenze.filter(tavoli__isnull=True).exists()
+
+    @property
+    def assegna_tavoli_url(self):
+        return reverse("assegna_tavoli", kwargs={"pk": self.pk})
 
     def __str__(self):
         return f"{self.nome}"

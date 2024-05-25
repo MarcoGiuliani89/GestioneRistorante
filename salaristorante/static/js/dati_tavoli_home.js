@@ -3,12 +3,45 @@ const info_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
 const check_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="text-success-emphasis bi bi-check-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/></svg>`;
 const ban_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="text-danger-emphasis bi bi-ban" viewBox="0 0 16 16"><path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/></svg>`;
 const pencil_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg>`;
+const pin_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pin-angle-fill" viewBox="0 0 16 16"><path d="M9.828.722a.5.5 0 0 1 .354.146l4.95 4.95a.5.5 0 0 1 0 .707c-.48.48-1.072.588-1.503.588-.177 0-.335-.018-.46-.039l-3.134 3.134a6 6 0 0 1 .16 1.013c.046.702-.032 1.687-.72 2.375a.5.5 0 0 1-.707 0l-2.829-2.828-3.182 3.182c-.195.195-1.219.902-1.414.707s.512-1.22.707-1.414l3.182-3.182-2.828-2.829a.5.5 0 0 1 0-.707c.688-.688 1.673-.767 2.375-.72a6 6 0 0 1 1.013.16l3.134-3.133a3 3 0 0 1-.04-.461c0-.43.108-1.022.589-1.503a.5.5 0 0 1 .353-.146"/></svg>`
 const loader = `<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>`;
 const modificaNotaModal = new bootstrap.Modal(document.getElementById('modificaNota'));
 const input_note = modificaNotaModal._element.querySelector('input');
 const save_btn = modificaNotaModal._element.querySelector('#salva_nota');
+const ospitiInPiediModal = new bootstrap.Modal(document.getElementById('ospitiInPiedi'));
 
 let righe;
+
+
+ospitiInPiediModal._element.addEventListener('shown.bs.modal', () => {
+    ospitiInPiediModal.innerHTML = loader;
+    ajax(`/ospiti/api/ospiti-in-piedi-servizio-attuale/`, {
+        method: 'GET',
+        headers: { 'X-CSRFToken': csrftoken },
+        success: response => {
+            console.log(response.value);
+            const lista_ospiti = document.createElement('ul');
+            lista_ospiti.classList.add('list-group', 'list-group-flush');
+            response.value.ospiti_in_piedi.forEach(ospite => {
+                const li = document.createElement('li');
+                li.classList.add('list-group-item');
+                const link = document.createElement('a');
+                link.setAttribute('href', ospite.assegna_tavoli_url);
+                link.setAttribute('title', `Assegna tavoli a ${ospite.nome}`);
+                link.innerHTML = pin_svg;
+                li.innerHTML = ospite.nome + ' ' + link.outerHTML;
+                lista_ospiti.appendChild(li);
+            })
+            ospitiInPiediModal._element.querySelector('.modal-body').innerHTML = lista_ospiti.outerHTML;
+        },
+        error: response => {
+            console.error(`Errore! STATUS: ${response.status}`);
+            console.error(response.statusText);
+            mostraMessaggio("alert-danger", response.statusText, true);
+        }
+    })
+})
+
 
 // Recupero totale presenze per servizio
 const span_tot = document.getElementById('p_tot');

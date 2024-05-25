@@ -71,6 +71,28 @@
     </div>
 </div>
 
+
+{% if servizio_selezionato.presenze_in_piedi %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <span class="me-1 text-warning-emphasis">
+                     {% bs_icon 'exclamation-triangle-fill' %}
+                 </span> Attenzione:
+                </h5>
+                    <button type="button" class="btn btn-dark text-primary-emphasis" data-bs-toggle="modal" data-bs-target="#ospitiInPiedi">
+                    {% bs_icon 'list-ul' %}                
+                    <span class="ms-1 text-warning-emphasis">
+                        In questo servizio ci sono ospiti che non sono stati ancora assegnati a nessun tavolo!
+                    </span>
+                </button>
+            </div>
+        </div>        
+    </div>
+</div>
+{% endif %}
 <div class="row mb-4">
     <div class="col">
         <div class="card">
@@ -100,7 +122,6 @@
 </div>
 
 
-
 <!-- TODO -->
 <div class="alert alert-warning" role="alert">
     <strong>TO DO: </strong><br>
@@ -110,7 +131,7 @@
         <li><del>Rendere editabili celle tabella home e realizzare API</del></li>
         <li><del><strong> Assicurarsi che 1 tavolo abbia sempre solo un'unica presenza a servizio</strong></del></li>
         <li><del>Realizzare API per totale presenze del servizio</del></li>
-        <li>Mostrare alert per presenze non assegnate a nessun tavolo</li>
+        <li><del>Mostrare alert per presenze non assegnate a nessun tavolo</del></li>
         <li><del>Note del Servizio</del> </li>
         <li><del>Inserire tipologia ospiti: Staff</del></li>
         <li>Date arrivo e partenza ospiti in homepage</li>
@@ -143,11 +164,11 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col"></th><!-- Utilizzabile toggle -->
-                        <th scope="col">
+                        <th scope="col">{% bs_icon 'toggles' %}</th><!-- Utilizzabile toggle -->
+                        <th scope="col" class="border-end text-center">
                             {% include 'partials/svg_icon_sedia.html' %}
                         </th><!-- Max_posti editabile -->
-                        <th scope="col">Ospite</th>
+                        <th scope="col" class="ps-2">Ospite</th>
                         <th scope="col">{% bs_icon '123' %}</th><!-- Rooms -->
                         <th scope="col"></th><!-- Tipologia -->
                         <th scope="col"></th><!-- Trattamento -->
@@ -155,15 +176,15 @@
                         <th scope="col">B.</th><!-- Bambini editabile -->
                         <th scope="col">I.</th><!-- Infant editabile -->
                         <th scope="col">Note servizio</th><!-- editabile -->
-                        <th scope="col">Note tavolo</th><!-- editabile -->
+                        <th scope="col" class="border-start ps-2">Note tavolo</th><!-- editabile -->
                 </thead>
                 <tbody>
                     {% for tavolo in sala.tavoli_ordinati %}
                     <tr data-tavoloid="{{tavolo.id}}">
                         <td class="text-nowrap">{{tavolo}}</td>
                         <td></td><!-- Utilizzabile editabile -->
-                        <td ></td><!-- Max_posti editabile -->
-                        <td class="text-nowrap"><!-- Ospite -->
+                        <td class="border-end text-center"></td><!-- Max_posti editabile -->
+                        <td class="ps-2 text-nowrap"><!-- Ospite -->
                             {% include 'partials/loading_spinner.html' %}
                         </td>
                         <td></td><!-- Rooms -->
@@ -173,7 +194,7 @@
                         <td ></td><!-- Bambini editabile -->
                         <td ></td><!-- Infant editabile -->
                         <td class="text-nowrap"></td><!-- Note servizio editabile -->
-                        <td class="text-nowrap"></td><!-- Note tavolo editabile -->
+                        <td class="text-nowrap border-start ps-2"></td><!-- Note tavolo editabile -->
                     </tr>                        
                     {% empty %}
                     <tr>
@@ -243,6 +264,20 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Ospiti in piedi -->
+<div class="modal fade" id="ospitiInPiedi" tabindex="-1" aria-labelledby="ospitiInPiediLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ospitiInPiediLabel">Ospiti in piedi - {{servizio_selezionato}}:</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% include 'partials/loading_spinner.html' %}
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 

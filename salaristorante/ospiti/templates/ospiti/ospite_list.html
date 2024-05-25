@@ -55,7 +55,7 @@ Ospiti
                                 text-warning
                             {% endif %}                                
                             
-                            " href="{% url 'assegna_tavoli' ospite.id %}" title="Assegna tavoli a {{ospite}}">
+                            " href="{{ ospite.assegna_tavoli_url }}" title="Assegna tavoli a {{ospite}}">
                                 {% bs_icon 'pin-angle-fill' %}
                             </a>
                         </td>
