@@ -269,7 +269,7 @@ function formattaNotaPopover(nota, tipoNota, presenzaId, tavoloId) {
     const notaButton = `<button type="button" class="edit_nota btn btn-link text-primary-emphasis px-0 me-1" data-bs-toggle="modal" data-bs-target="#modificaNota" data-tipo="${tipoNota}" data-presenzaid="${presenzaId}" data-tavoloid="${tavoloId}" data-nota="${nota}">${pencil_svg}</button>`;
 
     if (!nota) {
-        return tipoNota === "notaTavolo" ? notaButton : "";
+        return tipoNota === "notaTavolo" ? notaButton : presenzaId ? notaButton : "";
     }
 
     if (!ridotto) {
