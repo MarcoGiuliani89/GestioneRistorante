@@ -1,10 +1,3 @@
-// Costanti per le icone SVG
-const info_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/></svg>`;
-const check_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="text-success-emphasis bi bi-check-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/></svg>`;
-const ban_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="text-danger-emphasis bi bi-ban" viewBox="0 0 16 16"><path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/></svg>`;
-const pencil_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg>`;
-const pin_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pin-angle-fill" viewBox="0 0 16 16"><path d="M9.828.722a.5.5 0 0 1 .354.146l4.95 4.95a.5.5 0 0 1 0 .707c-.48.48-1.072.588-1.503.588-.177 0-.335-.018-.46-.039l-3.134 3.134a6 6 0 0 1 .16 1.013c.046.702-.032 1.687-.72 2.375a.5.5 0 0 1-.707 0l-2.829-2.828-3.182 3.182c-.195.195-1.219.902-1.414.707s.512-1.22.707-1.414l3.182-3.182-2.828-2.829a.5.5 0 0 1 0-.707c.688-.688 1.673-.767 2.375-.72a6 6 0 0 1 1.013.16l3.134-3.133a3 3 0 0 1-.04-.461c0-.43.108-1.022.589-1.503a.5.5 0 0 1 .353-.146"/></svg>`
-const loader = `<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>`;
 const modificaNotaModal = new bootstrap.Modal(document.getElementById('modificaNota'));
 const input_note = modificaNotaModal._element.querySelector('input');
 const save_btn = modificaNotaModal._element.querySelector('#salva_nota');
@@ -14,17 +7,21 @@ let righe;
 
 
 ospitiInPiediModal._element.addEventListener('shown.bs.modal', () => {
+
+    // Modale che recupera e mostra l'elenco degli ospiti che non hanno alcun tavolo assegnato nel servizio selezionato (a ciascuno aggiunge un link alla pagina per la assegnazione).
+
     ospitiInPiediModal.innerHTML = loader;
     ajax(`/ospiti/api/ospiti-in-piedi-servizio-attuale/`, {
         method: 'GET',
         headers: { 'X-CSRFToken': csrftoken },
         success: response => {
-            console.log(response.value);
+            // crea la lista
             const lista_ospiti = document.createElement('ul');
             lista_ospiti.classList.add('list-group', 'list-group-flush');
             response.value.ospiti_in_piedi.forEach(ospite => {
                 const li = document.createElement('li');
                 li.classList.add('list-group-item');
+                // aggiungi il link
                 const link = document.createElement('a');
                 link.setAttribute('href', ospite.assegna_tavoli_url);
                 link.setAttribute('title', `Assegna tavoli a ${ospite.nome}`);
@@ -32,6 +29,8 @@ ospitiInPiediModal._element.addEventListener('shown.bs.modal', () => {
                 li.innerHTML = ospite.nome + ' ' + link.outerHTML;
                 lista_ospiti.appendChild(li);
             })
+
+            // mostra la lista
             ospitiInPiediModal._element.querySelector('.modal-body').innerHTML = lista_ospiti.outerHTML;
         },
         error: response => {
@@ -42,14 +41,16 @@ ospitiInPiediModal._element.addEventListener('shown.bs.modal', () => {
     })
 })
 
-
-// Recupero totale presenze per servizio
+// Span delle celle della tabella presenze totali
 const span_tot = document.getElementById('p_tot');
 const span_adulti = document.getElementById('p_adulti');
 const span_bambini = document.getElementById('p_bambini');
 const span_infant = document.getElementById('p_infant');
 
 function recuperaTotale() {
+
+    // Chiamata API per recuperare i totali presenze 
+
     ajax(`/servizi/api/totale-presenze-per-servizio/${servizio_id}/`, {
         method: 'GET',
         headers: { 'X-CSRFToken': csrftoken },
@@ -69,9 +70,7 @@ function recuperaTotale() {
 
 recuperaTotale();
 
-
-
-// Funzione per inizializzare le righe della tabella
+// Inizializzo le righe della tabella dei tavoli
 function inizializzaRighe() {
     righe = document.querySelectorAll('tr[data-tavoloid]');
     righe.forEach(riga => {
@@ -80,8 +79,11 @@ function inizializzaRighe() {
     });
 }
 
-// Funzione per recuperare i dati per ciascun tavolo
+
 function recuperaDati(tavoloId, riga) {
+
+    // Recupera i dati per ciascun tavolo
+
     ajax(`/tavoli/api/dati-tavolo-servizio/${tavoloId}/`, {
         method: 'GET',
         headers: { 'X-CSRFToken': csrftoken },
@@ -96,13 +98,15 @@ function recuperaDati(tavoloId, riga) {
     });
 }
 
-// Funzione per popolare la tabella con i dati
 function popolaTabella(dati, riga) {
+
+    // Imposta la compilazione della tabella con i dati recuperati
+
     const children = riga.children;
 
     const bottoneUtilizzabile = creaBottoneUtilizzabile(dati.utilizzabile, dati.tavolo_id);
-    const formattedOspite = formattaOspite(dati.ospite, dati.note_ospite);
-    const formattedCamere = formattaCamere(dati.ospite, dati.rooms);
+    const formattedOspite = formattaOspite(dati.ospite);
+    const formattedCamere = formattaCamere(dati.ospite);
     const tipologiaBadge = creaBadge(dati.tipologia, 'tipologia');
     const trattamentoBadge = creaBadge(dati.trattamento, 'trattamento');
     const notaPresenzaPopover = formattaNotaPopover(dati.note_servizio, 'notaPresenza', dati.presenza_id, dati.tavolo_id);
@@ -125,6 +129,9 @@ function popolaTabella(dati, riga) {
 
 // Funzione per rendere alcune celle editabili
 function rendiRigaEditabile(riga, dati) {
+
+    // Rendi editabili le celle di max_posti e n° ad. bamb. inf. per il tavolo
+
     const celleEditabili = [riga.children[2], riga.children[7], riga.children[8], riga.children[9]];
 
     celleEditabili.forEach(cella => {
@@ -153,19 +160,22 @@ function filtraContenutoNumerico(cella) {
 }
 
 function gestisciEnter(event) {
+    // chiudi le modali alla pressione del tasto Invio
     if (event.key === 'Enter') {
         event.preventDefault();
         event.target.blur();
     }
 }
 
-// Funzione per aggiornare i dati tramite chiamata API
+// Imposto l'aggiornamento dei dati numerici tramite API
+// Inizio dalla mappa degli url associandoli all'indice della cella in cui sto scrivendo
 const urlMap = {
     2: "/tavoli/api/edit-max-posti-tavolo/",
     7: "/servizi/api/edit-adulti-presenza/",
     8: "/servizi/api/edit-bambini-presenza/",
     9: "/servizi/api/edit-infant-presenza/"
 };
+// allo stesso modo mappo i nomi dei campi
 const fieldMap = {
     2: 'max_posti',
     7: 'adulti',
@@ -173,11 +183,14 @@ const fieldMap = {
     9: 'infant'
 };
 async function aggiornaDati(cella, dati) {
+    // salvo il valore immesso dall'utente prima di visualizzare il loader
     const newValue = cella.textContent;
     cella.innerHTML = loader;
 
-
+    // ricavo l'indice della cella in cui l'utente ha scritto
     const fieldIndex = [...cella.parentElement.children].indexOf(cella);
+
+    // tramite l'indice recuperio url e fieldName dalle mappe
     const fieldName = fieldMap[fieldIndex];
     const url = urlMap[fieldIndex];
 
@@ -207,8 +220,11 @@ async function aggiornaDati(cella, dati) {
     }
 }
 
-// Funzione per creare un pulsante per alternare l'utilizzabilità di un tavolo
+
+
 function creaBottoneUtilizzabile(valore, tavoloId) {
+
+    //Crea un pulsante per alternare l'utilizzabilità di un tavolo
     const div = document.createElement('div');
     const svg = valore ? check_svg : ban_svg;
 
@@ -222,54 +238,120 @@ function creaBottoneUtilizzabile(valore, tavoloId) {
     return div;
 }
 
-// Funzione per formattare le informazioni dell'ospite
-function formattaOspite(ospite, notaOspite) {
+function alternaUtilizzabile(tavoloId, btn) {
+
+    // Chiama l'API per alternare lo stato di utilizzabilità
+    btn.innerHTML = loader;
+    ajax(`/tavoli/api/toggle-tavolo-utilizzabile/${tavoloId}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrftoken },
+        success: response => {
+            btn.innerHTML = response.value.utilizzabile ? check_svg : ban_svg;
+        },
+        error: response => {
+            console.error(`Errore! STATUS: ${response.status}`);
+            console.error(response.statusText);
+            mostraMessaggio("alert-danger", response.statusText, true);
+        }
+    });
+}
+
+
+function formattaOspite(ospite) {
+    // Funzione per formattare le informazioni dell'ospite, il popover delle date ed eventualmente quello delle note ospite
     if (!ospite) return "";
 
-    let ospiteHtml = `<strong>${ospite}</strong>`;
-    if (notaOspite) {
+    let in_svg_color, out_svg_color, popover_color;
+
+    if (servizio_id == ospite.arrivo_id) {
+        in_svg_color = popover_color = "text-success-emphasis";
+        out_svg_color = "text-light";
+    } else if (servizio_id == ospite.partenza_id) {
+        out_svg_color = popover_color = "text-danger-emphasis";
+        in_svg_color = "text-light";
+    } else {
+        in_svg_color = out_svg_color = popover_color = "text-light";
+    }
+
+    const popover_content = `
+        <ul class="list-group">
+            <li class="list-group-item ${in_svg_color}">${ospite.arrivo}</li>
+            <li class="list-group-item ${out_svg_color}">${ospite.partenza}</li>
+        </ul>
+    `;
+
+    const popover_options = {
+        container: 'body',
+        html: true,
+        title: `${ospite.nome}:`,
+        content: popover_content,
+        customClass: ['btn', 'btn-link', popover_color, "me-1"],
+        placement: 'top',
+        inner_html: calendar_svg
+    };
+
+    let ospiteHtml = `${creaPopover(popover_options)}<strong>${ospite.nome}</strong>`;
+
+    if (ospite.note) {
         ospiteHtml += `
-            <a tabindex="0" type="button" class="btn btn-link text-primary-emphasis p-1" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="left" data-bs-trigger="focus" data-bs-title="${ospite}:" data-bs-content="${notaOspite}">
+            <a tabindex="0" type="button" class="btn btn-link text-light p-1" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="left" data-bs-trigger="focus" data-bs-title="${ospite.nome}:" data-bs-content="${ospite.note}">
                 ${info_svg}
             </a>`;
     }
+
     return ospiteHtml;
 }
 
-// Funzione per formattare le informazioni delle camere
-function formattaCamere(ospite, camere) {
-    if (!ospite || !camere) return "";
-
-    const listaCamere = camere.split(",");
-    if (listaCamere.length === 1) return listaCamere[0];
-
-    const popover_title = `Camere di ${ospite}`;
-    const popover_content = camere;
-    const popover_innerHTML = `#${listaCamere.length}`;
-
-    return creaPopover(popover_title, popover_content, popover_innerHTML, "right");
-}
-
-function creaPopover(title, content, innerHTML, direction) {
+function creaPopover(options) {
     const popoverButton = document.createElement('a');
     popoverButton.setAttribute('tabindex', '0');
     popoverButton.setAttribute('type', 'button');
-    popoverButton.classList.add('btn', 'btn-link', 'text-success-emphasis', 'px-0');
-    popoverButton.setAttribute('data-bs-container', 'body');
+    popoverButton.classList.add(...options.customClass);
+    popoverButton.setAttribute('data-bs-container', options.container);
+    popoverButton.setAttribute('data-bs-html', options.html);
     popoverButton.setAttribute('data-bs-toggle', 'popover');
-    popoverButton.setAttribute('data-bs-placement', direction);
+    popoverButton.setAttribute('data-bs-placement', options.placement);
     popoverButton.setAttribute('data-bs-trigger', 'focus');
-    popoverButton.setAttribute('data-bs-title', title);
-    popoverButton.setAttribute('data-bs-content', content);
-    popoverButton.innerHTML = innerHTML;
+    popoverButton.setAttribute('data-bs-title', options.title);
+    popoverButton.setAttribute('data-bs-content', options.content);
+    popoverButton.innerHTML = options.inner_html;
 
     inizializzaPopovers();
 
     return popoverButton.outerHTML;
 }
+function inizializzaPopovers() {
+    const elementiPopover = document.querySelectorAll('[data-bs-toggle="popover"]');
+    elementiPopover.forEach(elementoPopover => {
+        new bootstrap.Popover(elementoPopover);
+    });
+}
 
-// Funzione per creare un badge colorato
+function formattaCamere(ospite) {
+    if (!ospite || !ospite.rooms) return "";
+
+    const listaCamere = ospite.rooms.split(",");
+    if (listaCamere.length === 1) return listaCamere[0];
+
+    const popover_options = {
+        container: 'body',
+        html: false,
+        title: `Camere di ${ospite.nome}`,
+        content: ospite.rooms,
+        customClass: ['btn', 'btn-link', "me-1"],
+        placement: 'top',
+        inner_html: `#${listaCamere.length}`
+    };
+
+    return creaPopover(popover_options);
+}
+
+
+
 function creaBadge(valore, tipo) {
+
+    // Funzione per creare un badge colorato
+    // mappe colori
     const badgeTypes = {
         tipologia: {
             Individuali: "primary",
@@ -310,7 +392,17 @@ function formattaNotaPopover(nota, tipoNota, presenzaId, tavoloId) {
         return notaButton + nota;
     }
 
-    return notaButton + creaPopover("Note:", nota, nota_rid, "left");
+    const popover_options = {
+        container: 'body',
+        html: false,
+        title: "Note:",
+        content: nota,
+        customClass: ['btn', 'btn-link'],
+        placement: 'left',
+        inner_html: nota_rid
+    };
+
+    return notaButton + creaPopover(popover_options);
 }
 
 function riduciTesto(testo) {
@@ -321,13 +413,6 @@ function riduciTesto(testo) {
     }
 }
 
-// Funzione per inizializzare i popover
-function inizializzaPopovers() {
-    const elementiPopover = document.querySelectorAll('[data-bs-toggle="popover"]');
-    elementiPopover.forEach(elementoPopover => {
-        new bootstrap.Popover(elementoPopover);
-    });
-}
 
 // Inizializzare la modale e il suo bottone
 modificaNotaModal._element.addEventListener('shown.bs.modal', handleModalShown);
@@ -434,22 +519,7 @@ function findTableRow(tavoloId) {
     return document.querySelector(`tr[data-tavoloid="${tavoloId}"]`);
 }
 
-// Funzione per alternare lo stato di utilizzabilità
-function alternaUtilizzabile(tavoloId, btn) {
-    btn.innerHTML = loader;
-    ajax(`/tavoli/api/toggle-tavolo-utilizzabile/${tavoloId}/`, {
-        method: 'POST',
-        headers: { 'X-CSRFToken': csrftoken },
-        success: response => {
-            btn.innerHTML = response.value.utilizzabile ? check_svg : ban_svg;
-        },
-        error: response => {
-            console.error(`Errore! STATUS: ${response.status}`);
-            console.error(response.statusText);
-            mostraMessaggio("alert-danger", response.statusText, true);
-        }
-    });
-}
+
 
 // Funzione per gestire le chiamate POST
 function apiPost(url, dati) {

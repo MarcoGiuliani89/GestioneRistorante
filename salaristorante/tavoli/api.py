@@ -286,7 +286,9 @@ class DatiTavoloServizioAPI(APIView):
         # Recupera la presenza per il servizio selezionato
         presenza = (
             tavolo.presenze.filter(servizio_id=servizio_selezionato_id)
-            .select_related("ospite")
+            .select_related(
+                "ospite", "ospite__servizio_arrivo", "ospite__servizio_partenza"
+            )
             .first()
         )
 
@@ -294,11 +296,17 @@ class DatiTavoloServizioAPI(APIView):
             data = {
                 "tavolo_id": tavolo_id,
                 "presenza_id": presenza.id,
-                "ospite": presenza.ospite.nome,
-                "tipologia": presenza.ospite.get_tipologia_display(),
-                "trattamento": presenza.ospite.trattamento,
-                "note_ospite": presenza.ospite.note,
-                "rooms": presenza.ospite.rooms,
+                "ospite": {
+                    "nome": presenza.ospite.nome,
+                    "arrivo": str(presenza.ospite.servizio_arrivo),
+                    "arrivo_id": presenza.ospite.servizio_arrivo.id,
+                    "partenza": str(presenza.ospite.servizio_partenza),
+                    "partenza_id": presenza.ospite.servizio_partenza.id,
+                    "tipologia": presenza.ospite.get_tipologia_display(),
+                    "trattamento": presenza.ospite.trattamento,
+                    "note": presenza.ospite.note,
+                    "rooms": presenza.ospite.rooms,
+                },
                 "adulti": presenza.adulti,
                 "bambini": presenza.bambini,
                 "infant": presenza.infant,
@@ -312,10 +320,6 @@ class DatiTavoloServizioAPI(APIView):
                 "tavolo_id": tavolo_id,
                 "presenza_id": None,
                 "ospite": None,
-                "tipologia": None,
-                "trattamento": None,
-                "note_ospite": None,
-                "rooms": None,
                 "adulti": None,
                 "bambini": None,
                 "infant": None,
