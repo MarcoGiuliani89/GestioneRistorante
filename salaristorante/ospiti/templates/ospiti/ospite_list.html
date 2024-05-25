@@ -64,16 +64,16 @@ Ospiti
                             <span class="badge 
                             
                             {% if ospite.trattamento == 'BB' %}
-                                text-bg-light
+                                text-bg-warning
 
                             {% elif ospite.trattamento == 'HB' %}
-                                text-bg-primary
+                                text-bg-info
                                 
                             {% elif ospite.trattamento == 'FB' %}
-                                text-bg-success
+                                text-bg-light
                                 
                             {% elif ospite.trattamento == 'HBB' %}
-                                text-bg-warning
+                                text-bg-primary
                                 
                             {% elif ospite.trattamento == 'FBB' %}
                                 text-bg-danger                                
@@ -92,7 +92,9 @@ Ospiti
                                 text-bg-secondary
                                 
                             {% elif ospite.get_tipologia_display == 'Esterni' %}
-                                text-bg-danger                                
+                                text-bg-danger
+                            {% elif ospite.get_tipologia_display == 'Staff' %} 
+                                text-bg-warning                             
                             {% endif %}                                
                             ">
                                 {{ ospite.get_tipologia_display }}

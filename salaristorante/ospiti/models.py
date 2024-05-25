@@ -6,11 +6,13 @@ class Ospite(models.Model):
     INDIVIDUALI = 1
     GRUPPO = 2
     ESTERNI = 3
+    STAFF = 4
 
     TIPOLOGIA_CHOICHES = [
         (INDIVIDUALI, "Individuali"),
         (GRUPPO, "Gruppo"),
         (ESTERNI, "Esterni"),
+        (STAFF, "Staff"),
     ]
 
     BB = "BB"

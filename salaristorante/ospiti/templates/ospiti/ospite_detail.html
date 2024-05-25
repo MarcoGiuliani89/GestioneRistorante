@@ -45,12 +45,12 @@
                                     <span class="badge rounded-pill
                                         {% if ospite.get_tipologia_display == 'Individuali' %}
                                         text-bg-primary
-
                                         {% elif ospite.get_tipologia_display == 'Gruppo' %}
                                             text-bg-secondary
-                                            
                                         {% elif ospite.get_tipologia_display == 'Esterni' %}
                                             text-bg-danger
+                                        {% elif ospite.get_tipologia_display == 'Staff' %} 
+                                            text-bg-warning
                                         {% endif %}
                                     ">
                                         {{ospite.get_tipologia_display}}

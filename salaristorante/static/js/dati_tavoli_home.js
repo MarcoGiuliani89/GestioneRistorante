@@ -242,15 +242,16 @@ function creaBadge(valore, tipo) {
             Individuali: "primary",
             Gruppo: "secondary",
             Esterni: "danger",
-            default: "warning"
+            Staff: "warning",
+            default: "success"
         },
         trattamento: {
-            HB: "warning",
-            FB: "danger",
-            BB: "info",
+            BB: "warning",
+            HB: "info",
+            FB: "light",
             HBB: "primary",
             FBB: "danger",
-            default: "secondary"
+            default: "success"
         }
     };
 
