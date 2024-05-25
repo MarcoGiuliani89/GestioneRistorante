@@ -1,10 +1,11 @@
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 from ospiti.models import Ospite
-from .models import Presenza
+from .models import Presenza, Servizio
 
 
 class ServiziPresenzeOspiteAPI(APIView):
@@ -96,3 +97,29 @@ class EditNotePresenza(APIView):
         data = {"presenza_id": presenza_id, "note": note}
 
         return Response(data, status=status.HTTP_200_OK)
+
+
+class TotalePresenzePerServizioAPI(APIView):
+    def get(self, request, servizio_id):
+        servizio = get_object_or_404(Servizio, id=servizio_id)
+
+        presenze_totali = Presenza.objects.filter(servizio=servizio).aggregate(
+            totale_adulti=Sum("adulti"),
+            totale_bambini=Sum("bambini"),
+            totale_infant=Sum("infant"),
+        )
+
+        totale_adulti = presenze_totali["totale_adulti"] or 0
+        totale_bambini = presenze_totali["totale_bambini"] or 0
+        totale_infant = presenze_totali["totale_infant"] or 0
+        totale_presenze = totale_adulti + totale_bambini + totale_infant
+
+        response_data = {
+            "servizio_id": servizio.id,
+            "totale_adulti": totale_adulti,
+            "totale_bambini": totale_bambini,
+            "totale_infant": totale_infant,
+            "totale_presenze": totale_presenze,
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)

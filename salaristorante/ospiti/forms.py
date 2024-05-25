@@ -31,6 +31,9 @@ class OspiteForm(forms.ModelForm):
             "note": "Note ospite",
             "trattamento": "Trattamento",
         }
+        help_texts = {
+            "rooms": "Se più di una, separare con la virgola",
+        }
 
     def clean(self):
         cleaned_data = super().clean()

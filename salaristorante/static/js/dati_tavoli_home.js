@@ -10,6 +10,33 @@ const save_btn = modificaNotaModal._element.querySelector('#salva_nota');
 
 let righe;
 
+// Recupero totale presenze per servizio
+const span_tot = document.getElementById('p_tot');
+const span_adulti = document.getElementById('p_adulti');
+const span_bambini = document.getElementById('p_bambini');
+const span_infant = document.getElementById('p_infant');
+
+function recuperaTotale() {
+    ajax(`/servizi/api/totale-presenze-per-servizio/${servizio_id}/`, {
+        method: 'GET',
+        headers: { 'X-CSRFToken': csrftoken },
+        success: response => {
+            span_tot.innerHTML = response.value.totale_presenze;
+            span_adulti.innerHTML = response.value.totale_adulti;
+            span_bambini.innerHTML = response.value.totale_bambini;
+            span_infant.innerHTML = response.value.totale_infant;
+        },
+        error: response => {
+            console.error(`Errore! STATUS: ${response.status}`);
+            console.error(response.statusText);
+            mostraMessaggio("alert-danger", response.statusText, true);
+        }
+    });
+}
+
+recuperaTotale();
+
+
 
 // Funzione per inizializzare le righe della tabella
 function inizializzaRighe() {

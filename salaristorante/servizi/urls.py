@@ -12,6 +12,7 @@ from .api import (
     EditBambiniPresenza,
     EditInfantPresenza,
     EditNotePresenza,
+    TotalePresenzePerServizioAPI,
 )
 
 urlpatterns = [
@@ -58,5 +59,10 @@ urlpatterns = [
         "api/edit-note-presenza/",
         EditNotePresenza.as_view(),
         name="api_edit_note_presenza",
+    ),
+    path(
+        "api/totale-presenze-per-servizio/<int:servizio_id>/",
+        TotalePresenzePerServizioAPI.as_view(),
+        name="api_totale_presenze_per_servizio",
     ),
 ]

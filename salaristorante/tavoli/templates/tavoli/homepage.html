@@ -13,8 +13,8 @@
     </div>
 </div>
 <div class="row mb-4">
-    <div class="col-12"><h4>Cambia servizio visualizzato:</h4></div>
-    <div class="col seleziona_servizi">
+    <div class="col-12 col-md-6 seleziona_servizi">
+        <h4>Cambia servizio visualizzato:</h4>
         <div class="btn-group btn-group-lg me-3" role="group" aria-label="Segli servizio">
             <a type="button" class="btn btn-primary" title="Vai al servizio precedente" href="{% url 'servizio_precedente' %}">
                 {% bs_icon 'arrow-left-circle-fill' size='1.1em' %}
@@ -30,6 +30,40 @@
             {% bs_icon 'calendar2-date' size='1.1em' %}           
         </button>
     </div>
+    <div class="col-12 col-md-6">
+        <table class="table text-center">
+            <thead>
+              <tr>
+                <td scope="col" colspan="3">
+                    <h6>Presenze:</h6>                    
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" colspan="3" id="p_tot">{% include 'partials/loading_spinner.html' %}</th>
+              </tr>
+              <tr>
+                <td>
+                    <h6>Adulti:</h6>
+                    <span id="p_adulti">{% include 'partials/loading_spinner.html' %}</span>
+                    
+                </td>
+                <td>
+                    <h6>Bambini:</h6>
+                    <span id="p_bambini">{% include 'partials/loading_spinner.html' %}</span>
+                    
+                </td>
+                <td>
+                    <h6>Infant:</h6>
+                    <span id="p_infant">{% include 'partials/loading_spinner.html' %}</span>
+                    
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        
+    </div>
 </div>
 
 <!-- TODO -->
@@ -40,9 +74,9 @@
         <li><del>Mostrare dati tavolo recuperati (manca decidere se abbreviare le note)</del></li>
         <li><del>Rendere editabili celle tabella home e realizzare API</del></li>
         <li><del><strong> Assicurarsi che 1 tavolo abbia sempre solo un'unica presenza a servizio</strong></del></li>
-        <li><strong>Assicurarsi che le camere siano una lista separata da ,</strong></li>
-        <li>Realizzare API per totale presenze del servizio</li>
-        <li>Mostrare presenze totali</li>
+        <li><del>Realizzare API per totale presenze del servizio</del></li>
+        <li>Mostrare alert per presenze non assegnate a nessun tavolo</li>
+        <li>Inserire tipologia ospiti: Staff</li>
     </ul>
 </div>
 
@@ -178,6 +212,7 @@
 {% block extra_js %}
 <script>
     const csrftoken = '{{csrf_token}}';
+    const servizio_id = '{{servizio_selezionato.id}}';
 </script> 
 <script src="{% static 'js/simpleAjax.js' %}"></script>
 <script src="{% static 'js/methods.js' %}"></script>
