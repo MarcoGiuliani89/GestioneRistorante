@@ -11,7 +11,8 @@ from .api import (
     EditAdultiPresenza,
     EditBambiniPresenza,
     EditInfantPresenza,
-    EditNotePresenza,
+    EditNotePresenzaAPI,
+    EditNoteServizioAPI,
     TotalePresenzePerServizioAPI,
 )
 
@@ -57,8 +58,13 @@ urlpatterns = [
     ),
     path(
         "api/edit-note-presenza/",
-        EditNotePresenza.as_view(),
+        EditNotePresenzaAPI.as_view(),
         name="api_edit_note_presenza",
+    ),
+    path(
+        "api/edit-note-servizio/",
+        EditNoteServizioAPI.as_view(),
+        name="api_edit_note_servizio",
     ),
     path(
         "api/totale-presenze-per-servizio/<int:servizio_id>/",

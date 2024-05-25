@@ -13,6 +13,7 @@ from servizi.methods import (
     get_selected_servizio,
     get_current_servizio_id,
 )
+from servizi.api import EditNoteBaseAPI
 from servizi.models import Servizio, Presenza
 
 
@@ -368,16 +369,6 @@ class EditMaxPostiTavoloAPI(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-class EditNoteTavoloAPI(APIView):
-
-    def post(self, request):
-        tavolo_id = request.data.get("tavolo_id")
-        note = request.data.get("note")
-
-        tavolo = get_object_or_404(Tavolo, id=tavolo_id)
-        tavolo.note = note
-        tavolo.save()
-
-        data = {"tavolo_id": tavolo_id, "note": tavolo.note}
-
-        return Response(data, status=status.HTTP_200_OK)
+class EditNoteTavoloAPI(EditNoteBaseAPI):
+    model = Tavolo
+    id_field = "tavolo_id"

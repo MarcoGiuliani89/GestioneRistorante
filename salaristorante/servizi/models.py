@@ -13,6 +13,7 @@ class Servizio(models.Model):
 
     data = models.DateField()
     pasto = models.PositiveSmallIntegerField(choices=PASTO_CHOICES)
+    note = models.CharField(max_length=500, blank=True, null=True)
 
     @property
     def formatted_data(self):

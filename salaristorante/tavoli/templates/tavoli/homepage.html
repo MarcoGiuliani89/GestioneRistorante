@@ -7,64 +7,99 @@
 
 {% block content %}
 
-<div class="row mb-2">
+<div class="row mb-3">
+    <div class="col mt-3">
+        <h2 class="text-center">{{servizio_selezionato}}</h2>
+    </div>
+</div>
+
+<div class="row row-cols-2 g-4 mb-4">
     <div class="col">
-        <h3>Pianotavoli di: {{servizio_selezionato}}</h3>
-    </div>
-</div>
-<div class="row mb-4">
-    <div class="col-12 col-md-6 seleziona_servizi">
-        <h4>Cambia servizio visualizzato:</h4>
-        <div class="btn-group btn-group-lg me-3" role="group" aria-label="Segli servizio">
-            <a type="button" class="btn btn-primary" title="Vai al servizio precedente" href="{% url 'servizio_precedente' %}">
-                {% bs_icon 'arrow-left-circle-fill' size='1.1em' %}
-            </a>
-            <a type="button" class="btn btn-primary" title="Vai al servizio attuale" href="{% url 'servizio_attuale' %}">
-                {% bs_icon 'watch' size='1.1em' %}
-            </a>
-            <a type="button" class="btn btn-primary" title="Vai al servizio successivo" href="{% url 'servizio_successivo' %}">
-                {% bs_icon 'arrow-right-circle-fill' size='1.1em' %}
-            </a>
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <button type="button" id="modifica_nota" class="btn btn-link text-light ps-0 pb-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#modificaNota" data-servizioid="{{servizio_selezionato.id}}" data-tipo="notaServizio" data-nota="{{servizio_selezionato.note}}">
+                        {% bs_icon 'pencil' %}<strong class="ms-1">Note Servizio:</strong>
+                    </button> 
+                </h5>
+                
+                <p>
+                    <span id="triangolo_attenzione" class="me-1 text-warning-emphasis 
+                       {% if not servizio_selezionato.note %}
+                           d-none
+                       {% endif %}
+                    ">
+                        {% bs_icon 'exclamation-triangle-fill' %}
+                    </span>
+                    <span id="nota_servizio">{{servizio_selezionato.note | default_if_none:""}}</span>                    
+                </p>            
+            </div>
         </div>
-        <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#selzionaServizio">
-            {% bs_icon 'calendar2-date' size='1.1em' %}           
-        </button>
     </div>
-    <div class="col-12 col-md-6">
-        <table class="table text-center">
-            <thead>
-              <tr>
-                <td scope="col" colspan="3">
-                    <h6>Presenze:</h6>                    
-                </td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row" colspan="3" id="p_tot">{% include 'partials/loading_spinner.html' %}</th>
-              </tr>
-              <tr>
-                <td>
-                    <h6>Adulti:</h6>
-                    <span id="p_adulti">{% include 'partials/loading_spinner.html' %}</span>
-                    
-                </td>
-                <td>
-                    <h6>Bambini:</h6>
-                    <span id="p_bambini">{% include 'partials/loading_spinner.html' %}</span>
-                    
-                </td>
-                <td>
-                    <h6>Infant:</h6>
-                    <span id="p_infant">{% include 'partials/loading_spinner.html' %}</span>
-                    
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-body pb-0">
+                <table class="table text-center">
+                    <tbody>
+                      <tr>
+                        <th scope="row" colspan="3" class="pt-0">
+                            <h6 class="d-inline">Presenze totali:
+                            <span id="p_tot" class="ms-2">{% include 'partials/loading_spinner.html' %}</span></h6>
+                        </th>
+                      </tr>
+                      <tr>
+                        <td>
+                            <h6>Adulti:</h6>
+                            <span id="p_adulti">{% include 'partials/loading_spinner.html' %}</span>
+                            
+                        </td>
+                        <td>
+                            <h6>Bambini:</h6>
+                            <span id="p_bambini">{% include 'partials/loading_spinner.html' %}</span>
+                            
+                        </td>
+                        <td>
+                            <h6>Infant:</h6>
+                            <span id="p_infant">{% include 'partials/loading_spinner.html' %}</span>
+                            
+                        </td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
+
+<div class="row mb-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    Cambia servizio visualizzato:
+                </h5>
+                <div class="seleziona_servizi">
+                    <div class="btn-group btn-group-lg me-3" role="group" aria-label="Segli servizio">
+                        <a type="button" class="btn btn-dark" title="Vai al servizio precedente" href="{% url 'servizio_precedente' %}">
+                            {% bs_icon 'arrow-left-circle-fill' size='1.1em' %}
+                        </a>
+                        <a type="button" class="btn btn-dark" title="Vai al servizio attuale" href="{% url 'servizio_attuale' %}">
+                            {% bs_icon 'watch' size='1.1em' %}
+                        </a>
+                        <a type="button" class="btn btn-dark" title="Vai al servizio successivo" href="{% url 'servizio_successivo' %}">
+                            {% bs_icon 'arrow-right-circle-fill' size='1.1em' %}
+                        </a>
+                    </div>
+                    <button type="button" class="btn btn-dark btn-lg" data-bs-toggle="modal" data-bs-target="#selzionaServizio">
+                        {% bs_icon 'calendar2-date' size='1.1em' %}           
+                    </button>
+                </div>
+            </div>
+        </div>        
+    </div>
+</div>
+
+
 
 <!-- TODO -->
 <div class="alert alert-warning" role="alert">
@@ -77,6 +112,8 @@
         <li><del>Realizzare API per totale presenze del servizio</del></li>
         <li>Mostrare alert per presenze non assegnate a nessun tavolo</li>
         <li>Inserire tipologia ospiti: Staff</li>
+        <li>Note del Servizio</li>
+        <li>Date arrivo e partenza ospiti in homepage</li>
     </ul>
 </div>
 

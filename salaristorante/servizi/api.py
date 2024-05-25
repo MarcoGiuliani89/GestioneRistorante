@@ -85,18 +85,31 @@ class EditInfantPresenza(BaseEditPresenzaFieldAPI):
     default_field_name = "default_infant"
 
 
-class EditNotePresenza(APIView):
+class EditNoteBaseAPI(APIView):
+    model = None
+    id_field = None
+
     def post(self, request):
-        presenza_id = request.data.get("presenza_id")
+        obj_id = request.data.get(self.id_field)
         note = request.data.get("note")
 
-        presenza = get_object_or_404(Presenza, id=presenza_id)
-        presenza.note = note
-        presenza.save()
+        obj = get_object_or_404(self.model, id=obj_id)
+        obj.note = note
+        obj.save()
 
-        data = {"presenza_id": presenza_id, "note": note}
+        data = {self.id_field: obj_id, "note": note}
 
         return Response(data, status=status.HTTP_200_OK)
+
+
+class EditNotePresenzaAPI(EditNoteBaseAPI):
+    model = Presenza
+    id_field = "presenza_id"
+
+
+class EditNoteServizioAPI(EditNoteBaseAPI):
+    model = Servizio
+    id_field = "servizio_id"
 
 
 class TotalePresenzePerServizioAPI(APIView):

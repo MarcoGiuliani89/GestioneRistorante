@@ -72,7 +72,7 @@ function popolaTabella(dati, riga) {
     const formattedCamere = formattaCamere(dati.ospite, dati.rooms);
     const tipologiaBadge = creaBadge(dati.tipologia, 'tipologia');
     const trattamentoBadge = creaBadge(dati.trattamento, 'trattamento');
-    const notaServizioPopover = formattaNotaPopover(dati.note_servizio, 'notaServizio', dati.presenza_id, dati.tavolo_id);
+    const notaPresenzaPopover = formattaNotaPopover(dati.note_servizio, 'notaPresenza', dati.presenza_id, dati.tavolo_id);
     const notaTavoloPopover = formattaNotaPopover(dati.note_tavolo, 'notaTavolo', dati.presenza_id, dati.tavolo_id);
 
     children[1].appendChild(bottoneUtilizzabile);
@@ -84,7 +84,7 @@ function popolaTabella(dati, riga) {
     children[7].innerHTML = dati.adulti;
     children[8].innerHTML = dati.bambini;
     children[9].innerHTML = dati.infant;
-    children[10].innerHTML = notaServizioPopover;
+    children[10].innerHTML = notaPresenzaPopover;
     children[11].innerHTML = notaTavoloPopover;
 
     rendiRigaEditabile(riga, dati);
@@ -329,12 +329,13 @@ function handleSaveButtonClick() {
     const tipo = currentModalButton.getAttribute('data-tipo');
     const presenzaId = currentModalButton.getAttribute('data-presenzaid');
     const tavoloId = currentModalButton.getAttribute('data-tavoloid');
+    const servizioId = currentModalButton.getAttribute('data-servizioid');
     const note = input_note.value;
-    // Aggiorna con l'URL appropriato
     const payload = {
         'tipo': tipo,
         'presenza_id': presenzaId,
         'tavolo_id': tavoloId,
+        'servizio_id': servizioId,
         'note': note
     };
 
@@ -350,19 +351,37 @@ async function salvaNota(payload) {
     const { url, CellIndex } = config;
 
     try {
-        // Cerca quale riga ha il tavolo_id corrispondente
-        const riga = findTableRow(tavolo_id);
-        if (!riga) return;
 
-        const cella = riga.children[CellIndex];
-        if (!cella) return;
+        if (tipo != "notaServizio") {
+            // Cerca quale riga ha il tavolo_id corrispondente
+            const riga = findTableRow(tavolo_id);
+            if (!riga) return;
 
-        cella.innerHTML = loader;
+            const cella = riga.children[CellIndex];
+            if (!cella) return;
 
-        // Implementa la chiamata AJAX
-        const response = await apiPost(url, payload);
-        cella.innerHTML = formattaNotaPopover(response.note, tipo, presenza_id, tavolo_id);
-        inizializzaPopovers();
+            cella.innerHTML = loader;
+            // Implementa la chiamata AJAX
+            const response = await apiPost(url, payload);
+            cella.innerHTML = formattaNotaPopover(response.note, tipo, presenza_id, tavolo_id);
+            inizializzaPopovers();
+        } else {
+            const span = document.getElementById("nota_servizio");
+            const icons = document.getElementById("triangolo_attenzione");
+            const edit_btn = document.getElementById("modifica_nota");
+            span.innerHTML = loader;
+            // Implementa la chiamata AJAX
+            const response = await apiPost(url, payload);
+            if (!response.note || response.note == "") {
+                icons.classList.add("d-none");
+                edit_btn.setAttribute("data-nota", null);
+            }
+            else {
+                edit_btn.setAttribute("data-nota", response.note);
+                icons.classList.remove("d-none");
+            }
+            span.innerHTML = response.note
+        }
 
     } catch (error) {
         console.error("Errore durante la chiamata API:", error);
@@ -370,8 +389,9 @@ async function salvaNota(payload) {
 }
 function getConfig(tipo) {
     const tipoConfig = {
-        notaServizio: { url: "/servizi/api/edit-note-presenza/", CellIndex: 10 },
-        notaTavolo: { url: "/tavoli/api/edit-note-tavolo/", CellIndex: 11 }
+        notaPresenza: { url: "/servizi/api/edit-note-presenza/", CellIndex: 10 },
+        notaTavolo: { url: "/tavoli/api/edit-note-tavolo/", CellIndex: 11 },
+        notaServizio: { url: "/servizi/api/edit-note-servizio/", CellIndex: null }
     };
     return tipoConfig[tipo];
 }
