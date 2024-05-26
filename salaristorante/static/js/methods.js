@@ -53,32 +53,51 @@ function mostraMessaggio(c, text, permanent = false) {
     }
 }
 
-function uncheckAll(name) {
-    document.querySelectorAll(`input[type="checkbox"][name="${name}"]`)
-        .forEach(el => el.checked = false);
-}
+// function uncheckAll(name) {
+//     document.querySelectorAll(`input[type="checkbox"][name="${name}"]`)
+//         .forEach(el => el.checked = false);
+// }
 
-function checkAll(name) {
-    document.querySelectorAll(`input[type="checkbox"][name="${name}"]`)
-        .forEach(el => el.checked = true);
-}
+// function checkAll(name) {
+//     document.querySelectorAll(`input[type="checkbox"][name="${name}"]`)
+//         .forEach(el => el.checked = true);
+// }
 
-function selectElementContents(el) {
-    var range = document.createRange();
-    range.selectNodeContents(el);
-    var sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-}
+// function selectElementContents(el) {
+//     var range = document.createRange();
+//     range.selectNodeContents(el);
+//     var sel = window.getSelection();
+//     sel.removeAllRanges();
+//     sel.addRange(range);
+// }
 
-function isEmptyObject(value) {
-    return (
-        Object.prototype.toString.call(value) === '[object Object]' &&
-        JSON.stringify(value) === '{}'
-    );
-}
+// function isEmptyObject(value) {
+//     return (
+//         Object.prototype.toString.call(value) === '[object Object]' &&
+//         JSON.stringify(value) === '{}'
+//     );
+// }
 
-function timeNow() {
-    let d = new Date()
-    return `ore: ${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}:${d.getMilliseconds()}`
+// function timeNow() {
+//     let d = new Date()
+//     return `ore: ${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}:${d.getMilliseconds()}`
+// }
+
+
+// Funzione per gestire le chiamate POST
+function apiPost(url, dati) {
+    return new Promise((resolve, reject) => {
+        ajax(url, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrftoken },
+            data: dati,
+            success: response => resolve(response.value),
+            error: response => {
+                console.error(`Errore! STATUS: ${response.status}`);
+                console.error(response.statusText);
+                mostraMessaggio("alert-danger", response.statusText, true);
+                reject(response.statusText);
+            }
+        });
+    });
 }

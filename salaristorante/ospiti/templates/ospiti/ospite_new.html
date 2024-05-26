@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load bootstrap_icons %}
+
+
+{% block title %}
+Aggiungi Ospite  
+{% endblock %}
+    
+
+{% block content %}
+<div class="d-flex">
+    <div class="me-auto d-flex">
+        <h4>Aggiungi ospite</h4>
+    </div>
+</div>
+
+<form method="POST" class="mt-4">
+    {% csrf_token %}
+    <div class="row mt-2 mb-4">
+        <div class="col-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-5 mb-2">{% bootstrap_field form.nome %}</div>
+                        <div class="col-4 mb-2">{% bootstrap_field form.tipologia %}</div>
+                        <div class="col-3 mb-2">{% bootstrap_field form.trattamento %}</div>
+                    </div>
+                    <div class="row mb-2 border-bottom border-1">
+                        <div class="col-6 mb-2">{% bootstrap_field form.servizio_arrivo %}</div>
+                        <div class="col-6 mb-2">{% bootstrap_field form.servizio_partenza %}</div>
+                    </div>
+                    <div class="row mb-2 border-bottom border-1 py-2">
+                        <div class="col-4">{% bootstrap_field form.default_adulti %}</div>
+                        <div class="col-4">{% bootstrap_field form.default_bambini %}</div>
+                        <div class="col-4">{% bootstrap_field form.default_infant %}</div>
+                        <div class="col-12 mb-2 text-muted">
+                            Numero predefinito di presenze ai pasti per il gruppo o l'ospite. Potrà essere poi aggiornato per ogni <strong>Servizio</strong> se non rimane costante durante tutto il soggiorno.
+                        </div>
+                    </div>
+                    <div class="row mb-2 pt-2">
+                        <div class="col-6 mb-2">{% bootstrap_field form.rooms %}</div>
+                        <div class="col-6 mb-2">{% bootstrap_field form.note %}</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary me-2 my-2">Salva</button>
+                    <a href="{{request.META.HTTP_REFERER}}" class="btn btn-light my-2">Annulla</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock content %}

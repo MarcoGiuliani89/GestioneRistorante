@@ -10,6 +10,27 @@
 
 {% block content %}
 
+<div class="row">
+    <div class="col-8">
+        <h4>{{ ospite }}</h4>
+        <h6 class="text-muted text-uppercase">Assegna tavoli</h6>
+    </div>
+    <div class="col text-end">
+        <div class="btn-group btn-group" role="group" aria-label="Menu pagine ospite">
+            <a type="button" class="btn btn-outline-light" title="Modifica {{ospite}}" href="{% url 'aggiorna_ospite' ospite.id %}" >
+                {% bs_icon 'pencil' %}
+            </a>
+            <a type="button" class="btn btn-outline-light disabled" title="Assegna {{ospite}} ai tavoli" href="{{ ospite.assegna_tavoli_url }}" aria-disabled="true">
+                {% bs_icon 'pin-angle-fill' %}
+            </a>
+            <a type="button" class="btn btn-outline-light" title="Modifica presenze {{ospite}}" href="{% url 'presenze_ospite' ospite.id %}">
+                {% bs_icon 'people-fill' %}
+            </a>
+        </div>
+    </div>
+</div>
+
+
 <div class="row mt-2 mb-5">
     <div class="col-12">
         <div class="card h-100">
@@ -18,8 +39,22 @@
                     <div class="col">
                         <h4 class="card-title">
                             <div class="row d-flex align-items-center">
-                                <div class="col-auto">
-                                    <span class="badge fs-4 me-2
+                                <div class="col">
+                                    <span class="badge rounded-pill
+                                        {% if ospite.get_tipologia_display == 'Individuali' %}
+                                        text-bg-primary
+                                        {% elif ospite.get_tipologia_display == 'Gruppo' %}
+                                            text-bg-secondary
+                                        {% elif ospite.get_tipologia_display == 'Esterni' %}
+                                            text-bg-danger
+                                        {% elif ospite.get_tipologia_display == 'Staff' %} 
+                                            text-bg-warning
+                                        {% endif %}
+                                    ">
+                                        {{ospite.get_tipologia_display}}
+                                    </span>
+                                </div>                                <div class="col-auto">
+                                    <span class="badge me-2
                                         
                                         {% if ospite.trattamento == 'BB' %}
                                             text-bg-warning
@@ -39,30 +74,9 @@
                                         ">
                                             {{ ospite.trattamento }}
                                     </span>
-                                </div>                            
-                                <div class="col">{{ospite}}</div>
-                                <div class="col-auto">
-                                    <span class="badge rounded-pill
-                                        {% if ospite.get_tipologia_display == 'Individuali' %}
-                                        text-bg-primary
-                                        {% elif ospite.get_tipologia_display == 'Gruppo' %}
-                                            text-bg-secondary
-                                        {% elif ospite.get_tipologia_display == 'Esterni' %}
-                                            text-bg-danger
-                                        {% elif ospite.get_tipologia_display == 'Staff' %} 
-                                            text-bg-warning
-                                        {% endif %}
-                                    ">
-                                        {{ospite.get_tipologia_display}}
-                                    </span>
-                                </div>
+                                </div>                          
                             </div>
                         </h4>
-                    </div>
-                    <div class="col-auto">
-                        <a class="btn btn-link p-1 me-2" href="{% url 'aggiorna_ospite' ospite.id %}" title="Modifica {{ospite}}">
-                                {% bs_icon 'pencil' %}
-                        </a>
                     </div>
                 </div>                    
             </div>

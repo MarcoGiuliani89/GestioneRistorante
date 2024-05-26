@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap_icons %}
+
+
+{% block title %}
+Presenze {{ presenze.first.ospite }}  
+{% endblock %}
+
+
+{% block content %}
+
+<div class="row">
+    <div class="col-8">
+        <h4>{{ presenze.first.ospite }}</h4>
+        <h6 class="text-muted text-uppercase">Presenze ai pasti</h6>
+    </div>
+    <div class="col text-end">
+        <div class="btn-group btn-group" role="group" aria-label="Menu pagine ospite">
+            <a type="button" class="btn btn-outline-light" title="Modifica {{presenze.first.ospite}}" href="{% url 'aggiorna_ospite' presenze.first.ospite.id %}">
+                {% bs_icon 'pencil' %}
+            </a>
+            <a type="button" class="btn btn-outline-light" title="Assegna {{presenze.first.ospite}} ai tavoli" href="{{ presenze.first.ospite.assegna_tavoli_url }}">
+                {% bs_icon 'pin-angle-fill' %}
+            </a>
+            <a type="button" class="btn btn-outline-light disabled" title="Modifica presenze {{presenze.first.ospite}}" href="{% url 'presenze_ospite' presenze.first.ospite.id %}" aria-disabled="true">
+                {% bs_icon 'people-fill' %}
+            </a>
+        </div>
+    </div>
+</div>
+
+
+{% if is_paginated %}
+    {% include 'partials/pagination.html' %}
+{% endif %}
+
+<div class="row mb-3">
+    <div class="col">
+        <div class="table-responsive">
+            <table class="table table-sm table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">Data</th>
+                        <th scope="col">Pasto</th>
+                        <th scope="col">A.</th>
+                        <th scope="col">B.</th>
+                        <th scope="col">I.</th>                        
+                        <th scope="col">Totale</th>
+                </thead>
+                <tbody>
+                    {% for presenza in presenze %}
+                    <tr data-presenzaid = "{{ presenza.id }}">
+                        <td>{{ presenza.servizio.data }}</td>
+                        <td>{{ presenza.servizio.get_pasto_display }}</td>
+                        <td>{{ presenza.adulti }}</td>
+                        <td>{{ presenza.bambini }}</td>
+                        <td>{{ presenza.infant }}</td>
+                        <td>{{ presenza.tot }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">Qualcosa decisamente non va, non dovrebbe esistere un ospite senza presenze. Prova a distruggere l'ospite dall'Admin del Database o contatta lo sviluppatore.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% if is_paginated %}
+    {% include 'partials/pagination.html' %}
+{% endif %}
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    const csrftoken = '{{csrf_token}}';
+
+    const loader = `<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>`;
+</script> 
+<script src="{% static 'js/simpleAjax.js' %}"></script>
+<script src="{% static 'js/methods.js' %}"></script>
+<script src="{% static 'js/aggiorna_campi_numerici.js' %}"></script>
+<script>
+    const righe = document.querySelectorAll('tr[data-presenzaid]');
+
+    righe.forEach(riga => {
+        presenza_id = riga.getAttribute('data-presenzaid');
+
+        dati = {
+            presenza_id: presenza_id
+        }
+
+        const celleEditabili = [
+            riga.children[2],
+            riga.children[3],
+            riga.children[4],
+        ];
+
+        // mappo gli url di destinazione delle API associandoli agli indici delle celle editabili
+
+        const urlMap = {
+            2: "/servizi/api/edit-adulti-presenza/",
+            3: "/servizi/api/edit-bambini-presenza/",
+            4: "/servizi/api/edit-infant-presenza/"
+        };
+        // allo stesso modo mappo i nomi dei campi
+        const fieldMap = {
+            2: 'adulti',
+            3: 'bambini',
+            4: 'infant'
+        };
+
+        const apiMaps = {
+            urlMap: urlMap,
+            fieldMap: fieldMap
+        };
+            rendiRigaEditabile(celleEditabili, dati, apiMaps);
+    });        
+
+</script>
+{% endblock %}

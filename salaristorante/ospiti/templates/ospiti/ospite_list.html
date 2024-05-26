@@ -25,6 +25,7 @@ Ospiti
                         <th scope="col">#</th>
                         <th scope="col"></th>
                         <th scope="col"></th>
+                        <th scope="col"></th>
                         <th scope="col">Ospite</th>
                         <th scope="col"></th>
                         <th scope="col">Tipologia</th>
@@ -57,6 +58,11 @@ Ospiti
                             
                             " href="{{ ospite.assegna_tavoli_url }}" title="Assegna tavoli a {{ospite}}">
                                 {% bs_icon 'pin-angle-fill' %}
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-link p-1" href="{% url 'presenze_ospite' ospite.id %}" title="Presenze {{ospite}}">
+                                {% bs_icon 'people-fill' %}
                             </a>
                         </td>
                         <td><strong>{{ ospite }}</strong></td>

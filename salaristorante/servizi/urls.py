@@ -5,6 +5,7 @@ from .views import (
     ServizioAttuale,
     ServizioSuccessivo,
     SelezionaServizioManuale,
+    PresenzeOspiteListView,
 )
 from .api import (
     ServiziPresenzeOspiteAPI,
@@ -34,6 +35,11 @@ urlpatterns = [
         "seleziona-servizio-manuale/",
         SelezionaServizioManuale.as_view(),
         name="seleziona_servizio_manuale",
+    ),
+    path(
+        "presenze-ospite/<int:ospite_id>/",
+        PresenzeOspiteListView.as_view(),
+        name="presenze_ospite",
     ),
     # API
     path(

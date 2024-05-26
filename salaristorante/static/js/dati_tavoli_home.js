@@ -124,103 +124,35 @@ function popolaTabella(dati, riga) {
     children[10].innerHTML = notaPresenzaPopover;
     children[11].innerHTML = notaTavoloPopover;
 
-    rendiRigaEditabile(riga, dati);
-}
 
-// Funzione per rendere alcune celle editabili
-function rendiRigaEditabile(riga, dati) {
-
-    // Rendi editabili le celle di max_posti e n° ad. bamb. inf. per il tavolo
+    // Imposto l'aggiornamento dei dati numerici tramite API
+    // Indico quali sono le celle numeriche che devono diventare editabili
 
     const celleEditabili = [riga.children[2], riga.children[7], riga.children[8], riga.children[9]];
 
-    celleEditabili.forEach(cella => {
-        rendiCellaEditabile(cella, dati);
-    });
+    // Inizio dalla mappa degli url associandoli all'indice della cella in cui sto scrivendo
+
+    const urlMap = {
+        2: "/tavoli/api/edit-max-posti-tavolo/",
+        7: "/servizi/api/edit-adulti-presenza/",
+        8: "/servizi/api/edit-bambini-presenza/",
+        9: "/servizi/api/edit-infant-presenza/"
+    };
+    // allo stesso modo mappo i nomi dei campi da aggiornare
+    const fieldMap = {
+        2: 'max_posti',
+        7: 'adulti',
+        8: 'bambini',
+        9: 'infant'
+    };
+
+    const apiMaps = {
+        urlMap: urlMap,
+        fieldMap: fieldMap
+    };
+
+    rendiRigaEditabile(celleEditabili, dati, apiMaps);
 }
-
-function rendiCellaEditabile(cella, dati) {
-    cella.contentEditable = 'true';
-    cella.addEventListener('focus', () => selezionaTesto(cella));
-    cella.addEventListener('input', () => filtraContenutoNumerico(cella));
-    cella.addEventListener('keydown', gestisciEnter);
-    cella.addEventListener('blur', () => aggiornaDati(cella, dati));
-}
-
-function selezionaTesto(el) {
-    const range = document.createRange();
-    range.selectNodeContents(el);
-    const selezione = window.getSelection();
-    selezione.removeAllRanges();
-    selezione.addRange(range);
-}
-
-function filtraContenutoNumerico(cella) {
-    cella.textContent = cella.textContent.replace(/[^0-9]/g, '');
-}
-
-function gestisciEnter(event) {
-    // chiudi le modali alla pressione del tasto Invio
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        event.target.blur();
-    }
-}
-
-// Imposto l'aggiornamento dei dati numerici tramite API
-// Inizio dalla mappa degli url associandoli all'indice della cella in cui sto scrivendo
-const urlMap = {
-    2: "/tavoli/api/edit-max-posti-tavolo/",
-    7: "/servizi/api/edit-adulti-presenza/",
-    8: "/servizi/api/edit-bambini-presenza/",
-    9: "/servizi/api/edit-infant-presenza/"
-};
-// allo stesso modo mappo i nomi dei campi
-const fieldMap = {
-    2: 'max_posti',
-    7: 'adulti',
-    8: 'bambini',
-    9: 'infant'
-};
-async function aggiornaDati(cella, dati) {
-    // salvo il valore immesso dall'utente prima di visualizzare il loader
-    const newValue = cella.textContent;
-    cella.innerHTML = loader;
-
-    // ricavo l'indice della cella in cui l'utente ha scritto
-    const fieldIndex = [...cella.parentElement.children].indexOf(cella);
-
-    // tramite l'indice recuperio url e fieldName dalle mappe
-    const fieldName = fieldMap[fieldIndex];
-    const url = urlMap[fieldIndex];
-
-    if (!fieldName || !url) {
-        console.error("Cella non trovata");
-        return;
-    }
-
-    // Verifica se c'è un presenza_id o se stiamo aggiornando max_posti
-    if (dati.presenza_id || fieldIndex === 2) {
-        // aggiorno il payload con tavolo_id (per cella 2) o presenza_id (per altre celle)
-        const payload = {
-            [fieldName]: newValue,
-            ...(fieldIndex !== 2 ? { presenza_id: dati.presenza_id } : { tavolo_id: dati.tavolo_id })
-        };
-
-        try {
-            const response = await apiPost(url, payload);
-            cella.innerHTML = response[fieldName];
-        } catch (error) {
-            console.error(error);
-        }
-    } else {
-        if (fieldIndex !== 2) {
-            cella.innerHTML = ""; // Ripristina la cella vuota se non c'è presenza_id
-        }
-    }
-}
-
-
 
 function creaBottoneUtilizzabile(valore, tavoloId) {
 
@@ -517,26 +449,6 @@ function getConfig(tipo) {
 
 function findTableRow(tavoloId) {
     return document.querySelector(`tr[data-tavoloid="${tavoloId}"]`);
-}
-
-
-
-// Funzione per gestire le chiamate POST
-function apiPost(url, dati) {
-    return new Promise((resolve, reject) => {
-        ajax(url, {
-            method: 'POST',
-            headers: { 'X-CSRFToken': csrftoken },
-            data: dati,
-            success: response => resolve(response.value),
-            error: response => {
-                console.error(`Errore! STATUS: ${response.status}`);
-                console.error(response.statusText);
-                mostraMessaggio("alert-danger", response.statusText, true);
-                reject(response.statusText);
-            }
-        });
-    });
 }
 
 

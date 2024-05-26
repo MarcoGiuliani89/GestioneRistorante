@@ -137,6 +137,10 @@
         <li><del>Date arrivo e partenza ospiti in homepage</del></li>
         <li>Inserire bottone Elimina Successive in Assegnazioni Tavolo Ospite</li>
         <li>Lista Arrivi - Partenze della Giornata (specificando l'ultimo servizio) </li>
+        <li>Ricerca rapida frontend in homepage</li>
+        <li>Filtri e ricerca in lista ospiti</li>
+        <li><del>Pagina presenze ospite, con modifica rapida dei numeri</del></li>
+
     </ul>
 </div>
 
@@ -287,9 +291,12 @@
 <script>
     const csrftoken = '{{csrf_token}}';
     const servizio_id = '{{servizio_selezionato.id}}';
+
+    const loader = `<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>`;
 </script> 
 <script src="{% static 'js/simpleAjax.js' %}"></script>
 <script src="{% static 'js/methods.js' %}"></script>
+<script src="{% static 'js/aggiorna_campi_numerici.js' %}"></script>
 <script src="{% static 'js/svg_homepage.js' %}"></script>
 <script src="{% static 'js/dati_tavoli_home.js' %}"></script>
 {% endblock extra_js %}

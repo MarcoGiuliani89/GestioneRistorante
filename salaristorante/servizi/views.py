@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.views import View
 from django.views.generic.edit import FormView
+from django.views.generic.list import ListView
 
 from .forms import InizializzaServiziForm
 from .methods import (
@@ -12,7 +13,7 @@ from .methods import (
     precedentePasto,
     prossimoPasto,
 )
-from .models import Servizio
+from .models import Servizio, Presenza
 
 
 class InizializzaServiziView(FormView):
@@ -164,3 +165,16 @@ class SelezionaServizioManuale(View):
 
         # Reindirizza alla homepage
         return redirect("homepage")
+
+
+class PresenzeOspiteListView(ListView):
+    model = Presenza
+    template_name = "servizi/presenze_ospite_list.html"
+    context_object_name = "presenze"
+
+    def get_queryset(self, **kwargs):
+        return (
+            Presenza.objects.filter(ospite=self.kwargs["ospite_id"])
+            .select_related("servizio")
+            .prefetch_related("tavoli")
+        )

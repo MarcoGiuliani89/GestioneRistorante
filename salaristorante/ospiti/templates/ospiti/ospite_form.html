@@ -9,9 +9,23 @@ Aggiungi Ospite
     
 
 {% block content %}
-<div class="d-flex">
-    <div class="me-auto d-flex">
-        <h4>{{ form.nome.value | default_if_none:"Aggiungi ospite" }}</h4>
+<div class="row">
+    <div class="col-8">
+        <h4>{{ ospite }}</h4>
+        <h6 class="text-muted text-uppercase">Modifica dati</h6>
+    </div>
+    <div class="col text-end">
+        <div class="btn-group btn-group" role="group" aria-label="Menu pagine ospite">
+            <a type="button" class="btn btn-outline-light disabled" title="Modifica {{ospite}}" href="{% url 'aggiorna_ospite' ospite.id %}" aria-disabled="true">
+                {% bs_icon 'pencil' %}
+            </a>
+            <a type="button" class="btn btn-outline-light" title="Assegna {{ospite}} ai tavoli" href="{{ ospite.assegna_tavoli_url }}">
+                {% bs_icon 'pin-angle-fill' %}
+            </a>
+            <a type="button" class="btn btn-outline-light" title="Modifica presenze {{ospite}}" href="{% url 'presenze_ospite' ospite.id %}">
+                {% bs_icon 'people-fill' %}
+            </a>
+        </div>
     </div>
 </div>
 

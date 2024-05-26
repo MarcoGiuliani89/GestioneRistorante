@@ -24,7 +24,7 @@ class OspiteDetailView(DetailView):
 class OspiteCreateView(CreateView):
     model = Ospite
     form_class = OspiteForm
-    template_name = "ospiti/ospite_form.html"
+    template_name = "ospiti/ospite_new.html"
     success_url = reverse_lazy("crea_ospite")
 
     def form_valid(self, form):
