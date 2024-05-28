@@ -7,6 +7,8 @@
 
 {% block content %}
 
+{% include 'partials/TO_DO_list.html' %}
+
 <div class="row mb-3">
     <div class="col mt-3">
         <h2 class="text-center">{{servizio_selezionato}}</h2>
@@ -94,8 +96,8 @@
 </div>
 {% endif %}
 <div class="row mb-4">
-    <div class="col">
-        <div class="card">
+    <div class="col-6">
+        <div class="card h-100">
             <div class="card-body">
                 <h5 class="card-title">
                     Cambia servizio visualizzato:
@@ -119,31 +121,19 @@
             </div>
         </div>        
     </div>
+    <div class="col-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    Arrivi e partenze di oggi:
+                </h5>
+                <div id="arrivi_partenze">
+                    {% include 'partials/loading_spinner.html' %}
+                </div>             
+            </div>
+        </div>        
+    </div>
 </div>
-
-
-<!-- TODO -->
-<div class="alert alert-warning" role="alert">
-    <strong>TO DO: </strong><br>
-    <ul>
-        <li><del>API per recuperare i dati del tavolo nel servizio selezionato</del></li>
-        <li><del>Mostrare dati tavolo recuperati (manca decidere se abbreviare le note)</del></li>
-        <li><del>Rendere editabili celle tabella home e realizzare API</del></li>
-        <li><del><strong> Assicurarsi che 1 tavolo abbia sempre solo un'unica presenza a servizio</strong></del></li>
-        <li><del>Realizzare API per totale presenze del servizio</del></li>
-        <li><del>Mostrare alert per presenze non assegnate a nessun tavolo</del></li>
-        <li><del>Note del Servizio</del> </li>
-        <li><del>Inserire tipologia ospiti: Staff</del></li>
-        <li><del>Date arrivo e partenza ospiti in homepage</del></li>
-        <li>Inserire bottone Elimina Successive in Assegnazioni Tavolo Ospite</li>
-        <li>Lista Arrivi - Partenze della Giornata (specificando l'ultimo servizio) </li>
-        <li>Ricerca rapida frontend in homepage</li>
-        <li>Filtri e ricerca in lista ospiti</li>
-        <li><del>Pagina presenze ospite, con modifica rapida dei numeri</del></li>
-
-    </ul>
-</div>
-
 
 <nav>
     <div class="nav nav-underline mt-2" id="nav-tab" role="tablist">

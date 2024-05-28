@@ -70,6 +70,129 @@ function recuperaTotale() {
 
 recuperaTotale();
 
+
+function arrivi_partenze() {
+    ajax(`/ospiti/api/arrivi-partenze-servizio-attuale/`, {
+        method: 'GET',
+        headers: { 'X-CSRFToken': csrftoken },
+        success: response => {
+            console.log(response.value);
+            popola_arrivi_partenze(response.value);
+
+        },
+        error: response => {
+            console.error(`Errore! STATUS: ${response.status}`);
+            console.error(response.statusText);
+            mostraMessaggio("alert-danger", response.statusText, true);
+        }
+    })
+}
+
+arrivi_partenze();
+
+function createTable(data, title, cssClass) {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item';
+
+    const itemTitle = document.createElement('h5');
+    itemTitle.className = cssClass;
+    itemTitle.innerText = title;
+    item.appendChild(itemTitle);
+
+    if (data.length === 0) {
+        const noDataMessage = document.createElement('p');
+        noDataMessage.innerText = `Non ci sono ${title.toLowerCase()}.`;
+        item.appendChild(noDataMessage);
+    } else {
+        const table = document.createElement('table');
+        table.className = 'table table-sm table-striped align-middle';
+
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+            <tr>
+                <th scope="col">Tav.</th>
+                <th scope="col">Nome</th>
+                <th scope="col">A.</th>
+                <th scope="col">B.</th>
+                <th scope="col">I.</th>
+                <th scope="col"></th>
+                <th scope="col">Servizio</th> 
+            </tr>`;
+
+        const tbody = document.createElement('tbody');
+        data.forEach(ospite => {
+            const row = document.createElement('tr');
+            let tavoli = ""
+            switch (ospite.tavoli.length) {
+                case 0:
+                    break
+
+                case 1:
+                    tavoli = ospite.tavoli[0];
+                    break
+
+                default:
+                    tavoli = `
+                    <button class="btn btn-dark" type="button" data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="hover focus" data-bs-content="<ul class='list-group'>` +
+                        ospite.tavoli.map(tavolo => `<li class='list-group-item'>${tavolo}</li>`).join('') +
+                        `</ul>" data-bs-placement="top">
+                      ...
+                    </button>
+                `;
+            }
+
+
+            row.innerHTML = `
+                <td>${tavoli}</td>
+                <td>${ospite.nome}</td>
+                <td>${ospite.adulti}</td>
+                <td>${ospite.bambini}</td>
+                <td>${ospite.infant}</td>
+                <td>${ospite.trattamento}</td>
+                <td>${ospite.pasto_arrivo || ospite.pasto_partenza || ''}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        item.appendChild(table);
+    }
+    inizializzaPopovers();
+
+    return item;
+}
+
+function popola_arrivi_partenze(dati) {
+    const arrivi = dati.arrivi;
+    const partenze = dati.partenze;
+
+    const container = document.getElementById('arrivi_partenze');
+    container.innerHTML = '';
+
+    const dropdown = document.createElement('div');
+    dropdown.className = 'dropdown';
+
+    const button = document.createElement('button');
+    button.className = 'btn btn-dark dropdown-toggle';
+    button.type = 'button';
+    button.setAttribute('data-bs-toggle', 'dropdown');
+    button.setAttribute('aria-expanded', 'false');
+    button.innerText = 'Visualizza';
+
+    const dropdownMenu = document.createElement('div');
+    dropdownMenu.className = 'dropdown-menu dropdown-menu-end';
+
+    const partenzeItem = createTable(partenze, 'Partenze', 'text-danger-emphasis');
+    const arriviItem = createTable(arrivi, 'Arrivi', 'text-success-emphasis');
+
+    dropdownMenu.appendChild(partenzeItem);
+    dropdownMenu.appendChild(arriviItem);
+    dropdown.appendChild(button);
+    dropdown.appendChild(dropdownMenu);
+    container.appendChild(dropdown);
+}
+
 // Inizializzo le righe della tabella dei tavoli
 function inizializzaRighe() {
     righe = document.querySelectorAll('tr[data-tavoloid]');
@@ -107,8 +230,8 @@ function popolaTabella(dati, riga) {
     const bottoneUtilizzabile = creaBottoneUtilizzabile(dati.utilizzabile, dati.tavolo_id);
     const formattedOspite = formattaOspite(dati.ospite);
     const formattedCamere = formattaCamere(dati.ospite);
-    const tipologiaBadge = creaBadge(dati.tipologia, 'tipologia');
-    const trattamentoBadge = creaBadge(dati.trattamento, 'trattamento');
+    const tipologiaBadge = dati.ospite ? creaBadge(dati.ospite.tipologia, 'tipologia') : '';
+    const trattamentoBadge = dati.ospite ? creaBadge(dati.ospite.trattamento, 'trattamento') : '';
     const notaPresenzaPopover = formattaNotaPopover(dati.note_servizio, 'notaPresenza', dati.presenza_id, dati.tavolo_id);
     const notaTavoloPopover = formattaNotaPopover(dati.note_tavolo, 'notaTavolo', dati.presenza_id, dati.tavolo_id);
 
@@ -128,7 +251,12 @@ function popolaTabella(dati, riga) {
     // Imposto l'aggiornamento dei dati numerici tramite API
     // Indico quali sono le celle numeriche che devono diventare editabili
 
-    const celleEditabili = [riga.children[2], riga.children[7], riga.children[8], riga.children[9]];
+    let celleEditabili = [];
+
+    if (dati.presenza_id) {
+        celleEditabili = [riga.children[2], riga.children[7], riga.children[8], riga.children[9]];
+    } else celleEditabili = [riga.children[2]];
+
 
     // Inizio dalla mappa degli url associandoli all'indice della cella in cui sto scrivendo
 
@@ -246,6 +374,7 @@ function creaPopover(options) {
     popoverButton.setAttribute('data-bs-trigger', 'focus');
     popoverButton.setAttribute('data-bs-title', options.title);
     popoverButton.setAttribute('data-bs-content', options.content);
+    popoverButton.setAttribute('data-bs-trigger', options.trigger || 'focus');
     popoverButton.innerHTML = options.inner_html;
 
     inizializzaPopovers();
@@ -281,6 +410,8 @@ function formattaCamere(ospite) {
 
 
 function creaBadge(valore, tipo) {
+
+    console.log(valore, tipo);
 
     // Funzione per creare un badge colorato
     // mappe colori
