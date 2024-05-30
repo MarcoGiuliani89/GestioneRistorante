@@ -14,12 +14,22 @@ from servizi.methods import aggiorna_presenze_per_ospite
 from salaristorante import settings
 from .models import Ospite
 from .forms import OspiteForm
+from servizi.methods import get_selected_servizio
+from servizi.models import Servizio
 
 
 class OspiteDetailView(DetailView):
     model = Ospite
     template_name = "ospiti/ospite_detail.html"
     context_object_name = "ospite"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        servizio_selezionato_id = get_selected_servizio(self.request.user.id)
+        servizio_selezionato = Servizio.objects.get(id=servizio_selezionato_id)
+        context["servizio_selezionato"] = servizio_selezionato
+
+        return context
 
 
 class OspiteCreateView(CreateView):

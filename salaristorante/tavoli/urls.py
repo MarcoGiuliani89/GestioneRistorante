@@ -6,6 +6,7 @@ from .views import (
     EliminaPresenzeTavoloPeriodo,
     AssegnaPresenzeTavoli,
     togliPresenzeOspite,
+    eliminaTavoliDopoServizio,
 )
 
 from .api import (
@@ -32,6 +33,11 @@ urlpatterns = [
         "togli-presenze-ospite/<int:id_ospite>/",
         togliPresenzeOspite,
         name="togli_presenze_ospite",
+    ),
+    path(
+        "elimina-tavoli-dopo-servizio/<int:id_ospite>/<int:id_servizio>/",
+        eliminaTavoliDopoServizio,
+        name="elimina_tavoli_dopo_servizio",
     ),
     path(
         "assegna-presenze-tavoli/",

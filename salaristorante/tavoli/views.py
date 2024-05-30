@@ -222,3 +222,41 @@ def togliPresenzeOspite(request, id_ospite):
         # Se si verifica un'eccezione, ritorna una risposta con errore
         messages.error(request, f"Errore: {str(e)}")
         return redirect("assegna_tavoli", pk=id_ospite)
+
+
+def eliminaTavoliDopoServizio(request, id_ospite, id_servizio):
+    """
+    Elimina tutti i tavoli assegnati ad un ospite dopo il servizio selezionato
+    """
+    try:
+        # Recupera l'ospite corrispondente all'ID fornito
+        ospite = get_object_or_404(Ospite, id=id_ospite)
+        servizio_selezionato = get_object_or_404(Servizio, id=id_servizio)
+
+        # Recupera tutti i tavoli assegnati all'ospite
+        presenze_ospite = ospite.presenze.filter(
+            servizio__data__gt=servizio_selezionato.data
+        ) | ospite.presenze.filter(
+            servizio__data=servizio_selezionato.data,
+            servizio__pasto__gte=servizio_selezionato.pasto,
+        )
+
+        if presenze_ospite.exists():
+            tavoli = Tavolo.objects.filter(presenze__in=presenze_ospite).distinct()
+            # Rimuove le presenze dell'ospite da tutti i tavoli
+            for tavolo in tavoli:
+                tavolo.presenze.remove(*presenze_ospite)
+
+        # Crea il messaggio di successo
+        messages.success(
+            request,
+            f"Tutte le presenze di {ospite} successive al servizio selezionato sono state rimosse dai tavoli.",
+        )
+
+    except Exception as e:
+        # Se si verifica un'eccezione, ritorna una risposta con errore
+        messages.error(request, f"Errore: {str(e)}")
+        return redirect("assegna_tavoli", pk=id_ospite)
+
+    # Reindirizza alla pagina assegna_tavoli dell'ospite corrispondente
+    return redirect("assegna_tavoli", pk=id_ospite)

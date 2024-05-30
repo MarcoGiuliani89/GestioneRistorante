@@ -50,6 +50,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "salaristorante.middleware.BloccoAccessoMiddleware",
+    "salaristorante.middleware.ThreadLocalMiddleware",
 ]
 
 ROOT_URLCONF = "salaristorante.urls"
