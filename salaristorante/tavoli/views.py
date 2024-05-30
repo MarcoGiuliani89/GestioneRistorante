@@ -83,6 +83,30 @@ class AddMultipleTavoliView(FormView):
         return super().form_valid(form)
 
 
+def bissaTavolo(request, codice):
+    numero = "".join(c for c in codice if c.isdigit())
+    tavolo_n = Tavolo.objects.filter(codice=numero).first()
+    if not tavolo_n:
+        messages.error(
+            request,
+            f"Il tavolo {codice} non esiste! Prima di creare il tavolo {codice} bis, crea il principale!",
+        )
+        return redirect("homepage")
+
+    tavolo_n_bis = Tavolo.objects.filter(codice=f"{codice} bis").first()
+    if tavolo_n_bis:
+        messages.error(request, f"Il tavolo {codice} bis esiste già!")
+        return redirect("homepage")
+
+    tavolo_n_bis = Tavolo.objects.create(
+        codice=f"{codice} bis",
+        sala=tavolo_n.sala,
+    )
+    tavolo_n_bis.save()
+    messages.success(request, f"Tavolo {codice} bis creato correttamente!")
+    return redirect("homepage")
+
+
 class EliminaPresenzeTavoloPeriodo(View):
     """
     Elimina un set di presenze assegnate ad un tavolo in un determinato periodo

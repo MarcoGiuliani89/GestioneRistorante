@@ -3,7 +3,21 @@ const input_note = modificaNotaModal._element.querySelector('input');
 const save_btn = modificaNotaModal._element.querySelector('#salva_nota');
 const ospitiInPiediModal = new bootstrap.Modal(document.getElementById('ospitiInPiedi'));
 
+const tavoloBisModal = new bootstrap.Modal(document.getElementById('tavoloBis'));
+
 let righe;
+
+tavoloBisModal._element.addEventListener('shown.bs.modal', (event) => {
+    const modalBody = tavoloBisModal._element.querySelector('.modal-body');
+    const modalFooter = tavoloBisModal._element.querySelector('.modal-footer');
+    codice = event.relatedTarget.getAttribute('data-codice');
+    // tieni solo la parte di codice composta da numeri interi
+    codice = codice.replace(/[^0-9]/g, '');
+    modalBody.innerHTML = `Vuoi davvero creare un tavolo ${codice} bis ?`;
+    modalFooter.innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+    <a type="button" class="btn btn-primary" href="/tavoli/bissa-tavolo/${codice}/">Conferma</a>`;
+});
+
 
 
 ospitiInPiediModal._element.addEventListener('shown.bs.modal', () => {
@@ -234,17 +248,17 @@ function popolaTabella(dati, riga) {
     const notaPresenzaPopover = formattaNotaPopover(dati.note_servizio, 'notaPresenza', dati.presenza_id, dati.tavolo_id);
     const notaTavoloPopover = formattaNotaPopover(dati.note_tavolo, 'notaTavolo', dati.presenza_id, dati.tavolo_id);
 
-    children[1].appendChild(bottoneUtilizzabile);
-    children[2].innerHTML = dati.max_posti;
-    children[3].innerHTML = formattedOspite;
-    children[4].innerHTML = formattedCamere;
-    children[5].innerHTML = tipologiaBadge;
-    children[6].innerHTML = trattamentoBadge;
-    children[7].innerHTML = dati.adulti;
-    children[8].innerHTML = dati.bambini;
-    children[9].innerHTML = dati.infant;
-    children[10].innerHTML = notaPresenzaPopover;
-    children[11].innerHTML = notaTavoloPopover;
+    children[2].appendChild(bottoneUtilizzabile);
+    children[3].innerHTML = dati.max_posti;
+    children[4].innerHTML = formattedOspite;
+    children[5].innerHTML = formattedCamere;
+    children[6].innerHTML = tipologiaBadge;
+    children[7].innerHTML = trattamentoBadge;
+    children[8].innerHTML = dati.adulti;
+    children[9].innerHTML = dati.bambini;
+    children[10].innerHTML = dati.infant;
+    children[11].innerHTML = notaPresenzaPopover;
+    children[12].innerHTML = notaTavoloPopover;
 
 
     // Imposto l'aggiornamento dei dati numerici tramite API
@@ -253,24 +267,24 @@ function popolaTabella(dati, riga) {
     let celleEditabili = [];
 
     if (dati.presenza_id) {
-        celleEditabili = [riga.children[2], riga.children[7], riga.children[8], riga.children[9]];
-    } else celleEditabili = [riga.children[2]];
+        celleEditabili = [riga.children[3], riga.children[8], riga.children[9], riga.children[10]];
+    } else celleEditabili = [riga.children[3]];
 
 
     // Inizio dalla mappa degli url associandoli all'indice della cella in cui sto scrivendo
 
     const urlMap = {
-        2: "/tavoli/api/edit-max-posti-tavolo/",
-        7: "/servizi/api/edit-adulti-presenza/",
-        8: "/servizi/api/edit-bambini-presenza/",
-        9: "/servizi/api/edit-infant-presenza/"
+        3: "/tavoli/api/edit-max-posti-tavolo/",
+        8: "/servizi/api/edit-adulti-presenza/",
+        9: "/servizi/api/edit-bambini-presenza/",
+        10: "/servizi/api/edit-infant-presenza/"
     };
     // allo stesso modo mappo i nomi dei campi da aggiornare
     const fieldMap = {
-        2: 'max_posti',
-        7: 'adulti',
-        8: 'bambini',
-        9: 'infant'
+        3: 'max_posti',
+        8: 'adulti',
+        9: 'bambini',
+        10: 'infant'
     };
 
     const apiMaps = {
@@ -567,8 +581,8 @@ async function salvaNota(payload) {
 }
 function getConfig(tipo) {
     const tipoConfig = {
-        notaPresenza: { url: "/servizi/api/edit-note-presenza/", CellIndex: 10 },
-        notaTavolo: { url: "/tavoli/api/edit-note-tavolo/", CellIndex: 11 },
+        notaPresenza: { url: "/servizi/api/edit-note-presenza/", CellIndex: 11 },
+        notaTavolo: { url: "/tavoli/api/edit-note-tavolo/", CellIndex: 12 },
         notaServizio: { url: "/servizi/api/edit-note-servizio/", CellIndex: null }
     };
     return tipoConfig[tipo];

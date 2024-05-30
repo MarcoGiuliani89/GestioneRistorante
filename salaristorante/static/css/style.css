@@ -21,6 +21,11 @@ h6,
     box-shadow: none;
 }
 
+.btn_bis {
+    background-color: transparent;
+    border-color: transparent;
+}
+
 .seleziona_servizi svg {
     vertical-align: sub;
 }

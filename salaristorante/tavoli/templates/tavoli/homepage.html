@@ -163,6 +163,7 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
+                        <th scope="col"></th>                        
                         <th scope="col">{% bs_icon 'toggles' %}</th><!-- Utilizzabile toggle -->
                         <th scope="col" class="border-end text-center">
                             {% include 'partials/svg_icon_sedia.html' %}
@@ -180,7 +181,15 @@
                 <tbody>
                     {% for tavolo in sala.tavoli_ordinati %}
                     <tr data-tavoloid="{{tavolo.id}}">
-                        <td class="text-nowrap">{{tavolo}}</td>
+                        <td>                            
+                            <button type="button" class="btn btn-dark btn_bis" data-bs-toggle="modal" data-bs-target="#tavoloBis" title="Crea tavolo bis" data-codice="{{tavolo.codice}}">
+                                {% bs_icon 'box-arrow-up-right' %}
+                            </button>                            
+                        </td>
+                        <td class="text-nowrap">
+                            <strong>{{tavolo}}</strong>                           
+                        </td>
+
                         <td></td><!-- Utilizzabile editabile -->
                         <td class="border-end text-center"></td><!-- Max_posti editabile -->
                         <td class="ps-2 text-nowrap"><!-- Ospite -->
@@ -197,7 +206,7 @@
                     </tr>                        
                     {% empty %}
                     <tr>
-                        <td colspan="12">Non ci sono tavoli in questa sala</td>
+                        <td colspan="13">Non ci sono tavoli in questa sala</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -277,7 +286,23 @@
             </div>
         </div>
     </div>
+</div>
 
+<!-- Modal Tavolo bis -->
+<div class="modal fade" id="tavoloBis" tabindex="-1" aria-labelledby="tavoloBisLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tavoloBisLabel">Crea tavolo bis:</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% include 'partials/loading_spinner.html' %}
+            </div>
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 

@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     homepage,
     AddMultipleTavoliView,
+    bissaTavolo,
     EliminaPresenzeTavoloPeriodo,
     AssegnaPresenzeTavoli,
     togliPresenzeOspite,
@@ -24,6 +25,7 @@ urlpatterns = [
     # VIEWS
     path("", homepage, name="homepage"),
     path("aggiungi-tavoli/", AddMultipleTavoliView.as_view(), name="aggiungi_tavoli"),
+    path("bissa-tavolo/<str:codice>/", bissaTavolo, name="bissa_tavolo"),
     path(
         "elimina-presenze-tavolo-periodo/",
         EliminaPresenzeTavoloPeriodo.as_view(),
