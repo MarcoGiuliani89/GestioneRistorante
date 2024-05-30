@@ -1,12 +1,9 @@
 from datetime import datetime, timedelta
 from django.conf import settings
-from django.contrib import messages
 from django.core.cache import cache
-from django.shortcuts import redirect
 
 from .models import Servizio, Presenza
 from ospiti.models import Ospite
-from salaristorante.middleware import get_current_request
 
 
 def set_selected_servizio(user_id, servizio_id):
@@ -21,7 +18,7 @@ def get_selected_servizio(user_id):
     servizio_id = cache.get(cache_key)
     if not servizio_id:
         set_selected_servizio(user_id, get_current_servizio_id())
-        return get_selected_servizio(user_id)
+        return get_current_servizio_id()
     return servizio_id
 
 
@@ -46,11 +43,7 @@ def get_current_servizio_id():
 
     servizio = Servizio.objects.filter(data=selected_data, pasto=selected_pasto).first()
     if not servizio:
-        request = get_current_request()
-        messages.error(
-            request, "Non esistono servizi, inizializzali prima di cominciare"
-        )
-        return redirect("inizializza_servizi")
+        return None
     return servizio.id
 
 
