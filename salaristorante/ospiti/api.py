@@ -2,7 +2,11 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from servizi.methods import get_selected_servizio
+from servizi.methods import (
+    get_selected_servizio,
+    get_current_servizio_id,
+    set_selected_servizio,
+)
 from servizi.models import Servizio
 from .models import Ospite
 from .serializers import OspiteInPiediSerializer
@@ -31,6 +35,11 @@ class ArriviPartenzeServizioAttualeAPI(APIView):
     def get(self, request):
         try:
             servizio_id = get_selected_servizio(request.user.id)
+
+            if not servizio_id:
+                servizio_id = get_current_servizio_id()
+                set_selected_servizio(request.user.id, servizio_id)
+
             servizio = Servizio.objects.get(id=servizio_id)
         except Servizio.DoesNotExist:
             return Response(

@@ -148,7 +148,7 @@
             aria-selected="{% if forloop.counter == 1 %}true{% else %}false{% endif %}">{{sala}}</button>
         {% empty %}
         <p>Non ci ancora sono sale ristorante da visualizzare.
-            <br><a href="#">Vai alla lista Sale</a>.
+            <br>Inizializzale da Admin se sei un superuser, altrimenti contatta l'amministratore</a>.
         </p>
         {% endfor %}
     </div>
@@ -206,7 +206,7 @@
                     </tr>                        
                     {% empty %}
                     <tr>
-                        <td colspan="13">Non ci sono tavoli in questa sala</td>
+                        <td colspan="13">Non ci sono tavoli in questa sala <a href="{% url 'aggiungi_tavoli' %}">inizializzali</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
