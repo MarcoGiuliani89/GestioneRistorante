@@ -271,8 +271,6 @@ class DatiTavoloServizioAPI(APIView):
         tavolo_id = request.query_params.get("tavolo_id")
         servizio_id = request.query_params.get("servizio_id")
 
-        print(f"tavolo_id: {tavolo_id}, servizio_id: {servizio_id}")
-
         # Recupera il tavolo
         tavolo = get_object_or_404(Tavolo, id=tavolo_id)
 

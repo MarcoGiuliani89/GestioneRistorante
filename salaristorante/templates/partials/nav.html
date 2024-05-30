@@ -39,6 +39,12 @@
             </ul>
           </li>
         </ul>
+        <form class="d-flex" role="search" action="{% url 'ospiti_list' %}" method="GET">
+          <div class="input-group me-2">
+            <button class="btn btn-outline-secondary" type="submit">{% bs_icon 'search' %}</button>
+            <input class="form-control" type="search" name="ospite" placeholder="Cerca ospite" aria-label="Search">
+          </div>
+        </form>
 
         <div class="d-flex">     
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">          
