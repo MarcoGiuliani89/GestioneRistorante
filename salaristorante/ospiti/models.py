@@ -27,7 +27,7 @@ class Ospite(models.Model):
         (HB, "Half Board"),
         (FB, "Full Board"),
         (HBB, "Half Board & Beverage"),
-        (FBB, "Full Board and Beverage"),
+        (FBB, "Full Board & Beverage"),
     ]
 
     nome = models.CharField(max_length=100)

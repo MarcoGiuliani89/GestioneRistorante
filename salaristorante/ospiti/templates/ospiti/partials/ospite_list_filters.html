@@ -1,0 +1,72 @@
+{% load bootstrap_icons %}
+
+<button
+    class="btn btn-dark mb-3 me-2"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#collapseFilter"
+    aria-expanded="false"
+    aria-controls="collapseFilter"
+>
+    <span class="me-1">{% bs_icon 'funnel-fill' %}</span>Filtri<span class="ms-1">{% bs_icon 'chevron-down' %}</span>
+</button>
+
+{% if request.GET.ospite or request.GET.trattamento or request.GET.tipologia or request.GET.data_arrivo_inizio or request.GET.data_arrivo_fine or  request.GET.data_partenza_inizio or request.GET.data_partenza_fine %}
+    <a href="{% url 'ospiti_list' %}" class="btn btn-light mb-3">Reset Filtri</a>
+{% endif %} 
+
+
+    
+<div class="collapse mb-4 border-bottom border-2" id="collapseFilter">
+    <form action="" method="GET">
+        <div class="row">
+            <div class="col-12 col-md-4 mb-3">
+                <div data-mdb-input-init class="form-outline">
+                    <input type="text" class="form-control" 
+                        name="ospite" placeholder="Nome ospite / gruppo">
+                </div>                 
+            </div>
+            <div class="col-12 col-md-4 mb-3">
+                <select name="trattamento" class="form-select" aria-label="Default select example">
+                    <option value="">-- Seleziona trattamento --</option>
+                    {% for t in trattamenti %}
+                        <option value="{{ t.0 }}">{{ t.1 }}</option>
+                    {% endfor %}
+                </select>                
+            </div>
+            <div class="col-12 col-md-4 mb-3">
+                <select name="tipologia" class="form-select" aria-label="Default select example">
+                    <option value="">-- Seleziona tipologia ospite --</option>
+                    {% for t in tipologie %}
+                        <option value="{{ t.0 }}">{{ t.1 }}</option>
+                    {% endfor %}
+                </select>                
+            </div>        
+        </div>
+        <div class="row">
+            <div class="col-12 col-md-6 mb-3">
+                Arrivo da, a:
+                <div class="form-outline mb-1">
+                    <input type="date" class="form-control" name="data_arrivo_inizio">
+                </div>
+                <div class="form-outline mb-1">
+                    <input type="date" class="form-control" name="data_arrivo_fine">
+                </div>             
+            </div>
+            <div class="col-12 col-md-6 mb-3">
+                Partenza da, a:
+                <div class="form-outline mb-1">
+                    <input type="date" class="form-control" name="data_partenza_inizio">
+                </div>
+                <div class="form-outline mb-1">
+                    <input type="date" class="form-control" name="data_partenza_fine">
+                </div>             
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col text-center">
+                <button type="submit" class="btn btn-light">Applica Filtri</button>
+            </div>
+        </div>    
+    </form>
+</div>

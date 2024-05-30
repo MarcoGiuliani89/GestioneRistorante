@@ -12,6 +12,8 @@ Ospiti
 
 <h4>Ospiti</h4> 
 
+{% include 'ospiti/partials/ospite_list_filters.html' %}
+
 {% if is_paginated %}
     {% include 'partials/pagination.html' %}
 {% endif %}

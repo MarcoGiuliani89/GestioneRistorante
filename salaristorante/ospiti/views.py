@@ -1,5 +1,6 @@
+from datetime import datetime
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect, render
+from django.db.models import Q
 from django.urls import reverse_lazy
 from django.views.generic import (
     DetailView,
@@ -60,6 +61,60 @@ class OspiteListView(ListView):
     template_name = "ospiti/ospite_list.html"
     context_object_name = "ospiti"
     paginate_by = settings.PAGINATION_NUM
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["trattamenti"] = Ospite.TRATTAMENTO_CHOICES
+        context["tipologie"] = Ospite.TIPOLOGIA_CHOICHES
+        return context
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+
+        # campi di ricerca
+        nome = self.request.GET.get("ospite")
+        trattamento = self.request.GET.get("trattamento")
+        tipologia = self.request.GET.get("tipologia")
+        arrivo_da = self.request.GET.get("data_arrivo_inizio")
+        arrivo_a = self.request.GET.get("data_arrivo_fine")
+        partenza_da = self.request.GET.get("data_partenza_inizio")
+        partenza_a = self.request.GET.get("data_partenza_fine")
+
+        # Costruzione del filtro
+        filters = Q()
+
+        if nome:
+            filters &= Q(nome__icontains=nome)
+        if trattamento:
+            filters &= Q(trattamento=trattamento)
+        if tipologia:
+            filters &= Q(tipologia=tipologia)
+        if arrivo_da:
+            try:
+                arrivo_da_date = datetime.strptime(arrivo_da, "%Y-%m-%d")
+                filters &= Q(servizio_arrivo__data__gte=arrivo_da_date)
+            except ValueError:
+                pass
+        if arrivo_a:
+            try:
+                arrivo_a_date = datetime.strptime(arrivo_a, "%Y-%m-%d")
+                filters &= Q(servizio_arrivo__data__lte=arrivo_a_date)
+            except ValueError:
+                pass
+        if partenza_da:
+            try:
+                partenza_da_date = datetime.strptime(partenza_da, "%Y-%m-%d")
+                filters &= Q(servizio_partenza__data__gte=partenza_da_date)
+            except ValueError:
+                pass
+        if partenza_a:
+            try:
+                partenza_a_date = datetime.strptime(partenza_a, "%Y-%m-%d")
+                filters &= Q(servizio_partenza__data__lte=partenza_a_date)
+            except ValueError:
+                pass
+
+        return qs.filter(filters)
 
 
 class OspiteDeleteView(DeleteView):
