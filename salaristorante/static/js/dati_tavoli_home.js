@@ -76,7 +76,6 @@ function arrivi_partenze() {
         method: 'GET',
         headers: { 'X-CSRFToken': csrftoken },
         success: response => {
-            console.log(response.value);
             popola_arrivi_partenze(response.value);
 
         },
@@ -410,9 +409,6 @@ function formattaCamere(ospite) {
 
 
 function creaBadge(valore, tipo) {
-
-    console.log(valore, tipo);
-
     // Funzione per creare un badge colorato
     // mappe colori
     const badgeTypes = {

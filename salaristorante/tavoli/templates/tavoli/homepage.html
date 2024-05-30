@@ -125,13 +125,18 @@
         <div class="card h-100">
             <div class="card-body">
                 <h5 class="card-title">
-                    Arrivi e partenze di oggi:
+                    Arrivi e partenze:
                 </h5>
                 <div id="arrivi_partenze">
                     {% include 'partials/loading_spinner.html' %}
                 </div>             
             </div>
         </div>        
+    </div>
+</div>
+<div class="row mt-5">
+    <div class="col-12 col-md-4">
+        {% include 'partials/frontend_search_table.html'  with inputId="search_homepage" tableClass="table_tavoli_servizio" %}
     </div>
 </div>
 

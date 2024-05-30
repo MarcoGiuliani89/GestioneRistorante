@@ -1,0 +1,7 @@
+{% load bootstrap_icons %}
+<div class="input-group mb-3">
+    <span class="btn btn-light">{% bs_icon 'search' %}</span>
+    <input type="text" id="{{inputId}}" class="form-control"
+        onkeyup="searchInTable('{{inputId}}', '{{tableClass}}')"
+        placeholder="Cerca..." aria-label="Cerca" aria-describedby="search-icon">
+</div>

@@ -101,3 +101,33 @@ function apiPost(url, dati) {
         });
     });
 }
+
+function searchInTable(inputID, tableclass) {
+    const input = document.getElementById(inputID);
+    // Tolgo i caratteri speciali e converto tutto maiuscolo
+    const filter = input.value.toUpperCase().replace(/[^a-zA-Z0-9]/g, "");
+
+    const tablelist = document.getElementsByClassName(tableclass);
+
+    for (const t of tablelist) {
+        const tbody = t.querySelector("tbody")
+        const tr = tbody.getElementsByTagName("tr");
+        // Ciclo le righe e nascondo quelle che non corrispondono alla ricerca
+        for (let i = 0; i < tr.length; i++) {
+            const children = tr[i].children;
+            for (x = 0; x < children.length; x++) {
+                if (children[x]) {
+                    const txtValue = children[x].textContent || children[x].innerText;
+                    //Tolgo i caratteri speciali, converto in maiuscolo e comparo la stringa con il filtro
+                    if (txtValue.toUpperCase().replace(/[^a-zA-Z0-9]/g, "").indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                        break // se trovo un match in una cella passo alla riga successiva
+                    } else {
+                        // se non trovo un match nascondo la riga
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    }
+}
