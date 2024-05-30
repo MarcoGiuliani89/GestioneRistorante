@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.models import Prefetch
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
@@ -105,6 +106,7 @@ class EliminaPresenzeTavoloPeriodo(View):
     Elimina un set di presenze assegnate ad un tavolo in un determinato periodo
     """
 
+    @transaction.atomic
     def post(self, request):
         try:
             # Recupera i parametri dalla richiesta POST
