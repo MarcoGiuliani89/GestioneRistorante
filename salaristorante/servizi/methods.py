@@ -65,7 +65,7 @@ def get_current_servizio_id():
 
     servizio = Servizio.objects.filter(data=selected_data, pasto=selected_pasto).first()
     if not servizio:
-        return None
+        raise NoServizioFoundException("Nessun servizio trovato")
     return servizio.id
 
 

@@ -126,7 +126,24 @@ class ServizioSuccessivo(View):
 
 class ServizioAttuale(View):
     def get(self, request):
-        current_servizio_id = get_current_servizio_id()
+        try:
+            current_servizio_id = get_current_servizio_id()
+        except NoServizioFoundException:
+            try:
+                servizio_alternativo = recupera_servizio(request)
+                set_selected_servizio(request.user.id, servizio_alternativo.id)
+            except NoServizioFoundException:
+                messages.error(
+                    request, "Non esistono servizi, inizializzali prima di cominciare"
+                )
+                return redirect("inizializza_servizi")
+
+            messages.warning(
+                request,
+                f"Non esiste un servizio corrispondente alla data odierna, vado a {servizio_alternativo.data} pasto{servizio_alternativo.pasto}",
+            )
+            return redirect("homepage")
+
         set_selected_servizio(request.user.id, current_servizio_id)
         return redirect("homepage")
 
