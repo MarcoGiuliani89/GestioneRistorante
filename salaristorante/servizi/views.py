@@ -74,7 +74,10 @@ class ServizioPrecedente(View):
 
         if not servizio_precedente:
             # Se non c'è un servizio precedente, reindirizza alla homepage
-            messages.warning(request, "Il servizio precedente non è disponibile")
+            messages.warning(
+                request,
+                "Il servizio precedente (${nuova_data}, pasto {pasto_successivo}) non è disponibile",
+            )
             return redirect("homepage")
 
         # Imposta il nuovo servizio selezionato in cache
@@ -109,7 +112,10 @@ class ServizioSuccessivo(View):
 
         if not servizio_successivo:
             # Se non c'è un servizio successivo, reindirizza alla homepage
-            messages.warning(request, "Il servizio successivo non è disponibile")
+            messages.warning(
+                request,
+                f"Il servizio successivo (${nuova_data}, pasto {pasto_successivo}) non è disponibile",
+            )
             return redirect("homepage")
 
         # Imposta il nuovo servizio selezionato in cache
