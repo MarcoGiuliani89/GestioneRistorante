@@ -6,10 +6,13 @@ Django==5.0.6
 django-bootstrap-icons==0.8.7
 django-bootstrap5==24.2
 djangorestframework==3.15.1
+gunicorn==22.0.0
 idna==3.7
+packaging==24.0
 python-dotenv==1.0.1
 pytz==2024.1
 requests==2.31.0
 sqlparse==0.5.0
 typing_extensions==4.11.0
 urllib3==2.2.1
+whitenoise==6.6.0

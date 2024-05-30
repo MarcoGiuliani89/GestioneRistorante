@@ -51,6 +51,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "salaristorante.middleware.BloccoAccessoMiddleware",
     "salaristorante.middleware.ThreadLocalMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = "salaristorante.urls"
