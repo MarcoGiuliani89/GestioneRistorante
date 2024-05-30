@@ -25,7 +25,7 @@ ospitiInPiediModal._element.addEventListener('shown.bs.modal', () => {
     // Modale che recupera e mostra l'elenco degli ospiti che non hanno alcun tavolo assegnato nel servizio selezionato (a ciascuno aggiunge un link alla pagina per la assegnazione).
 
     ospitiInPiediModal.innerHTML = loader;
-    ajax(`/ospiti/api/ospiti-in-piedi-servizio-attuale/`, {
+    ajax(`/ospiti/api/ospiti-in-piedi-servizio/${servizio_id}/`, {
         method: 'GET',
         headers: { 'X-CSRFToken': csrftoken },
         success: response => {
@@ -86,7 +86,7 @@ recuperaTotale();
 
 
 function arrivi_partenze() {
-    ajax(`/ospiti/api/arrivi-partenze-servizio-attuale/`, {
+    ajax(`/ospiti/api/arrivi-partenze-servizio/${servizio_id}/`, {
         method: 'GET',
         headers: { 'X-CSRFToken': csrftoken },
         success: response => {
@@ -498,7 +498,7 @@ let currentModalButton = null;
 function handleModalShown(event) {
     currentModalButton = event.relatedTarget;
     const nota = currentModalButton.getAttribute('data-nota');
-    input_note.value = nota !== "null" ? nota : '';
+    input_note.value = (nota === "None" || nota === null) ? '' : nota;
     input_note.focus();
     input_note.select();
 }
