@@ -9,37 +9,23 @@ from .forms import MultipleTavoliForm
 from .methods import ordinaTavoli
 from .models import Sala, Tavolo
 from ospiti.models import Ospite
-from servizi.methods import (
-    get_current_servizio_id,
-    get_selected_servizio,
-    set_selected_servizio,
-)
+from servizi.exceptions import NoServizioFoundException
+from servizi.methods import recupera_servizio
 from servizi.models import Servizio, Presenza
 
 
 def homepage(request):
     # Recupera tutte le sale con i tavoli prefetchati
-    sale = Sala.objects.all().prefetch_related("tavoli")
+    sale = Sala.objects.prefetch_related("tavoli").all()
 
     # Ordina i tavoli per ciascuna sala
     for sala in sale:
         sala.tavoli_ordinati = ordinaTavoli(sala.tavoli.all())
 
-    servizio_selezionato_id = get_selected_servizio(request.user.id)
+    try:
+        servizio_selezionato = recupera_servizio(request)
 
-    if not servizio_selezionato_id:
-        # Se l'utente non ha scelto un servizio specifico ottieni l'id di quello attuale e salvalo nella cache
-        servizio_selezionato_id = get_current_servizio_id()
-        set_selected_servizio(request.user.id, servizio_selezionato_id)
-
-    # Recupera il servizio scelto in base all'id, oppure l'ultimo disponibile
-    servizio_selezionato = (
-        Servizio.objects.filter(id=servizio_selezionato_id).first()
-        or Servizio.objects.order_by("data", "pasto").last()
-    )
-
-    if not servizio_selezionato:
-        # se ancora non ho servizi vuol dire che non ce ne sono e porto alla pagina per inizializzarli
+    except NoServizioFoundException:
         messages.error(
             request, "Non esistono servizi, inizializzali prima di cominciare"
         )

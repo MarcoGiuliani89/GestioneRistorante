@@ -220,9 +220,10 @@ function recuperaDati(tavoloId, riga) {
 
     // Recupera i dati per ciascun tavolo
 
-    ajax(`/tavoli/api/dati-tavolo-servizio/${tavoloId}/`, {
+    ajax(`/tavoli/api/dati-tavolo-servizio/`, {
         method: 'GET',
         headers: { 'X-CSRFToken': csrftoken },
+        data: { 'tavolo_id': tavoloId, 'servizio_id': servizio_id },
         success: response => {
             popolaTabella(response.value, riga);
         },

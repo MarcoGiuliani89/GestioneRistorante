@@ -63,7 +63,7 @@ urlpatterns = [
         name="api_periodi_in_piedi_ospite",
     ),
     path(
-        "api/dati-tavolo-servizio/<int:tavolo_id>/",
+        "api/dati-tavolo-servizio/",
         DatiTavoloServizioAPI.as_view(),
         name="api_dati_tavolo_servizio",
     ),

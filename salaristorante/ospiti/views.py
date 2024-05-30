@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.contrib import messages
 from django.db.models import Q
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
     DetailView,
@@ -14,8 +15,8 @@ from servizi.methods import aggiorna_presenze_per_ospite
 from salaristorante import settings
 from .models import Ospite
 from .forms import OspiteForm
-from servizi.methods import get_selected_servizio
-from servizi.models import Servizio
+from servizi.exceptions import NoServizioFoundException
+from servizi.methods import recupera_servizio
 
 
 class OspiteDetailView(DetailView):
@@ -25,10 +26,17 @@ class OspiteDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        servizio_selezionato_id = get_selected_servizio(self.request.user.id)
-        servizio_selezionato = Servizio.objects.get(id=servizio_selezionato_id)
-        context["servizio_selezionato"] = servizio_selezionato
 
+        try:
+            servizio_selezionato = recupera_servizio(self.request)
+
+        except NoServizioFoundException:
+            messages.error(
+                self.request, "Non esistono servizi, inizializzali prima di cominciare"
+            )
+            return redirect("inizializza_servizi")
+
+        context["servizio_selezionato"] = servizio_selezionato
         return context
 
 

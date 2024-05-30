@@ -8,11 +8,7 @@ from .methods import ordinaTavoli
 from .models import Tavolo
 from .serializers import AssegnaTavoloSerializer
 from ospiti.models import Ospite
-from servizi.methods import (
-    are_contiguous,
-    get_selected_servizio,
-    get_current_servizio_id,
-)
+from servizi.methods import are_contiguous
 from servizi.api import EditNoteBaseAPI
 from servizi.models import Servizio, Presenza
 
@@ -270,22 +266,19 @@ class PeriodiInPiediOspite(APIView):
 
 class DatiTavoloServizioAPI(APIView):
 
-    def get(self, request, tavolo_id):
-        user_id = request.user.id
+    def get(self, request):
 
-        # Recupera il servizio selezionato dalla cache
-        servizio_selezionato_id = get_selected_servizio(user_id)
+        tavolo_id = request.query_params.get("tavolo_id")
+        servizio_id = request.query_params.get("servizio_id")
 
-        # Se non c'è un servizio selezionato, utilizza get_current_servizio_id
-        if not servizio_selezionato_id:
-            servizio_selezionato_id = get_current_servizio_id()
+        print(f"tavolo_id: {tavolo_id}, servizio_id: {servizio_id}")
 
         # Recupera il tavolo
         tavolo = get_object_or_404(Tavolo, id=tavolo_id)
 
         # Recupera la presenza per il servizio selezionato
         presenza = (
-            tavolo.presenze.filter(servizio_id=servizio_selezionato_id)
+            tavolo.presenze.filter(servizio_id=servizio_id)
             .select_related(
                 "ospite", "ospite__servizio_arrivo", "ospite__servizio_partenza"
             )

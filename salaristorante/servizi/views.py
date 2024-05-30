@@ -6,9 +6,10 @@ from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 
 from .forms import InizializzaServiziForm
+from .exceptions import NoServizioFoundException
 from .methods import (
+    recupera_servizio,
     get_current_servizio_id,
-    get_selected_servizio,
     set_selected_servizio,
     precedentePasto,
     prossimoPasto,
@@ -49,18 +50,22 @@ class InizializzaServiziView(FormView):
 
 class ServizioPrecedente(View):
     def get(self, request):
-        current_servizio_id = get_selected_servizio(request.user.id)
-        if not current_servizio_id:
-            # Se non c'è un servizio selezionato, reindirizza alla homepage
-            return redirect("homepage")
 
-        current_servizio = Servizio.objects.get(pk=current_servizio_id)
+        try:
+            servizio_selezionato = recupera_servizio(request)
 
-        pasto_precedente = precedentePasto(current_servizio.pasto)
+        except NoServizioFoundException:
+            messages.error(
+                request, "Non esistono servizi, inizializzali prima di cominciare"
+            )
+            return redirect("inizializza_servizi")
+
+        pasto_precedente = precedentePasto(servizio_selezionato.pasto)
+
         if pasto_precedente == Servizio.CENA:
-            nuova_data = current_servizio.data - timedelta(days=1)
+            nuova_data = servizio_selezionato.data - timedelta(days=1)
         else:
-            nuova_data = current_servizio.data
+            nuova_data = servizio_selezionato.data
 
         # Ottieni l'ID del servizio precedente
         servizio_precedente = Servizio.objects.filter(
@@ -80,18 +85,22 @@ class ServizioPrecedente(View):
 
 class ServizioSuccessivo(View):
     def get(self, request):
-        current_servizio_id = get_selected_servizio(request.user.id)
-        if not current_servizio_id:
-            # Se non c'è un servizio selezionato, reindirizza alla homepage
-            return redirect("homepage")
 
-        current_servizio = Servizio.objects.get(pk=current_servizio_id)
+        try:
+            servizio_selezionato = recupera_servizio(request)
 
-        pasto_successivo = prossimoPasto(current_servizio.pasto)
+        except NoServizioFoundException:
+            messages.error(
+                request, "Non esistono servizi, inizializzali prima di cominciare"
+            )
+            return redirect("inizializza_servizi")
+
+        pasto_successivo = prossimoPasto(servizio_selezionato.pasto)
+
         if pasto_successivo == Servizio.COLAZIONE:
-            nuova_data = current_servizio.data + timedelta(days=1)
+            nuova_data = servizio_selezionato.data + timedelta(days=1)
         else:
-            nuova_data = current_servizio.data
+            nuova_data = servizio_selezionato.data
 
         # Ottieni l'ID del servizio successivo
         servizio_successivo = Servizio.objects.filter(

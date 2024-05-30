@@ -1,7 +1,5 @@
 from django import forms
 from .models import Ospite
-from tavoli.models import Tavolo
-from servizi.models import Presenza
 
 
 class OspiteForm(forms.ModelForm):
@@ -26,7 +24,7 @@ class OspiteForm(forms.ModelForm):
             "servizio_partenza": "Partenza",
             "default_adulti": "Numero predefinito di adulti",
             "default_bambini": "Numero predefinito di bambini",
-            "default_infant": "Numero predefinito di infanti",
+            "default_infant": "Numero predefinito di infant",
             "rooms": "Camere assegnate",
             "note": "Note ospite",
             "trattamento": "Trattamento",

@@ -2,8 +2,31 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.cache import cache
 
+from .exceptions import NoServizioFoundException
 from .models import Servizio, Presenza
 from ospiti.models import Ospite
+
+
+def recupera_servizio(request):
+    """
+    Recupera il servizio selezionato dall'utente, oppure il servizio attuale, se non esistono restituisce l'ultimo disponibile. Se non esistono servizi restituisci un'eccezione personalizzata
+    """
+    # recupera il servizio selezionato
+    servizio_selezionato_id = get_selected_servizio(request.user.id)
+
+    if not servizio_selezionato_id:
+        servizio_selezionato_id = get_current_servizio_id()
+
+    # Recupera il servizio scelto in base all'id, oppure l'ultimo disponibile
+    servizio = (
+        Servizio.objects.filter(id=servizio_selezionato_id).first()
+        or Servizio.objects.order_by("data", "pasto").last()
+    )
+    if servizio is None:
+        raise NoServizioFoundException("Nessun servizio trovato")
+
+    set_selected_servizio(request.user.id, servizio.id)
+    return servizio
 
 
 def set_selected_servizio(user_id, servizio_id):
@@ -17,8 +40,7 @@ def get_selected_servizio(user_id):
     cache_key = f"servizio_selezionato_{user_id}"
     servizio_id = cache.get(cache_key)
     if not servizio_id:
-        set_selected_servizio(user_id, get_current_servizio_id())
-        return get_current_servizio_id()
+        return None
     return servizio_id
 
 
