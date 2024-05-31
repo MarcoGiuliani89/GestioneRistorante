@@ -15,8 +15,10 @@
         <hr class="dropdown-divider">
         </li>
         <li>
-            <a class="dropdown-item text-danger" href="{% url 'logout'%}">
-            Esci</a>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Esci</button>
+            </form
         </li>
     </ul>
 </li>
