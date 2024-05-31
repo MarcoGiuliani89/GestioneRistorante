@@ -15,13 +15,13 @@ def recupera_servizio(request):
     servizio_selezionato_id = get_selected_servizio(request.user.id)
 
     if not servizio_selezionato_id:
-        servizio_selezionato_id = get_current_servizio_id()
+        try:
+            servizio_selezionato_id = get_current_servizio_id()
+            servizio = Servizio.objects.get(id=servizio_selezionato_id)
 
-    # Recupera il servizio scelto in base all'id, oppure l'ultimo disponibile
-    servizio = (
-        Servizio.objects.filter(id=servizio_selezionato_id).first()
-        or Servizio.objects.order_by("data", "pasto").last()
-    )
+        except NoServizioAttualeException:
+            servizio = Servizio.objects.order_by("data", "pasto").last()
+
     if servizio is None:
         raise NoServizioFoundException("Nessun servizio trovato")
 
