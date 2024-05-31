@@ -81,7 +81,7 @@ def get_current_servizio_id():
 
 
 def prossimoPasto(p):
-    return (p % 3) + 1
+    return (p + 1) if p < 3 else 1
 
 
 def precedentePasto(p):

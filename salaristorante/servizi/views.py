@@ -76,7 +76,7 @@ class ServizioPrecedente(View):
             # Se non c'è un servizio precedente, reindirizza alla homepage
             messages.warning(
                 request,
-                "Il servizio precedente (${nuova_data}, pasto {pasto_successivo}) non è disponibile",
+                f"Il servizio precedente ({nuova_data}, pasto {pasto_precedente}) non è disponibile",
             )
             return redirect("homepage")
 
@@ -114,7 +114,7 @@ class ServizioSuccessivo(View):
             # Se non c'è un servizio successivo, reindirizza alla homepage
             messages.warning(
                 request,
-                f"Il servizio successivo (${nuova_data}, pasto {pasto_successivo}) non è disponibile",
+                f"Il servizio successivo ({nuova_data}, pasto {pasto_successivo}) non è disponibile",
             )
             return redirect("homepage")
 
