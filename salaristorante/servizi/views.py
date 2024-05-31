@@ -6,7 +6,7 @@ from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 
 from .forms import InizializzaServiziForm
-from .exceptions import NoServizioFoundException
+from .exceptions import NoServizioFoundException, NoServizioAttualeException
 from .methods import (
     recupera_servizio,
     get_current_servizio_id,
@@ -128,20 +128,21 @@ class ServizioAttuale(View):
     def get(self, request):
         try:
             current_servizio_id = get_current_servizio_id()
-        except NoServizioFoundException:
-            servizio_alternativo = recupera_servizio(request)
-            if servizio_alternativo:
-                set_selected_servizio(request.user.id, servizio_alternativo.id)
-                messages.warning(
-                    request,
-                    f"Non esiste un servizio corrispondente alla data odierna, vado a {servizio_alternativo.data} pasto{servizio_alternativo.pasto}",
-                )
-                return redirect("homepage")
-            else:
+        except NoServizioAttualeException:
+            try:
+                servizio_alternativo = recupera_servizio(request)
+            except NoServizioFoundException:
                 messages.error(
                     request, "Non esistono servizi, inizializzali prima di cominciare"
                 )
                 return redirect("inizializza_servizi")
+
+            set_selected_servizio(request.user.id, servizio_alternativo.id)
+            messages.warning(
+                request,
+                f"Non esiste un servizio corrispondente alla data odierna, vado a {servizio_alternativo.data} pasto{servizio_alternativo.pasto}",
+            )
+            return redirect("homepage")
 
         set_selected_servizio(request.user.id, current_servizio_id)
         return redirect("homepage")

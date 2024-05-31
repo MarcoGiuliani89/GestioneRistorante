@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.cache import cache
 
-from .exceptions import NoServizioFoundException
+from .exceptions import NoServizioFoundException, NoServizioAttualeException
 from .models import Servizio, Presenza
 from ospiti.models import Ospite
 
@@ -65,7 +65,7 @@ def get_current_servizio_id():
 
     servizio = Servizio.objects.filter(data=selected_data, pasto=selected_pasto).first()
     if not servizio:
-        raise NoServizioFoundException("Nessun servizio trovato")
+        raise NoServizioAttualeException("Nessun servizio corrente")
     return servizio.id
 
 
