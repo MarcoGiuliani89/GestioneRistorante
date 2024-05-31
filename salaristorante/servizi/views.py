@@ -1,6 +1,6 @@
 from datetime import timedelta
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.views import View
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
@@ -49,23 +49,16 @@ class InizializzaServiziView(FormView):
 
 
 class ServizioPrecedente(View):
-    def get(self, request):
+    def get(self, request, servizio_attuale_id):
 
-        try:
-            servizio_selezionato = recupera_servizio(request)
+        servizio_attuale = get_object_or_404(Servizio, pk=servizio_attuale_id)
 
-        except NoServizioFoundException:
-            messages.error(
-                request, "Non esistono servizi, inizializzali prima di cominciare"
-            )
-            return redirect("inizializza_servizi")
-
-        pasto_precedente = precedentePasto(servizio_selezionato.pasto)
+        pasto_precedente = precedentePasto(servizio_attuale.pasto)
 
         if pasto_precedente == Servizio.CENA:
-            nuova_data = servizio_selezionato.data - timedelta(days=1)
+            nuova_data = servizio_attuale.data - timedelta(days=1)
         else:
-            nuova_data = servizio_selezionato.data
+            nuova_data = servizio_attuale.data
 
         # Ottieni l'ID del servizio precedente
         servizio_precedente = Servizio.objects.filter(
@@ -87,25 +80,18 @@ class ServizioPrecedente(View):
 
 
 class ServizioSuccessivo(View):
-    def get(self, request):
+    def get(self, request, servizio_attuale_id):
 
-        try:
-            servizio_selezionato = recupera_servizio(request)
+        servizio_attuale = get_object_or_404(Servizio, pk=servizio_attuale_id)
 
-        except NoServizioFoundException:
-            messages.error(
-                request, "Non esistono servizi, inizializzali prima di cominciare"
-            )
-            return redirect("inizializza_servizi")
-
-        pasto_successivo = prossimoPasto(servizio_selezionato.pasto)
+        pasto_successivo = prossimoPasto(servizio_attuale.pasto)
 
         if pasto_successivo == Servizio.COLAZIONE:
-            nuova_data = servizio_selezionato.data + timedelta(days=1)
+            nuova_data = servizio_attuale.data + timedelta(days=1)
         else:
-            nuova_data = servizio_selezionato.data
+            nuova_data = servizio_attuale.data
 
-        # Ottieni l'ID del servizio successivo
+        # Ottieni il servizio successivo
         servizio_successivo = Servizio.objects.filter(
             data=nuova_data, pasto=pasto_successivo
         ).first()

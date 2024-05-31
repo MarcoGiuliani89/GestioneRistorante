@@ -25,11 +25,15 @@ urlpatterns = [
         name="inizializza_servizi",
     ),
     path(
-        "servizio-precedente/", ServizioPrecedente.as_view(), name="servizio_precedente"
+        "servizio-precedente/<int:servizio_attuale_id>/",
+        ServizioPrecedente.as_view(),
+        name="servizio_precedente",
     ),
     path("servizio-attuale/", ServizioAttuale.as_view(), name="servizio_attuale"),
     path(
-        "servizio-successivo/", ServizioSuccessivo.as_view(), name="servizio_successivo"
+        "servizio-successivo/<int:servizio_attuale_id>/",
+        ServizioSuccessivo.as_view(),
+        name="servizio_successivo",
     ),
     path(
         "seleziona-servizio-manuale/",

@@ -103,13 +103,13 @@
                 </h5>
                 <div class="seleziona_servizi">
                     <div class="btn-group btn-group-lg me-3" role="group" aria-label="Segli servizio">
-                        <a type="button" class="btn btn-dark" title="Vai al servizio precedente" href="{% url 'servizio_precedente' %}">
+                        <a type="button" class="btn btn-dark" title="Vai al servizio precedente" href="{% url 'servizio_precedente' servizio_selezionato.id %}">
                             {% bs_icon 'arrow-left-circle-fill' size='1.1em' %}
                         </a>
                         <a type="button" class="btn btn-dark" title="Vai al servizio attuale" href="{% url 'servizio_attuale' %}">
                             {% bs_icon 'watch' size='1.1em' %}
                         </a>
-                        <a type="button" class="btn btn-dark" title="Vai al servizio successivo" href="{% url 'servizio_successivo' %}">
+                        <a type="button" class="btn btn-dark" title="Vai al servizio successivo" href="{% url 'servizio_successivo' servizio_selezionato.id %}">
                             {% bs_icon 'arrow-right-circle-fill' size='1.1em' %}
                         </a>
                     </div>
