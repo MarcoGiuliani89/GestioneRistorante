@@ -9,22 +9,33 @@ from ospiti.models import Ospite
 
 def recupera_servizio(request):
     """
-    Recupera il servizio selezionato dall'utente, oppure il servizio attuale, se non esistono restituisce l'ultimo disponibile. Se non esistono servizi restituisci un'eccezione personalizzata
+    Recupera il servizio selezionato dall'utente, oppure il servizio attuale.
+    Se non esistono restituisce l'ultimo disponibile.
+    Se non esistono servizi, restituisce un'eccezione personalizzata.
     """
-    # recupera il servizio selezionato
+    # Recupera il servizio selezionato
     servizio_selezionato_id = get_selected_servizio(request.user.id)
 
-    if not servizio_selezionato_id:
+    if servizio_selezionato_id:
+        # Se esiste un servizio_id selezionato, recupera il servizio
+        try:
+            servizio = Servizio.objects.get(id=servizio_selezionato_id)
+        except Servizio.DoesNotExist:
+            servizio = None
+    else:
+        # Se non esiste un id selezionato, prova a recuperare il servizio corrente
         try:
             servizio_selezionato_id = get_current_servizio_id()
             servizio = Servizio.objects.get(id=servizio_selezionato_id)
-
         except NoServizioAttualeException:
+            # Se non c'è un servizio corrente, prendi l'ultimo disponibile
             servizio = Servizio.objects.order_by("data", "pasto").last()
 
     if servizio is None:
+        # Se non esiste alcun servizio, lancia un'eccezione personalizzata
         raise NoServizioFoundException("Nessun servizio trovato")
 
+    # Imposta il servizio selezionato per l'utente
     set_selected_servizio(request.user.id, servizio.id)
     return servizio
 
