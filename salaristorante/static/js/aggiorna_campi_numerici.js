@@ -59,6 +59,22 @@ async function aggiornaDati(cella, dati, apiMaps) {
     try {
         const response = await apiPost(url, payload);
         cella.innerHTML = response[fieldName];
+
+        if (dati.cellaTot) {
+            // aggiona totali presenze
+            dati.cellaTot.innerHTML = loader;
+            ajax(`/servizi/api/totali-presenza/${dati.presenza_id}/`, {
+                method: 'GET',
+                headers: { 'X-CSRFToken': csrftoken },
+                success: response => {
+                    dati.cellaTot.innerHTML = response.value.totale;
+                },
+                error: error => {
+                    console.error(error);
+                }
+            })
+        }
+
     } catch (error) {
         console.error(error);
     }

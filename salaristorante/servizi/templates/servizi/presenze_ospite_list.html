@@ -10,7 +10,7 @@ Presenze {{ presenze.first.ospite }}
 
 {% block content %}
 
-<div class="row">
+<div class="row mb-5">
     <div class="col-8">
         <h4>{{ presenze.first.ospite }}</h4>
         <h6 class="text-muted text-uppercase">Presenze ai pasti</h6>
@@ -43,20 +43,23 @@ Presenze {{ presenze.first.ospite }}
                     <tr>
                         <th scope="col">Data</th>
                         <th scope="col">Pasto</th>
-                        <th scope="col">A.</th>
-                        <th scope="col">B.</th>
-                        <th scope="col">I.</th>                        
+                        <th scope="col" class="table-success">A.</th>
+                        <th scope="col" class="table-warning">B.</th>
+                        <th scope="col" class="table-info">I.</th>
                         <th scope="col">Totale</th>
+                        <th scope="col">Note servizio</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {% for presenza in presenze %}
                     <tr data-presenzaid = "{{ presenza.id }}">
                         <td>{{ presenza.servizio.data }}</td>
                         <td>{{ presenza.servizio.get_pasto_display }}</td>
-                        <td>{{ presenza.adulti }}</td>
-                        <td>{{ presenza.bambini }}</td>
-                        <td>{{ presenza.infant }}</td>
-                        <td>{{ presenza.tot }}</td>
+                        <td class="table-success">{{ presenza.adulti }}</td>
+                        <td class="table-warning">{{ presenza.bambini }}</td>
+                        <td class="table-info">{{ presenza.infant }}</td>
+                        <td class="text-end pe-4">{{ presenza.tot }}</td>
+                        <td>{{ presenza.note | default_if_none:"" }}</td>
                     </tr>
                     {% empty %}
                     <tr>
@@ -88,10 +91,12 @@ Presenze {{ presenze.first.ospite }}
     const righe = document.querySelectorAll('tr[data-presenzaid]');
 
     righe.forEach(riga => {
-        presenza_id = riga.getAttribute('data-presenzaid');
+        const presenza_id = riga.getAttribute('data-presenzaid');
+        const cellaTot = riga.children[5];
 
         dati = {
-            presenza_id: presenza_id
+            presenza_id: presenza_id,
+            cellaTot: cellaTot
         }
 
         const celleEditabili = [

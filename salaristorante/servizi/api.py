@@ -85,6 +85,21 @@ class EditInfantPresenza(BaseEditPresenzaFieldAPI):
     default_field_name = "default_infant"
 
 
+class TotaliPresenzaAPI(APIView):
+    def get(self, request, presenza_id):
+        presenza = get_object_or_404(Presenza, id=presenza_id)
+
+        data = {
+            "presenza_id": presenza_id,
+            "adulti": presenza.adulti,
+            "bambini": presenza.bambini,
+            "infant": presenza.infant,
+            "totale": presenza.adulti + presenza.bambini + presenza.infant,
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
 class EditNoteBaseAPI(APIView):
     model = None
     id_field = None

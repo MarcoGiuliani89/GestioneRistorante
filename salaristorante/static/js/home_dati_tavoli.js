@@ -99,6 +99,7 @@ function popolaTabella(dati, riga) {
     };
 
     rendiRigaEditabile(celleEditabili, dati, apiMaps);
+    inizializzaPopovers();
 }
 
 function creaBottoneUtilizzabile(valore, tavoloId) {
@@ -175,7 +176,7 @@ function formattaOspite(ospite) {
         inner_html: calendar_svg
     };
 
-    let ospiteHtml = `${creaPopover(popover_options)}<strong>${ospite.nome}</strong>`;
+    let ospiteHtml = `${creaPopover(popover_options)}<strong><a href="/servizi/presenze-ospite/${ospite.id}/" class="text-decoration-none text-light">${ospite.nome}</strong>`;
 
     if (ospite.note) {
         ospiteHtml += `
@@ -201,8 +202,6 @@ function creaPopover(options) {
     popoverButton.setAttribute('data-bs-content', options.content);
     popoverButton.setAttribute('data-bs-trigger', options.trigger || 'focus');
     popoverButton.innerHTML = options.inner_html;
-
-    inizializzaPopovers();
 
     return popoverButton.outerHTML;
 }

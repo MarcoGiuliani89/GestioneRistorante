@@ -288,6 +288,7 @@ class DatiTavoloServizioAPI(APIView):
                 "tavolo_id": tavolo_id,
                 "presenza_id": presenza.id,
                 "ospite": {
+                    "id": presenza.ospite.id,
                     "nome": presenza.ospite.nome,
                     "arrivo": str(presenza.ospite.servizio_arrivo),
                     "arrivo_id": presenza.ospite.servizio_arrivo.id,

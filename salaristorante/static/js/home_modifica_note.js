@@ -17,7 +17,9 @@ let currentModalButton = null;
 function handleModalShown(event) {
     currentModalButton = event.relatedTarget;
     const nota = currentModalButton.getAttribute('data-nota');
-    input_note.value = (nota === "None" || nota === null) ? '' : nota;
+    const isNotaValid = nota && !["None", "null"].includes(nota);
+
+    input_note.value = isNotaValid ? nota : '';
     input_note.focus();
     input_note.select();
 }
