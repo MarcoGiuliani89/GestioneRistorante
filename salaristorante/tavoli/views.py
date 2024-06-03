@@ -4,6 +4,7 @@ from django.db import transaction
 from django.db.models import Prefetch
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView
 
 from .forms import MultipleTavoliForm
@@ -11,7 +12,7 @@ from .methods import ordinaTavoli
 from .models import Sala, Tavolo
 from ospiti.models import Ospite
 from servizi.exceptions import NoServizioFoundException
-from servizi.methods import recupera_servizio
+from servizi.methods import recupera_servizio, get_aggregated_presences
 from servizi.models import Servizio, Presenza
 
 
@@ -40,6 +41,19 @@ def homepage(request):
 
     # Renderizza la pagina homepage con il contesto
     return render(request, "tavoli/homepage.html", context)
+
+
+class TavoloDetailView(DetailView):
+    model = Tavolo
+    template_name = "tavoli/tavolo_detail.html"
+    context_object_name = "tavolo"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tavolo = self.object
+        presenze = tavolo.presenze.all()
+        context["aggregated_presences"] = get_aggregated_presences(presenze)
+        return context
 
 
 class AddMultipleTavoliView(FormView):

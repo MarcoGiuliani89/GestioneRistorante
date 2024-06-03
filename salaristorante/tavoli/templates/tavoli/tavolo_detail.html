@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap_icons %}
+
+{% block title %}
+{{ tavolo }}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <h4>Tavolo: {{ tavolo }}</h4>
+    </div>
+</div>
+
+<div class="row mt-2 mb-5">
+    <div class="col-12 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <p><strong>Sala:</strong> {{ tavolo.sala }}</p>
+                <p><strong>Posti massimi:</strong> {{ tavolo.max_posti|default:"-" }}</p>
+                <p><strong>Utilizzabile:</strong> 
+                    {% if tavolo.utilizzabile %}
+                        <span class="text-success-emphasis">{% bs_icon 'check-circle' %}</span>
+                    {% else %}
+                        <span class="text-danger-emphasis">{% bs_icon 'ban' %}</span>
+                    {% endif %}
+                </p>
+                <p><strong>Note tavolo:</strong> {{ tavolo.note|default:"-" }}</p>
+            </div>           
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <h5>Presenze ospiti al tavolo {{ tavolo }}</h5>
+        <div class="table-responsive">
+            <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Inizio Periodo</th>
+                    <th>Fine Periodo</th>
+                    <th>Ospite</th>
+                    <th>Tipologia</th>
+                    <th>Trattamento</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for start, end, ospite in aggregated_presences %}
+                <tr>
+                    <td>{{ start.servizio.data }} - {{ start.servizio.get_pasto_display }}</td>
+                    <td>{{ end.servizio.data }} - {{ end.servizio.get_pasto_display }}</td>
+                    <td>
+                        <strong>
+                            <a href="/servizi/presenze-ospite/{{ospite.id}}/" class="text-decoration-none text-warning-emphasis">{{ospite}}</a>
+                        </strong>
+                    </td>
+                    <td>
+                        <span class="badge rounded-pill
+                        
+                        {% if ospite.get_tipologia_display == 'Individuali' %}
+                            text-bg-primary
+
+                        {% elif ospite.get_tipologia_display == 'Gruppo' %}
+                            text-bg-secondary
+                            
+                        {% elif ospite.get_tipologia_display == 'Esterni' %}
+                            text-bg-danger
+                        {% elif ospite.get_tipologia_display == 'Staff' %} 
+                            text-bg-warning                             
+                        {% endif %}                                
+                        ">
+                            {{ ospite.get_tipologia_display }}
+                        </span>                            
+                    </td>
+                    <td>
+                        <span class="badge 
+                            
+                        {% if ospite.trattamento == 'BB' %}
+                            text-bg-warning
+
+                        {% elif ospite.trattamento == 'HB' %}
+                            text-bg-info
+                            
+                        {% elif ospite.trattamento == 'FB' %}
+                            text-bg-light
+                            
+                        {% elif ospite.trattamento == 'HBB' %}
+                            text-bg-primary
+                            
+                        {% elif ospite.trattamento == 'FBB' %}
+                            text-bg-danger                                
+                        {% endif %}                                
+                        ">
+                            {{ ospite.trattamento }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+</div>
+
+{% endblock %}

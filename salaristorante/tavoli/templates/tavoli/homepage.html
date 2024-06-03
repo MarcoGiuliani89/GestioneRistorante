@@ -187,7 +187,8 @@
                             </button>                            
                         </td>
                         <td class="text-nowrap">
-                            <strong>{{tavolo}}</strong>                           
+                            <strong><a href="{% url 'tavolo_detail' tavolo.id %}" class="text-decoration-none text-primary-emphasis">{{tavolo}}</a>
+                            </strong>                           
                         </td>
 
                         <td></td><!-- Utilizzabile editabile -->

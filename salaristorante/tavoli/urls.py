@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     homepage,
+    TavoloDetailView,
     AddMultipleTavoliView,
     bissaTavolo,
     EliminaPresenzeTavoloPeriodo,
@@ -24,6 +25,7 @@ from .api import (
 urlpatterns = [
     # VIEWS
     path("", homepage, name="homepage"),
+    path("tavolo/<int:pk>/", TavoloDetailView.as_view(), name="tavolo_detail"),
     path("aggiungi-tavoli/", AddMultipleTavoliView.as_view(), name="aggiungi_tavoli"),
     path("bissa-tavolo/<str:codice>/", bissaTavolo, name="bissa_tavolo"),
     path(

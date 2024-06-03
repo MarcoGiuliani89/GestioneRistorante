@@ -176,7 +176,7 @@ function formattaOspite(ospite) {
         inner_html: calendar_svg
     };
 
-    let ospiteHtml = `${creaPopover(popover_options)}<strong><a href="/servizi/presenze-ospite/${ospite.id}/" class="text-decoration-none text-light">${ospite.nome}</strong>`;
+    let ospiteHtml = `${creaPopover(popover_options)}<strong><a href="/servizi/presenze-ospite/${ospite.id}/" class="text-decoration-none text-warning-emphasis">${ospite.nome}</a></strong>`;
 
     if (ospite.note) {
         ospiteHtml += `

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from itertools import groupby
 from django.conf import settings
 from django.core.cache import cache
 
@@ -211,3 +212,32 @@ def are_contiguous(last_servizio, current_servizio, trattamento):
         ):
             return True
     return False
+
+
+def get_aggregated_presences(presenze):
+    # Presenze ordinate per ospite e data del servizio
+    presenze_ordinate = presenze.order_by("ospite", "servizio__data", "servizio__pasto")
+
+    # Funzione per raggruppare per ospite
+    def key_func(p):
+        return p.ospite
+
+    # Risultato finale
+    risultati = []
+
+    for ospite, gruppi in groupby(presenze_ordinate, key=key_func):
+        gruppi = list(gruppi)
+        start = gruppi[0]
+        current = start
+        trattamento = ospite.trattamento
+        for presenza in gruppi[1:]:
+            # Check if current presence is contiguous to previous
+            if are_contiguous(current.servizio, presenza.servizio, trattamento):
+                current = presenza
+            else:
+                risultati.append((start, current, ospite))
+                start = presenza
+                current = start
+        risultati.append((start, current, ospite))
+
+    return risultati
