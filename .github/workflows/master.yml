@@ -17,4 +17,4 @@ jobs:
         server: ftp.mgiuliani.it
         username: ${{ secrets.ftp_username }}
         password: ${{ secrets.ftp_password }}
-        server-dir: /django/Ristorante/
+        server-dir: /django/RistoranteGolf/
