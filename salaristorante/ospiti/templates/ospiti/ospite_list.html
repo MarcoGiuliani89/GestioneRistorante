@@ -39,6 +39,7 @@ Ospiti
                         <th scope="col">Note</th>
                 </thead>
                 <tbody>
+                    {% now 'Y-m-d' as nowdate %}
                     {% for ospite in ospiti %}
                     <tr>
                         <td>
@@ -107,11 +108,11 @@ Ospiti
                             ">
                                 {{ ospite.get_tipologia_display }}
                             </span>                            
-                        </td>
-                        <td class="text-nowrap pe-4">
+                        </td>                        
+                        <td class="text-nowrap pe-4 {% if ospite.servizio_arrivo.data|date:'Y-m-d' == nowdate %}text-success-emphasis{% endif %}">
                             {{ ospite.servizio_arrivo.str_short }}
                         </td>
-                        <td class="text-nowrap pe-4">
+                        <td class="text-nowrap pe-4 {% if ospite.servizio_partenza.data|date:'Y-m-d' == nowdate %}text-danger-emphasis{% endif %}">
                             {{ ospite.servizio_partenza.str_short }}
                         </td>
                         <td>{{ ospite.default_adulti }}</td>
