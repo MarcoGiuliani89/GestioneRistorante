@@ -11,7 +11,7 @@
     <span class="me-1">{% bs_icon 'funnel-fill' %}</span>Filtri<span class="ms-1">{% bs_icon 'chevron-down' %}</span>
 </button>
 
-{% if request.GET.ospite or request.GET.trattamento or request.GET.tipologia or request.GET.data_arrivo_inizio or request.GET.data_arrivo_fine or  request.GET.data_partenza_inizio or request.GET.data_partenza_fine %}
+{% if request.GET.ospite or request.GET.trattamento or request.GET.tipologia or request.GET.data_arrivo_inizio or request.GET.data_arrivo_fine or  request.GET.data_partenza_inizio or request.GET.data_partenza_fine or request.GET.presenze_in_piedi %}
     <a href="{% url 'ospiti_list' %}" class="btn btn-light mb-3">Reset Filtri</a>
 {% endif %} 
 
@@ -61,6 +61,17 @@
                 <div class="form-outline mb-1">
                     <input type="date" class="form-control" name="data_partenza_fine">
                 </div>             
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="presenze_in_piedi" name="presenze_in_piedi">
+                    <label class="form-check-label" for="presenze_in_piedi">
+                        Presenze in Piedi
+                    </label>
+                </div>
+                
             </div>
         </div>
         <div class="row mb-4">

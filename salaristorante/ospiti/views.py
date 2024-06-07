@@ -97,6 +97,7 @@ class OspiteListView(ListView):
         arrivo_a = self.request.GET.get("data_arrivo_fine")
         partenza_da = self.request.GET.get("data_partenza_inizio")
         partenza_a = self.request.GET.get("data_partenza_fine")
+        presenze_in_piedi = self.request.GET.get("presenze_in_piedi")
 
         # Costruzione del filtro
         filters = Q()
@@ -132,7 +133,10 @@ class OspiteListView(ListView):
             except ValueError:
                 pass
 
-        return qs.filter(filters)
+        if presenze_in_piedi == "on":
+            filters &= Q(presenze__tavoli__isnull=True)
+
+        return qs.filter(filters).distinct()
 
 
 class OspiteDeleteView(DeleteView):
