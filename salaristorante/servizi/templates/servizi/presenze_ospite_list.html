@@ -53,13 +53,18 @@ Presenze {{ presenze.first.ospite }}
                 <tbody>
                     {% for presenza in presenze %}
                     <tr data-presenzaid = "{{ presenza.id }}">
-                        <td>{{ presenza.servizio.data }}</td>
-                        <td>{{ presenza.servizio.get_pasto_display }}</td>
+                        <td class="text-nowrap">{{ presenza.servizio.data }}</td>
+                        <td class="px-3">{{ presenza.servizio.get_pasto_display }}</td>
                         <td class="table-success">{{ presenza.adulti }}</td>
                         <td class="table-warning">{{ presenza.bambini }}</td>
                         <td class="table-info">{{ presenza.infant }}</td>
                         <td class="text-end pe-4">{{ presenza.tot }}</td>
-                        <td>{{ presenza.note | default_if_none:"" }}</td>
+                        <td>
+                            <button type="button" class="edit_nota btn btn-link text-primary-emphasis px-0 me-1" data-bs-toggle="modal" data-bs-target="#modificaNota"  data-presenzaid="{{ presenza.id }}" data-nota="{{ presenza.note | default_if_none:'' }}">
+                                {% bs_icon 'pencil' %}
+                            </button>
+                            <span class="nota_presenza">{{ presenza.note | default_if_none:"" }}</span>
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
@@ -74,6 +79,27 @@ Presenze {{ presenze.first.ospite }}
 {% if is_paginated %}
     {% include 'partials/pagination.html' %}
 {% endif %}
+
+<!-- Modal Modifica Nota -->
+<div class="modal fade" id="modificaNota" tabindex="-1" aria-labelledby="modificaNotaLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modificaNotaLabel">Modifica nota:</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="modifica_nota" aria-describedby="modifica_nota">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-primary" id = "salva_nota">
+                    Salva
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 
@@ -127,4 +153,6 @@ Presenze {{ presenze.first.ospite }}
     });        
 
 </script>
+<script src="{% static 'js/modifica_nota_presenza_ospite.js' %}"></script>
+
 {% endblock %}
