@@ -40,11 +40,21 @@ class OspiteDetailView(DetailView):
         return context
 
 
-class OspiteCreateView(CreateView):
+class OspiteCreateView(CreateView):    
     model = Ospite
     form_class = OspiteForm
     template_name = "ospiti/ospite_new.html"
     success_url = reverse_lazy("crea_ospite")
+
+    def get_initial(self):
+        # Quando creo un ospite preseleziona la data di arrivo e di partenza uguali all'ultimo ospite aggiunto in precedenza    
+        initial = super().get_initial()
+        last_ospite = Ospite.objects.order_by('id').last()
+
+        if last_ospite:
+            initial["servizio_arrivo"] = last_ospite.servizio_arrivo
+            initial["servizio_partenza"] = last_ospite.servizio_partenza
+        return initial
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -53,7 +63,8 @@ class OspiteCreateView(CreateView):
             form.cleaned_data["servizio_arrivo"],
             form.cleaned_data["servizio_partenza"],
         )
-        messages.success(self.request, f"Ospite creato con successo!")
+        nome = self.object.nome
+        messages.success(self.request, f"Ospite *{nome}* creato con successo!")
         return response
 
 
