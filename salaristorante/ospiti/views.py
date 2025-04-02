@@ -96,6 +96,7 @@ class OspiteListView(ListView):
         context = super().get_context_data(**kwargs)
         context["trattamenti"] = Ospite.TRATTAMENTO_CHOICES
         context["tipologie"] = Ospite.TIPOLOGIA_CHOICHES
+        context["totale_ospiti"] = Ospite.objects.count() # Conta tutti gli ospiti senza considerare filtri
         return context
 
     def get_queryset(self):

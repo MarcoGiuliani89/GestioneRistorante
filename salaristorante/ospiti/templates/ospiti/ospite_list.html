@@ -131,9 +131,15 @@ Ospiti
                         </td>
                     </tr>
                     {% empty %}
-                    <tr>
-                        <td colspan="13">Non sono ancora stati inseriti ospiti</td>
-                    </tr>
+                        {% if totale_ospiti == 0 %}
+                            <tr>
+                                <td colspan="13">❌ Non sono ancora stati inseriti ospiti nel tuo database.</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="13">⚠️ Nessun ospite corrisponde ai filtri di ricerca selezionati.</td>
+                            </tr>
+                        {% endif %}
                     {% endfor %}
                 </tbody>
             </table>
