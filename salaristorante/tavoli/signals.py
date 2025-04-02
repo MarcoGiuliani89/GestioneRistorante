@@ -1,6 +1,7 @@
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
+from django.conf import settings
 
 from .models import Tavolo
 from servizi.models import Presenza, Servizio
@@ -12,7 +13,11 @@ def prevent_duplicate_presence(
 ):
     """
     Prima di aggiungere delle presenze ad un Tavolo, verifica se il tavolo ha già presenze assegnate negli stessi servizi.
+    Utilizzo una variabile globale per disabilitare il segnale durante l'import dei dati da un dump di DB.
     """
+    if getattr(settings, 'IMPORTING_DATA', False):
+        return # se IMPORTING_DATA è True, durante l'importazione di un dump disabilita il signals (non fare nulla)
+    
     if action == "pre_add" and model == Presenza:
         if instance.utilizzabile is False:
             raise ValidationError(
