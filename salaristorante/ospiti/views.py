@@ -81,7 +81,8 @@ class OspiteUpdateView(UpdateView):
             form.cleaned_data["servizio_arrivo"],
             form.cleaned_data["servizio_partenza"],
         )
-        messages.success(self.request, f"Ospite aggiornato con successo!")
+        nome = self.object.nome
+        messages.success(self.request, f"Ospite *{nome}* aggiornato con successo!")
         return response
 
 
