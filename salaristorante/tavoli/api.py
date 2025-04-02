@@ -1,3 +1,5 @@
+import re
+from datetime import datetime
 from django.db.models import Q, Prefetch
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -56,7 +58,6 @@ class TavoliAssegnatiAPI(APIView):
     """
     API che restituisce tutti i tavoli assegnati all'ospite specificato.
     """
-
     def get(self, request, ospite_id):
         try:
             # Tenta di recuperare l'ospite con l'ID fornito
@@ -124,6 +125,7 @@ class TavoliAssegnatiAPI(APIView):
         response_data.sort(key=self.sort_key)
 
         return Response(response_data, status=status.HTTP_200_OK)
+    
 
     def get_period_string(self, period, ospite):
         # Ottiene i servizi di inizio e fine del periodo
@@ -163,37 +165,58 @@ class TavoliAssegnatiAPI(APIView):
             return 2
         elif str == "Cen":
             return 3
+        
+    def converti_data_ita_to_eng(self, data_ita):
+        """Converte una data con mese in italiano in una compatibile con strptime"""
+        MESI_ITA = {
+            "Gen": "Jan",
+            "Feb": "Feb",
+            "Mar": "Mar",
+            "Apr": "Apr",
+            "Mag": "May",
+            "Giu": "Jun",
+            "Lug": "Jul",
+            "Ago": "Aug",
+            "Set": "Sep",
+            "Ott": "Oct",
+            "Nov": "Nov",
+            "Dic": "Dec",
+        }
+        for mese_ita, mese_eng in MESI_ITA.items():
+            if mese_ita in data_ita:
+                return data_ita.replace(mese_ita, mese_eng)
+        return data_ita  # Se non trova il mese, restituisce la stringa invariata
+
 
     def sort_key(self, item):
-        # Elimina eventuali " bis" dal codice del tavolo
-        codice = item["codice"].split()[0]
+        match = re.match(r"(\d+)", item["codice"])
+        codice_num = int(match.group(1)) if match else float("inf")  
 
-        # Disponi in cima i tavoli assegnati per all'intero soggiorno, ordinati per codice
         if item["periodo"] == "Intero soggiorno":
-            return (0, int(codice))
+            return (0, codice_num)
 
-        # Definisci i criteri di ordinamento per i rimanenti tavoli
+        try:
+            period_parts = item["periodo"].split(" - ")
+            start_servizio_parts = period_parts[0].split(" ")
+            end_servizio_parts = period_parts[-1].split(" ")
 
-        # Estrai la data e il pasto dal periodo
-        period_parts = item["periodo"].split(" - ")
-        start_servizio_parts = period_parts[0].split(" ")
-        end_servizio_parts = period_parts[-1].split(" ")
+            # Estraggo la data senza il giorno della settimana
+            start_data_str = self.converti_data_ita_to_eng(" ".join(start_servizio_parts[1:4]))
+            end_data_str = self.converti_data_ita_to_eng(" ".join(end_servizio_parts[1:4]))
 
-        # Prendi la data e il pasto (convertito in numero) dal periodo di inizio e fine
-        start_data = start_servizio_parts[1]
-        start_pasto = self.pasto_str_to_num(start_servizio_parts[-1][1:-1])
-        end_data = end_servizio_parts[1]
-        end_pasto = self.pasto_str_to_num(end_servizio_parts[-1][1:-1])
+            # Converto la data in datetime usando il formato inglese
+            start_data = datetime.strptime(start_data_str, "%d %b %Y").date()
+            end_data = datetime.strptime(end_data_str, "%d %b %Y").date()
 
-        # Restituisci i criteri di ordinamento
-        return (
-            1,
-            start_data,
-            start_pasto,
-            end_data,
-            end_pasto,
-            int(codice),
-        )
+            start_pasto = self.pasto_str_to_num(start_servizio_parts[-1][1:-1])
+            end_pasto = self.pasto_str_to_num(end_servizio_parts[-1][1:-1])
+
+            return (1, start_data, start_pasto, end_data, end_pasto, codice_num)
+
+        except (IndexError, ValueError) as e:
+            print(f"Errore nell'ordinamento: {e} | Item: {item}")
+            return (2, float("inf"), float("inf"), float("inf"), float("inf"), codice_num)
+
 
 
 class PeriodiInPiediOspite(APIView):

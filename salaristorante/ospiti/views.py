@@ -20,6 +20,9 @@ from servizi.methods import recupera_servizio
 
 
 class OspiteDetailView(DetailView):
+    """
+    Vista di dettaglio dell'ospite, con tavoli assegnati, presenze in piedi e assegna tavoli
+    """
     model = Ospite
     template_name = "ospiti/ospite_detail.html"
     context_object_name = "ospite"
