@@ -2,50 +2,44 @@
   <div class="row pagination">
     <div class="col-12 d-flex justify-content-center">
       <nav aria-label="list pagination">
-        <ul class="pagination pagination-circle">
+        <ul class="pagination">
+          
+          <!-- Link alla pagina precedente -->
           {% if page_obj.has_previous %}
           <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">&laquo;</a>
           </li>
           {% endif %}
-
+          
+          <!-- Ciclo sulle pagine disponibili -->
           {% for i in paginator.page_range %}
           <li class="page-item">
-              {% if i == 1 %}
-                  {% if page_obj.number == i %}
-                      <span class="page-link active" href="">{{ i }}</span>
-                  {% else %}
-                      <a class="page-link" href="?page={{ i }}">{{ i }}</a>
-                  {% endif %}
-              {% endif %}
-              {% if i != 1 and i != page_obj.paginator.page_range|last %}
-                  {% if page_obj.number == i %}
-                      <span class="page-link active" href="">{{ i }}</span>
-                  {% else %}
-                      {% if page_obj.number|add:-3 == i %}
-                          <a class="page-link" href="">...</a>
-                      {% endif %}
-                      {% if page_obj.number|add:2 >= i and page_obj.number|add:-2 <= i %}
-                          <a class="page-link" href="?page={{ i }}">{{ i }}</a>
-                      {% endif %}
-                      {% if page_obj.number|add:3 == i %}
-                          <a class="page-link" href="">...</a>
-                      {% endif %}
-                  {% endif %}
-              {% endif %}
-              {% if i == page_obj.paginator.page_range|last %}
-                  {% if page_obj.number == i %}
-                      <span class="page-link active" href="">{{ page_obj.paginator.page_range|last }}</span>
-                  {% else %}
-                      <a class="page-link" href="?page={{ page_obj.paginator.page_range|last }}">{{ page_obj.paginator.page_range|last }}</a>
-                  {% endif %}
-              {% endif %}
-              </li>
+            
+            {% if i == 1 or i == page_obj.paginator.page_range|last %}
+                <!-- Per la prima e l'ultima pagina -->
+                {% if page_obj.number == i %}
+                  <span class="page-link active">{{ i }}</span>
+                {% else %}
+                  <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ i }}">{{ i }}</a>
+                {% endif %}
+            {% elif page_obj.number|add:-3 == i or page_obj.number|add:3 == i %}
+                <!-- Gestione dei punti di sospensione -->
+                <span class="page-link">...</span>
+            {% elif page_obj.number|add:2 >= i and page_obj.number|add:-2 <= i %}
+                <!-- Visualizza solo le pagine vicine alla pagina attuale -->
+                {% if page_obj.number == i %}
+                  <span class="page-link active">{{ i }}</span>
+                {% else %}
+                  <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ i }}">{{ i }}</a>
+                {% endif %}
+            {% endif %}
+          </li>
           {% endfor %}
-
+          
+          <!-- Link alla pagina successiva -->
           {% if page_obj.has_next %}
           <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">&raquo;</a>
           </li>
           {% endif %}
         </ul>
