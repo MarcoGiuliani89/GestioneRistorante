@@ -9,8 +9,33 @@ if (delete_modal) {
         const nome = button.dataset.nome;
 
         delete_form.action = `/ospiti/${pk_ospite}/cancella/`;
+
         delete_modal.querySelector('.modal-body').innerHTML = `Sei sicuro di voler eliminare l'ospite <strong>${nome}</strong>?`;
-        delete_modal.querySelector('.modal-footer').innerHTML = `<button type="button" class="btn btn-secondary"  data-bs-dismiss="modal">Annulla</button>
-        <button type="submit" class="btn btn-primary">Conferma</button>`;
+        delete_modal.querySelector('.modal-footer').innerHTML = `
+            <button type="button" id="cancelDeleteBtn" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+            <button type="submit" id="confirmDeleteBtn" class="btn btn-primary">Conferma</button>
+        `;
+    });
+
+    delete_form.addEventListener('submit', event => {
+        const confirmButton = document.getElementById('confirmDeleteBtn');
+        const cancelButton = document.getElementById('cancelDeleteBtn');
+        const closeButton = delete_modal.querySelector('.btn-close'); // Bottone "X"
+
+        // Disabilita i bottoni per evitare il doppio click
+        confirmButton.disabled = true;
+        confirmButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sto eliminando...';
+        cancelButton.disabled = true;
+
+        // Disabilita il bottone "X" senza rimuoverlo
+        if (closeButton) {
+            closeButton.disabled = true;
+            closeButton.style.pointerEvents = 'none'; // Impedisce il click
+            closeButton.style.opacity = '0.5'; // Cambia l'opacità
+        }
+
+        // Impedisce la chiusura della modale con clic esterno o ESC
+        delete_modal.setAttribute('data-bs-backdrop', 'static');
+        delete_modal.setAttribute('data-bs-keyboard', 'false');
     });
 }
