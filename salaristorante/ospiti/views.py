@@ -1,8 +1,9 @@
 from datetime import datetime
+from django.utils.safestring import mark_safe
 from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     DetailView,
     CreateView,
@@ -67,7 +68,7 @@ class OspiteCreateView(CreateView):
             form.cleaned_data["servizio_partenza"],
         )
         nome = self.object.nome
-        messages.success(self.request, f"Ospite *{nome}* creato con successo!")
+        messages.success(self.request, mark_safe(f"Ospite <strong><a href='{self.object.assegna_tavoli_url}'>{nome}</a></strong> creato con successo!"))
         return response
 
 
@@ -75,7 +76,6 @@ class OspiteUpdateView(UpdateView):
     model = Ospite
     form_class = OspiteForm
     template_name = "ospiti/ospite_form.html"
-    success_url = reverse_lazy("ospiti_list")
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -85,8 +85,16 @@ class OspiteUpdateView(UpdateView):
             form.cleaned_data["servizio_partenza"],
         )
         nome = self.object.nome
-        messages.success(self.request, f"Ospite *{nome}* aggiornato con successo!")
+        messages.success(self.request, mark_safe(f"Ospite <strong>{nome}</strong> aggiornato con successo!"))
         return response
+
+    def get_success_url(self):
+        # Dopo l'aggiornamento ritorna alla lista degli ospiti eventualmente con i filtri salvati nella sessione
+        base_url = reverse("ospiti_list")
+        query_string = self.request.session.get("ospiti_filtro", "")         
+
+        return f"{base_url}?{query_string}" if query_string else base_url
+
 
 
 class OspiteListView(ListView):
@@ -94,6 +102,11 @@ class OspiteListView(ListView):
     template_name = "ospiti/ospite_list.html"
     context_object_name = "ospiti"
     paginate_by = settings.PAGINATION_NUM
+
+    def get(self, request, *args, **kwargs):
+        # Salva i filtri nella sessione
+        request.session["ospiti_filtro"] = request.GET.urlencode()
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -157,4 +170,10 @@ class OspiteListView(ListView):
 
 class OspiteDeleteView(DeleteView):
     model = Ospite
-    success_url = reverse_lazy("ospiti_list")
+
+    def get_success_url(self):
+        # Dopo l'eliminazione ritorna alla lista degli ospiti eventualmente con i filtri salvati nella sessione
+        base_url = reverse("ospiti_list")
+        query_string = self.request.session.get("ospiti_filtro", "")         
+
+        return f"{base_url}?{query_string}" if query_string else base_url
