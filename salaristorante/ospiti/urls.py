@@ -6,7 +6,7 @@ from .views import (
     OspiteUpdateView,
     OspiteDeleteView,
 )
-from .api import OspitiInPiediServizioAPI, ArriviPartenzeServizioAPI
+from .api import OspitiInPiediServizioAPI, ArriviPartenzeServizioAPI, OspiteRoomsAPIView
 
 urlpatterns = [
     # VIEWS
@@ -29,5 +29,10 @@ urlpatterns = [
         "api/arrivi-partenze-servizio/<int:servizio_id>/",
         ArriviPartenzeServizioAPI.as_view(),
         name="api_arrivi_partenze_servizio",
+    ),
+    path(
+        "api/ospite-rooms/<int:pk_ospite>/",
+        OspiteRoomsAPIView.as_view(),
+        name="api_ospite_rooms",
     ),
 ]

@@ -188,51 +188,6 @@ function formattaOspite(ospite) {
     return ospiteHtml;
 }
 
-function creaPopover(options) {
-    const popoverButton = document.createElement('a');
-    popoverButton.setAttribute('tabindex', '0');
-    popoverButton.setAttribute('type', 'button');
-    popoverButton.classList.add(...options.customClass);
-    popoverButton.setAttribute('data-bs-container', options.container);
-    popoverButton.setAttribute('data-bs-html', options.html);
-    popoverButton.setAttribute('data-bs-toggle', 'popover');
-    popoverButton.setAttribute('data-bs-placement', options.placement);
-    popoverButton.setAttribute('data-bs-trigger', 'focus');
-    popoverButton.setAttribute('data-bs-title', options.title);
-    popoverButton.setAttribute('data-bs-content', options.content);
-    popoverButton.setAttribute('data-bs-trigger', options.trigger || 'focus');
-    popoverButton.innerHTML = options.inner_html;
-
-    return popoverButton.outerHTML;
-}
-function inizializzaPopovers() {
-    const elementiPopover = document.querySelectorAll('[data-bs-toggle="popover"]');
-    elementiPopover.forEach(elementoPopover => {
-        new bootstrap.Popover(elementoPopover);
-    });
-}
-
-function formattaCamere(ospite) {
-    if (!ospite || !ospite.rooms) return "";
-
-    const listaCamere = ospite.rooms.split(",");
-    if (listaCamere.length === 1) return listaCamere[0];
-
-    const popover_options = {
-        container: 'body',
-        html: false,
-        title: `Camere di ${ospite.nome}`,
-        content: ospite.rooms,
-        customClass: ['btn', 'btn-link', "me-1"],
-        placement: 'top',
-        inner_html: `#${listaCamere.length}`
-    };
-
-    return creaPopover(popover_options);
-}
-
-
-
 function creaBadge(valore, tipo) {
     // Funzione per creare un badge colorato
     // mappe colori
@@ -289,13 +244,6 @@ function formattaNotaPopover(nota, tipoNota, presenzaId, tavoloId) {
     return notaButton + creaPopover(popover_options);
 }
 
-function riduciTesto(testo) {
-    if (testo && testo.length > 12) {
-        return [testo.substring(0, 10) + '...', true];
-    } else {
-        return [testo, false];
-    }
-}
 
 
 // Inizializza le righe al caricamento della pagina

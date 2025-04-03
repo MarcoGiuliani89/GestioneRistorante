@@ -124,7 +124,7 @@
         <div class="card h-100">
             <div class="card-body">
                 <h5 class="card-title">
-                    Arrivi e partenze:
+                    Arrivi e partenze del {{servizio_selezionato.data}}:
                 </h5>
                 <div id="arrivi_partenze">
                     {% include 'partials/loading_spinner.html' %}
@@ -224,13 +224,13 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="selzionaServizioLabel">Modal title</h5>
+          <h5 class="modal-title" id="selzionaServizioLabel">Seleziona un servizio</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
             <div class="row">
                 <div class="col-12 col-sm-6">
-                    <label for="data" class="form-label">Seleziona la data:</label>
+                    <label for="data" class="form-label">Data:</label>
                     <input type="date" name="data" id="data" class="form-control" required>
                 </div>
                 <div class="col-12 col-sm-6">

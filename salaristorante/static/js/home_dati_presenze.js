@@ -112,10 +112,10 @@ function popola_arrivi_partenze(dati) {
     button.type = 'button';
     button.setAttribute('data-bs-toggle', 'dropdown');
     button.setAttribute('aria-expanded', 'false');
-    button.innerText = 'Visualizza';
+    button.innerText = 'Visualizza ';
 
     const dropdownMenu = document.createElement('div');
-    dropdownMenu.className = 'dropdown-menu dropdown-menu-end';
+    dropdownMenu.className = 'dropdown-menu dropdown-menu-end border border-secondary border-3';
 
     const partenzeItem = createTable(partenze, 'Partenze', 'text-danger-emphasis');
     const arriviItem = createTable(arrivi, 'Arrivi', 'text-success-emphasis');
@@ -148,7 +148,8 @@ function createTable(data, title, cssClass) {
         const thead = document.createElement('thead');
         thead.innerHTML = `
             <tr>
-                <th scope="col">Tav.</th>
+                <th scope="col" class="border-end">Tav.</th>
+                <th scope="col">Cam.</th>
                 <th scope="col">Nome</th>
                 <th scope="col">A.</th>
                 <th scope="col">B.</th>
@@ -159,6 +160,7 @@ function createTable(data, title, cssClass) {
 
         const tbody = document.createElement('tbody');
         data.forEach(ospite => {
+            console.log(ospite);
             const row = document.createElement('tr');
             let tavoli = ""
             switch (ospite.tavoli.length) {
@@ -181,7 +183,8 @@ function createTable(data, title, cssClass) {
 
 
             row.innerHTML = `
-                <td>${tavoli}</td>
+                <td class="border-end">${tavoli}</td>
+                <td>${formattaCamere(ospite, true)}</td>
                 <td>${ospite.nome}</td>
                 <td>${ospite.adulti}</td>
                 <td>${ospite.bambini}</td>

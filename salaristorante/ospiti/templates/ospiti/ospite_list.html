@@ -35,7 +35,8 @@ Ospiti
                         <th scope="col">Out</th>
                         <th scope="col">A.</th>
                         <th scope="col">B.</th>
-                        <th scope="col">I.</th>                        
+                        <th scope="col">I.</th>
+                        <th scope="col">{% bs_icon '123' %}</th>                        
                         <th scope="col">Note</th>
                 </thead>
                 <tbody>
@@ -118,26 +119,26 @@ Ospiti
                         <td>{{ ospite.default_adulti }}</td>
                         <td>{{ ospite.default_bambini }}</td>
                         <td>{{ ospite.default_infant }}</td>
-                        <td>
-                            
+                        <td class="rooms" data-pkospite="{{ ospite.id }}">
+                            {% include 'partials/loading_spinner.html' %}
+                        </td>
+                        <td>                            
                             {% if ospite.note %}
                                 <a  tabindex="0" type="button" class="btn btn-link text-primary-emphasis p-1" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="left"  data-bs-trigger="focus" data-bs-title="Note ospite: {{ospite}}" data-bs-content="{{ ospite.note }}">
                                     {% bs_icon 'info-circle-fill' %}
-                                </a>
-                                
-                            {% endif %}
-                                
-                            
+                                </a>                                
+                            {% endif %}                              
                         </td>
                     </tr>
+
                     {% empty %}
                         {% if totale_ospiti == 0 %}
                             <tr>
-                                <td colspan="13">❌ Non sono ancora stati inseriti ospiti nel tuo database.</td>
+                                <td colspan="14">❌ Non sono ancora stati inseriti ospiti nel tuo database.</td>
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="13">⚠️ Nessun ospite corrisponde ai filtri di ricerca selezionati.</td>
+                                <td colspan="14">⚠️ Nessun ospite corrisponde ai filtri di ricerca selezionati.</td>
                             </tr>
                         {% endif %}
                     {% endfor %}
@@ -175,6 +176,8 @@ Ospiti
     <script>
         const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
         const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
-    </script>    
+    </script>
+    <script src="{% static 'js/simpleAjax.js' %}"></script>
+    <script src="{% static 'js/methods.js' %}"></script>
     <script src="{% static 'js/lista_ospiti.js' %}"></script>
 {% endblock %}

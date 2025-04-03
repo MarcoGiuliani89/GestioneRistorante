@@ -1,3 +1,30 @@
+// CAMRE OSPITE
+tdrooms = document.querySelectorAll('td.rooms');
+tdrooms.forEach(tdroom => {
+    const pk_ospite = tdroom.getAttribute('data-pkospite');
+    recuperaCamere(pk_ospite, tdroom);
+
+});
+
+function recuperaCamere(pk_ospite, cella) {
+
+    // Recupera i dati per ciascun tavolo
+
+    ajax(`/ospiti/api/ospite-rooms/${pk_ospite}`, {
+        method: 'GET',
+        success: response => {
+            console.log(response.value);
+            cella.innerHTML = formattaCamere(response.value);
+            inizializzaPopovers();
+        },
+        error: response => {
+            console.error(`Errore! STATUS: ${response.status}`);
+            console.error(response.statusText);
+            mostraMessaggio("alert-danger", response.statusText, true);
+        }
+    });
+}
+
 // ELIMINA OSPITE
 const delete_modal = document.getElementById('deleteModal');
 const delete_form = document.getElementById('deleteForm');
@@ -39,3 +66,5 @@ if (delete_modal) {
         delete_modal.setAttribute('data-bs-keyboard', 'false');
     });
 }
+
+

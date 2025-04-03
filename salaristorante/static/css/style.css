@@ -33,3 +33,8 @@ h6,
 .table_tavoli_servizio svg {
     vertical-align: baseline;
 }
+
+#arrivi_partenze .dropdown-menu .dropdown-item:hover,
+#arrivi_partenze .dropdown-menu .dropdown-item:focus {
+    background-color: transparent;
+}

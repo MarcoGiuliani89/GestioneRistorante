@@ -53,36 +53,6 @@ function mostraMessaggio(c, text, permanent = false) {
     }
 }
 
-// function uncheckAll(name) {
-//     document.querySelectorAll(`input[type="checkbox"][name="${name}"]`)
-//         .forEach(el => el.checked = false);
-// }
-
-// function checkAll(name) {
-//     document.querySelectorAll(`input[type="checkbox"][name="${name}"]`)
-//         .forEach(el => el.checked = true);
-// }
-
-// function selectElementContents(el) {
-//     var range = document.createRange();
-//     range.selectNodeContents(el);
-//     var sel = window.getSelection();
-//     sel.removeAllRanges();
-//     sel.addRange(range);
-// }
-
-// function isEmptyObject(value) {
-//     return (
-//         Object.prototype.toString.call(value) === '[object Object]' &&
-//         JSON.stringify(value) === '{}'
-//     );
-// }
-
-// function timeNow() {
-//     let d = new Date()
-//     return `ore: ${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}:${d.getMilliseconds()}`
-// }
-
 
 // Funzione per gestire le chiamate POST
 function apiPost(url, dati) {
@@ -129,5 +99,59 @@ function searchInTable(inputID, tableclass) {
                 }
             }
         }
+    }
+}
+
+
+function creaPopover(options) {
+    const popoverButton = document.createElement('a');
+    popoverButton.setAttribute('tabindex', '0');
+    popoverButton.setAttribute('type', 'button');
+    popoverButton.classList.add(...options.customClass);
+    popoverButton.setAttribute('data-bs-container', options.container);
+    popoverButton.setAttribute('data-bs-html', options.html);
+    popoverButton.setAttribute('data-bs-toggle', 'popover');
+    popoverButton.setAttribute('data-bs-placement', options.placement);
+    popoverButton.setAttribute('data-bs-trigger', 'focus');
+    popoverButton.setAttribute('data-bs-title', options.title);
+    popoverButton.setAttribute('data-bs-content', options.content);
+    popoverButton.setAttribute('data-bs-trigger', options.trigger || 'focus');
+    popoverButton.innerHTML = options.inner_html;
+
+    return popoverButton.outerHTML;
+}
+
+function inizializzaPopovers() {
+    const elementiPopover = document.querySelectorAll('[data-bs-toggle="popover"]');
+    elementiPopover.forEach(elementoPopover => {
+        new bootstrap.Popover(elementoPopover);
+    });
+}
+
+function formattaCamere(ospite, hover = false) {
+    if (!ospite || !ospite.rooms) return "";
+
+    const listaCamere = ospite.rooms.split(",");
+    if (listaCamere.length === 1) return listaCamere[0];
+
+    const popover_options = {
+        container: 'body',
+        html: false,
+        title: `Camere di ${ospite.nome}`,
+        content: ospite.rooms,
+        customClass: ['btn', 'btn-link', "me-1"],
+        placement: 'top',
+        inner_html: `#${listaCamere.length}`,
+        trigger: hover ? 'hover' : 'focus'
+    };
+
+    return creaPopover(popover_options);
+}
+
+function riduciTesto(testo) {
+    if (testo && testo.length > 12) {
+        return [testo.substring(0, 10) + '...', true];
+    } else {
+        return [testo, false];
     }
 }

@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 from servizi.models import Servizio
 from .models import Ospite
@@ -47,6 +48,7 @@ class ArriviPartenzeServizioAPI(APIView):
                     {
                         "id": ospite.id,
                         "nome": ospite.nome,
+                        "rooms": ospite.rooms,
                         "tavoli": list(tavoli),
                         "adulti": prima_presenza.adulti,
                         "bambini": prima_presenza.bambini,
@@ -65,6 +67,7 @@ class ArriviPartenzeServizioAPI(APIView):
                     {
                         "id": ospite.id,
                         "nome": ospite.nome,
+                        "rooms": ospite.rooms,
                         "tavoli": list(tavoli),
                         "adulti": ultima_presenza.adulti,
                         "bambini": ultima_presenza.bambini,
@@ -81,3 +84,14 @@ class ArriviPartenzeServizioAPI(APIView):
         }
 
         return Response(response, status=status.HTTP_200_OK)
+    
+class OspiteRoomsAPIView(APIView):
+    def get(self, request, pk_ospite):
+        ospite = get_object_or_404(Ospite, pk=pk_ospite)
+        data = {
+            "pk": pk_ospite,
+            "nome": ospite.nome,
+            "rooms": ospite.rooms,
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
