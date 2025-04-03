@@ -23,22 +23,29 @@
             <div class="col-12 col-md-4 mb-3">
                 <div data-mdb-input-init class="form-outline">
                     <input type="text" class="form-control" 
-                        name="ospite" placeholder="Nome ospite / gruppo">
+                        name="ospite" placeholder="Nome ospite / gruppo" value="{{ request.GET.ospite }}">
                 </div>                 
             </div>
             <div class="col-12 col-md-4 mb-3">
-                <select name="trattamento" class="form-select" aria-label="Default select example">
+                <select name="trattamento" class="form-select" aria-label="select trattamento">
                     <option value="">-- Seleziona trattamento --</option>
                     {% for t in trattamenti %}
-                        <option value="{{ t.0 }}">{{ t.1 }}</option>
+                        <option value="{{ t.0 }}" {% if request.GET.trattamento|stringformat:"s" == t.0|stringformat:"s" %}selected{% endif %}>
+                            {{ t.1 }}
+                        </option>
                     {% endfor %}
                 </select>                
             </div>
             <div class="col-12 col-md-4 mb-3">
-                <select name="tipologia" class="form-select" aria-label="Default select example">
+                <select name="tipologia" class="form-select" aria-label="select tipologia">
                     <option value="">-- Seleziona tipologia ospite --</option>
                     {% for t in tipologie %}
-                        <option value="{{ t.0 }}">{{ t.1 }}</option>
+                        <option value="{{ t.0 }}" 
+                            {% if request.GET.tipologia|stringformat:"s" == t.0|stringformat:"s" %}
+                                selected
+                            {% endif %}>
+                            {{ t.1 }}
+                        </option>
                     {% endfor %}
                 </select>                
             </div>        
@@ -47,26 +54,31 @@
             <div class="col-12 col-md-6 mb-3">
                 Arrivo da, a:
                 <div class="form-outline mb-1">
-                    <input type="date" class="form-control" name="data_arrivo_inizio">
+                    <input type="date" class="form-control" name="data_arrivo_inizio"
+                            value="{{ request.GET.data_arrivo_inizio }}">
                 </div>
                 <div class="form-outline mb-1">
-                    <input type="date" class="form-control" name="data_arrivo_fine">
+                    <input type="date" class="form-control" name="data_arrivo_fine"
+                            value="{{ request.GET.data_arrivo_fine }}">
                 </div>             
             </div>
             <div class="col-12 col-md-6 mb-3">
                 Partenza da, a:
                 <div class="form-outline mb-1">
-                    <input type="date" class="form-control" name="data_partenza_inizio">
+                    <input type="date" class="form-control" name="data_partenza_inizio" 
+                            value="{{ request.GET.data_partenza_inizio }}">
                 </div>
                 <div class="form-outline mb-1">
-                    <input type="date" class="form-control" name="data_partenza_fine">
+                    <input type="date" class="form-control" name="data_partenza_fine"
+                            value="{{ request.GET.data_partenza_fine }}">
                 </div>             
             </div>
         </div>
         <div class="row">
             <div class="col">
                 <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="presenze_in_piedi" name="presenze_in_piedi">
+                    <input class="form-check-input" type="checkbox" role="switch" id="presenze_in_piedi" name="presenze_in_piedi"
+                            {% if request.GET.presenze_in_piedi == "on" %}checked{% endif %}>
                     <label class="form-check-label" for="presenze_in_piedi">
                         Presenze in Piedi
                     </label>
@@ -78,6 +90,6 @@
             <div class="col text-center">
                 <button type="submit" class="btn btn-light">Applica Filtri</button>
             </div>
-        </div>    
+        </div>
     </form>
 </div>

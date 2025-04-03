@@ -33,7 +33,10 @@
             </a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="{% url 'ospiti_list' %}">
-                Lista Ospiti</a></li>
+                Lista ospiti</a></li>
+              <li><a class="dropdown-item" href="{% url 'ospiti_list' %}?presenze_in_piedi=on">
+                  Ospiti in piedi</a></li>
+              <li><hr class="dropdown-divider"></li>  
               <li><a class="dropdown-item" href="{% url 'crea_ospite' %}">
                 Aggiungi ospite</a></li>
             </ul>
