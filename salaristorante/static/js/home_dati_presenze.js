@@ -178,10 +178,10 @@ function createTable(data, title, cssClass) {
 
                 default:
                     tavoli = `
-                    <button class="btn btn-dark" type="button" data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="hover focus" data-bs-content="<ul class='list-group'>` +
+                    <button class="btn btn-link" type="button" data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="hover focus" data-bs-content="<ul class='list-group'>` +
                         ospite.tavoli.map(tavolo => `<li class='list-group-item'>${tavolo}</li>`).join('') +
                         `</ul>" data-bs-placement="top">
-                      ...
+                        #${ospite.tavoli.length}
                     </button>
                 `;
             }

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}500 Server Error{% endblock title %}
+
+{% block content %}
+<div class="row">
+    <div class="col"></div>
+    <div class="col-10 col-sm-6 col-md-4 text-center">
+        <h2 class="text-center mb-4">- 500 Server Error -</h2>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col text-center">
+        <strong class="text-uppercase text-danger">Ops! C'è stato un errore imprevisto del server.</strong>
+    </div>
+</div>
+{% endblock %}
