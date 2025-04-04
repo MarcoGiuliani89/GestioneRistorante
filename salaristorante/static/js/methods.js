@@ -122,9 +122,10 @@ function creaPopover(options) {
 }
 
 function inizializzaPopovers() {
-    const elementiPopover = document.querySelectorAll('[data-bs-toggle="popover"]');
-    elementiPopover.forEach(elementoPopover => {
-        new bootstrap.Popover(elementoPopover);
+    document.querySelectorAll('[data-bs-toggle="popover"]').forEach(elementoPopover => {
+        if (!bootstrap.Popover.getInstance(elementoPopover)) {
+            new bootstrap.Popover(elementoPopover);
+        }
     });
 }
 

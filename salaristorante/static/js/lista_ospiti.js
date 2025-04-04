@@ -23,7 +23,7 @@ function API_tavoli_assegnati(ospite_pk, cella) {
 
 function formattaTavoli(tavoli, presenze_in_piedi) {
     // Crea l'alert se presenze_in_piedi è vero, altrimenti una stringa vuota
-    const alertMessage = presenze_in_piedi ? `
+    const alertMessage = tavoli.lenght > 0 && presenze_in_piedi ? `
         <a href="/ospiti/${tavoli[0].ospite_id}/assegna_tavoli/" class="me-1" title="Assegna le presenze in piedi!">⚠️</a>` : '';
     switch (tavoli.length) {
         case 0:
