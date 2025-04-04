@@ -27,17 +27,19 @@ Ospiti
                         <th scope="col">#</th>
                         <th scope="col"></th>
                         <th scope="col"></th>
-                        <th scope="col"></th>
+                        <th scope="col" class="border-end"></th>
                         <th scope="col">Ospite</th>
                         <th scope="col"></th>
-                        <th scope="col">Tipologia</th>
+                        <th scope="col" class="border-end">Tipologia</th>
                         <th scope="col">In</th>
-                        <th scope="col">Out</th>
-                        <th scope="col">A.</th>
-                        <th scope="col">B.</th>
-                        <th scope="col">I.</th>
-                        <th scope="col">{% bs_icon '123' %}</th>                        
-                        <th scope="col">Note</th>
+                        <th scope="col" class="border-end">Out</th>
+                        <th scope="col" class="text-center">A.</th>
+                        <th scope="col" class="text-center">B.</th>
+                        <th scope="col" class="text-center border-end">I.</th>
+                        <th scope="col" class="text-center">Tav.</th>
+                        <th scope="col" class="text-center">Cam.</th>  
+                        <th scope="col" class="text-center">Note</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {% now 'Y-m-d' as nowdate %}
@@ -64,7 +66,7 @@ Ospiti
                                 {% bs_icon 'pin-angle-fill' %}
                             </a>
                         </td>
-                        <td>
+                        <td class="border-end">
                             <a class="btn btn-link p-1" href="{% url 'presenze_ospite' ospite.id %}" title="Presenze {{ospite}}">
                                 {% bs_icon 'people-fill' %}
                             </a>
@@ -92,7 +94,7 @@ Ospiti
                                 {{ ospite.trattamento }}
                             </span>                            
                         </td>
-                        <td class="text-center">
+                        <td class="text-center border-end">
                             <span class="badge rounded-pill
                             
                             {% if ospite.get_tipologia_display == 'Individuali' %}
@@ -113,16 +115,17 @@ Ospiti
                         <td class="text-nowrap pe-4 {% if ospite.servizio_arrivo.data|date:'Y-m-d' == nowdate %}text-success-emphasis{% endif %}">
                             {{ ospite.servizio_arrivo.str_short }}
                         </td>
-                        <td class="text-nowrap pe-4 {% if ospite.servizio_partenza.data|date:'Y-m-d' == nowdate %}text-danger-emphasis{% endif %}">
+                        <td class="text-nowrap pe-4 border-end {% if ospite.servizio_partenza.data|date:'Y-m-d' == nowdate %}text-danger-emphasis{% endif %}">
                             {{ ospite.servizio_partenza.str_short }}
                         </td>
-                        <td>{{ ospite.default_adulti }}</td>
-                        <td>{{ ospite.default_bambini }}</td>
-                        <td>{{ ospite.default_infant }}</td>
-                        <td class="rooms" data-pkospite="{{ ospite.id }}">
+                        <td class="text-center">{{ ospite.default_adulti }}</td>
+                        <td class="text-center">{{ ospite.default_bambini }}</td>
+                        <td class="border-end text-center">{{ ospite.default_infant }}</td>
+                        <td class="tavoli text-center" data-pkospite="{{ ospite.id }}">{% include 'partials/loading_spinner.html' %}</td>
+                        <td class="rooms text-center" data-pkospite="{{ ospite.id }}">
                             {% include 'partials/loading_spinner.html' %}
                         </td>
-                        <td>                            
+                        <td class="text-center">                            
                             {% if ospite.note %}
                                 <a  tabindex="0" type="button" class="btn btn-link text-primary-emphasis p-1" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="left"  data-bs-trigger="focus" data-bs-title="Note ospite: {{ospite}}" data-bs-content="{{ ospite.note }}">
                                     {% bs_icon 'info-circle-fill' %}
@@ -134,11 +137,11 @@ Ospiti
                     {% empty %}
                         {% if totale_ospiti == 0 %}
                             <tr>
-                                <td colspan="14">❌ Non sono ancora stati inseriti ospiti nel tuo database.</td>
+                                <td colspan="15">❌ Non sono ancora stati inseriti ospiti nel tuo database.</td>
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="14">⚠️ Nessun ospite corrisponde ai filtri di ricerca selezionati.</td>
+                                <td colspan="15">⚠️ Nessun ospite corrisponde ai filtri di ricerca selezionati.</td>
                             </tr>
                         {% endif %}
                     {% endfor %}
@@ -168,7 +171,22 @@ Ospiti
         </div>
       </div>
     </div>
-    </form>
+</form>
+
+<!-- MODALE DINAMICA ELENCO MULTIPLO TAVOLI -->
+<div class="modal fade" id="tavoliMultipliModal" tabindex="-1" aria-labelledby="tavoliMultipliModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tavoliMultipliModalLabel">Tavoli Assegnati</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+        </div>
+        <div class="modal-body">
+        </div>
+      </div>
+    </div>
+  </div>
+
 {% endblock %}
 
 

@@ -1,3 +1,116 @@
+//TAVOLI OSPITE
+tdtavoli = document.querySelectorAll('td.tavoli');
+tdtavoli.forEach(tdtavolo => {
+    const pk_ospite = tdtavolo.getAttribute('data-pkospite');
+    API_tavoli_assegnati(pk_ospite, tdtavolo);
+})
+function API_tavoli_assegnati(ospite_pk, cella) {
+    ajax(`/tavoli/api/tavoli-assegnati/${ospite_pk}/`, {
+        method: 'GET',
+        success: (response) => {
+            cella.innerHTML = formattaTavoli(response.value);
+            inizializzaPopovers();
+        },
+        error: (response) => {
+            console.error(`Errore! STATUS: ${response.status}`)
+            console.error(response.statusText)
+            mostraMessaggio("alert-danger", response.statusText, true)
+
+        }
+    })
+}
+
+function formattaTavoli(tavoli) {
+    switch (tavoli.length) {
+        case 0:
+            return '❌';
+        case 1:
+            return `${tavoli[0].sala_sigla} ${tavoli[0].codice}`;
+        default:
+            return `${tavoli_multipli(tavoli)}`;
+    }
+}
+
+function tavoli_multipli(tavoli) {
+    if (!tavoli || tavoli.length === 0) return "";
+
+    // Creiamo il pulsante
+    const button = document.createElement('button');
+    button.className = 'btn btn-link p-0 text-decoration-none';
+    button.innerHTML = `#${tavoli.length}`; // Testo del pulsante
+    button.setAttribute('type', 'button');
+    button.setAttribute('data-bs-toggle', 'modal');
+    button.setAttribute('data-bs-target', '#tavoliMultipliModal');
+
+    // Salviamo i tavoli e il nome del cliente in un dataset come stringa JSON
+    button.dataset.tavoli = JSON.stringify(tavoli);
+    button.dataset.nome_ospite = tavoli[0].ospite_nome;
+
+
+    return button.outerHTML;
+}
+document.addEventListener('DOMContentLoaded', function () {
+    const tavoliModal = document.getElementById('tavoliMultipliModal');
+
+    tavoliModal.addEventListener('show.bs.modal', function (event) {
+        // Identifica il bottone che ha attivato la modale
+        const button = event.relatedTarget;
+
+        // Recupera i tavoli salvati al suo interno
+        const tavoli = JSON.parse(button.dataset.tavoli);
+
+        mostraTavoliModal(tavoli);
+    });
+});
+
+function mostraTavoliModal(tavoli) {
+    if (!tavoli || tavoli.length === 0) return;
+
+    // Aggiorniamo il titolo della modale
+    const modalTitle = document.querySelector('#tavoliMultipliModal .modal-title');
+    modalTitle.textContent = `Tavoli assegnati a ${tavoli[0].ospite_nome}`;
+
+
+    // Selezioniamo il body della modale
+    const modalBody = document.querySelector('#tavoliMultipliModal .modal-body');
+    modalBody.innerHTML = '';
+
+    // Creiamo la tabella
+    const table = document.createElement('table');
+    table.classList.add('table', 'table-sm', 'table_tavoli');
+
+    // Intestazione della tabella
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Tavolo</th>
+                <th>Periodo</th>
+            </tr>
+        </thead>
+    `;
+
+    // Corpo della tabella
+    const tbody = document.createElement('tbody');
+    tavoli.forEach(tavolo => {
+        const tr = document.createElement('tr');
+
+        const tdCodice = document.createElement('td');
+        tdCodice.innerHTML = `<span class="badge rounded-pill text-bg-secondary">${tavolo.sala_sigla} ${tavolo.codice}</span>`;
+
+        const tdPeriodo = document.createElement('td');
+        tdPeriodo.className = 'text-muted fs-7';
+        tdPeriodo.textContent = tavolo.periodo;
+
+        tr.appendChild(tdCodice);
+        tr.appendChild(tdPeriodo);
+        tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    modalBody.appendChild(table);
+}
+
+
 // CAMRE OSPITE
 tdrooms = document.querySelectorAll('td.rooms');
 tdrooms.forEach(tdroom => {
@@ -13,7 +126,6 @@ function recuperaCamere(pk_ospite, cella) {
     ajax(`/ospiti/api/ospite-rooms/${pk_ospite}`, {
         method: 'GET',
         success: response => {
-            console.log(response.value);
             cella.innerHTML = formattaCamere(response.value);
             inizializzaPopovers();
         },

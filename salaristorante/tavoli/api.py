@@ -110,7 +110,7 @@ class TavoliAssegnatiAPI(APIView):
                         # Crea una stringa di periodo per il gruppo corrente di presenze
                         period_string = self.get_period_string(current_period, ospite)
                         response_data.append(
-                            self.build_response(tavolo, period_string, current_period)
+                            self.build_response(tavolo, period_string, current_period, ospite)
                         )
                         current_period = [presenza]
 
@@ -118,7 +118,7 @@ class TavoliAssegnatiAPI(APIView):
                 # Gestisce l'ultimo gruppo di presenze
                 period_string = self.get_period_string(current_period, ospite)
                 response_data.append(
-                    self.build_response(tavolo, period_string, current_period)
+                    self.build_response(tavolo, period_string, current_period, ospite)
                 )
 
         # Ordina la risposta in base alle regole specificate in sort_key
@@ -141,7 +141,7 @@ class TavoliAssegnatiAPI(APIView):
         else:
             return f"{start_servizio.str_short} - {end_servizio.str_short}"
 
-    def build_response(self, tavolo, period_string, period):
+    def build_response(self, tavolo, period_string, period, ospite):
         # Costruisce la risposta per ogni tavolo assegnato, includendo gli ID delle presenze dela singola riga
         start_servizio_str = str(period[0].servizio)
         end_servizio_str = str(period[-1].servizio)
@@ -155,6 +155,8 @@ class TavoliAssegnatiAPI(APIView):
             "start_servizio": start_servizio_str,
             "end_servizio": end_servizio_str,
             "presenza_ids": presenza_ids,
+            "ospite_id": ospite.id,
+            "ospite_nome": ospite.nome,
         }
 
     def pasto_str_to_num(self, str):
