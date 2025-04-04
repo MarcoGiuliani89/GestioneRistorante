@@ -8,7 +8,8 @@ function API_tavoli_assegnati(ospite_pk, cella) {
     ajax(`/tavoli/api/tavoli-assegnati/${ospite_pk}/`, {
         method: 'GET',
         success: (response) => {
-            cella.innerHTML = formattaTavoli(response.value);
+            const presenze_in_piedi = (cella.dataset.presenze_in_piedi === "True");
+            cella.innerHTML = formattaTavoli(response.value, presenze_in_piedi);
             inizializzaPopovers();
         },
         error: (response) => {
@@ -20,14 +21,17 @@ function API_tavoli_assegnati(ospite_pk, cella) {
     })
 }
 
-function formattaTavoli(tavoli) {
+function formattaTavoli(tavoli, presenze_in_piedi) {
+    // Crea l'alert se presenze_in_piedi è vero, altrimenti una stringa vuota
+    const alertMessage = presenze_in_piedi ? `
+        <a href="/ospiti/${tavoli[0].ospite_id}/assegna_tavoli/" class="me-1" title="Assegna le presenze in piedi!">⚠️</a>` : '';
     switch (tavoli.length) {
         case 0:
             return '❌';
         case 1:
-            return `${tavoli[0].sala_sigla} ${tavoli[0].codice}`;
+            return alertMessage + `${tavoli[0].sala_sigla} ${tavoli[0].codice}`;
         default:
-            return `${tavoli_multipli(tavoli)}`;
+            return alertMessage + `${tavoli_multipli(tavoli)}`;
     }
 }
 

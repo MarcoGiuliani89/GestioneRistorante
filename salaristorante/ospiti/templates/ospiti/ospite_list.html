@@ -121,7 +121,7 @@ Ospiti
                         <td class="text-center">{{ ospite.default_adulti }}</td>
                         <td class="text-center">{{ ospite.default_bambini }}</td>
                         <td class="border-end text-center">{{ ospite.default_infant }}</td>
-                        <td class="tavoli text-center" data-pkospite="{{ ospite.id }}">{% include 'partials/loading_spinner.html' %}</td>
+                        <td class="tavoli text-center" data-pkospite="{{ ospite.id }}" data-presenze_in_piedi="{{ ospite.presenze_in_piedi }}">{% include 'partials/loading_spinner.html' %}</td>
                         <td class="rooms text-center" data-pkospite="{{ ospite.id }}">
                             {% include 'partials/loading_spinner.html' %}
                         </td>
