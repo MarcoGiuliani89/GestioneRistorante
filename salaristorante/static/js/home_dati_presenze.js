@@ -125,6 +125,11 @@ function popola_arrivi_partenze(dati) {
     dropdown.appendChild(button);
     dropdown.appendChild(dropdownMenu);
     container.appendChild(dropdown);
+
+    // Impedisce la chiusura del dropdown quando si clicca al suo interno
+    dropdownMenu.addEventListener('click', function (event) {
+        event.stopPropagation();
+    });
 }
 
 
