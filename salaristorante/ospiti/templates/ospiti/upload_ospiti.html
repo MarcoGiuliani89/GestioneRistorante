@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load bootstrap_icons %}
+
+
+{% block title %}
+Upload Ospiti  
+{% endblock %}
+    
+
+{% block content %}
+<div class="d-flex">
+    <div class="me-auto d-flex">
+        <h4>Upload ospiti</h4>
+    </div>
+</div>
+
+<form id="uploadForm" enctype="multipart/form-data" class="mt-4">
+    <input type="file" name="file" id="fileInput" class="form-control">
+    <button type="submit" class="btn btn-primary mt-2">Carica</button>
+</form>
+
+<pre id="output"></pre>
+
+{% endblock content %}
+
+
+{% block extra_js %}
+<script>
+    document.getElementById("uploadForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        
+        let formData = new FormData();
+        formData.append("file", document.getElementById("fileInput").files[0]);
+    
+        fetch("{% url 'importa_ospiti' %}", {
+            method: "POST",
+            body: formData,
+            headers: { "X-CSRFToken": "{{ csrf_token }}" }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => console.error("Errore:", error));
+    });
+    </script> 
+{% endblock %}
+    

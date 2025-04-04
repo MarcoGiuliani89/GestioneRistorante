@@ -6,7 +6,9 @@ from .views import (
     OspiteUpdateView,
     OspiteDeleteView,
 )
+from .views_import_ospiti import upload_ospiti
 from .api import OspitiInPiediServizioAPI, ArriviPartenzeServizioAPI, OspiteRoomsAPIView
+
 
 urlpatterns = [
     # VIEWS
@@ -35,4 +37,6 @@ urlpatterns = [
         OspiteRoomsAPIView.as_view(),
         name="api_ospite_rooms",
     ),
+    # IMPORTA OSPITI
+    path("importa-ospiti/", upload_ospiti, name="importa_ospiti"),
 ]

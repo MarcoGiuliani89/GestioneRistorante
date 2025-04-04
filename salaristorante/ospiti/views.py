@@ -177,3 +177,5 @@ class OspiteDeleteView(DeleteView):
         query_string = self.request.session.get("ospiti_filtro", "")         
 
         return f"{base_url}?{query_string}" if query_string else base_url
+
+
