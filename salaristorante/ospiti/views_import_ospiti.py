@@ -1,9 +1,12 @@
 import os, json, re, string
 import pandas as pd
+from django.apps import apps
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
 from django.shortcuts import render
+
+from core.models import ExcelOspitiMapping
 
 def upload_ospiti(request):
     if request.method == "POST" and request.FILES.get("file"):
@@ -45,8 +48,27 @@ def upload_ospiti(request):
 
             # # Conversione delle prime righe in JSON pulito
             # preview_data = json.loads(json.dumps(df.head(20).to_dict(orient="records"), default=str))
+
+            # aggiungo i campi di Ospite per poter aggiornare la mappatura colonne
+            Ospite = apps.get_model("ospiti", "Ospite")
+            valid_fields = {
+                f.name: f.verbose_name.title()
+                for f in Ospite._meta.get_fields()
+                if f.concrete and f.name not in ["id", "data_import"]
+            }
+
             
-            return JsonResponse({"status": "success", "preview": data})
+            # recupero la mappatura delle colonne
+            mappatura = ExcelOspitiMapping.objects.first()
+            if mappatura:
+                mappatura = mappatura.mapping
+            
+            return JsonResponse({
+                "status": "success", 
+                "preview": data,
+                "campi_mappatura": valid_fields,
+                "mappatura_salvata": mappatura
+            })
         
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)})

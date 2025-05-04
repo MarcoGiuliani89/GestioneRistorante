@@ -25,6 +25,7 @@ Upload Ospiti
 <div class="table-responsive mt-4" id="previewContainer" style="display: none;">
     <table class="table table-bordered table-sm" id="previewTable">
         <thead class="table-light">
+            <tr id="selectRow"></tr>
             <tr id="tableHeader">
                 <th>#</th>
             </tr>
@@ -45,6 +46,7 @@ Upload Ospiti
 {% block extra_js %}
 <script>
     const url_importa_ospiti = '{% url "importa_ospiti" %}';
+    const url_mappatura = '{% url "api_excel_mapping" %}';
     const csrf_token = '{{csrf_token}}';
 </script>
 <script src="{% static 'js/upload_ospiti_lettura.js' %}"></script> 
