@@ -48,6 +48,7 @@ class Ospite(models.Model):
     trattamento = models.CharField(
         max_length=4, choices=TRATTAMENTO_CHOICES, default=HB
     )
+    data_import = models.DateTimeField(null=True, blank=True)
 
     @property
     def presenze_in_piedi(self):
