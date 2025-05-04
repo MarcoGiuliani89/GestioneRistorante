@@ -3,7 +3,9 @@ from datetime import datetime
 from django.db.models import Q, Prefetch
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .methods import ordinaTavoli
@@ -15,6 +17,7 @@ from servizi.api import EditNoteBaseAPI
 from servizi.models import Servizio, Presenza
 
 
+@permission_classes([IsAuthenticated])
 class TavoliDisponibiliAPI(APIView):
     """
     API che restituisce tutti i tavoli disponibili nel periodo di tempo richiesto.
@@ -54,6 +57,7 @@ class TavoliDisponibiliAPI(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@permission_classes([IsAuthenticated])
 class TavoliAssegnatiAPI(APIView):
     """
     API che restituisce tutti i tavoli assegnati all'ospite specificato.
@@ -220,7 +224,7 @@ class TavoliAssegnatiAPI(APIView):
             return (2, float("inf"), float("inf"), float("inf"), float("inf"), codice_num)
 
 
-
+@permission_classes([IsAuthenticated])
 class PeriodiInPiediOspite(APIView):
     """
     API per ottenere tutti i periodi consecutivi in cui un ospite non è assegnato a nessun tavolo.
@@ -289,6 +293,7 @@ class PeriodiInPiediOspite(APIView):
         )
 
 
+@permission_classes([IsAuthenticated])
 class DatiTavoloServizioAPI(APIView):
 
     def get(self, request):
@@ -349,6 +354,7 @@ class DatiTavoloServizioAPI(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
+@permission_classes([IsAuthenticated])
 class ToggleTavoloUtilizzabileAPI(APIView):
 
     def post(self, request, tavolo_id):
@@ -361,6 +367,7 @@ class ToggleTavoloUtilizzabileAPI(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
+@permission_classes([IsAuthenticated])
 class EditMaxPostiTavoloAPI(APIView):
 
     def post(self, request):
@@ -390,6 +397,7 @@ class EditMaxPostiTavoloAPI(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
+@permission_classes([IsAuthenticated])
 class EditNoteTavoloAPI(EditNoteBaseAPI):
     model = Tavolo
     id_field = "tavolo_id"

@@ -1,13 +1,15 @@
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from ospiti.models import Ospite
 from .models import Presenza, Servizio
 
-
+@permission_classes([IsAuthenticated])
 class ServiziPresenzeOspiteAPI(APIView):
     def get(self, request, pk):
         # Recupera l'ospite specificato
@@ -28,6 +30,7 @@ class ServiziPresenzeOspiteAPI(APIView):
         return Response(response_data, status=status.HTTP_200_OK)
 
 
+@permission_classes([IsAuthenticated])
 class BaseEditPresenzaFieldAPI(APIView):
     """
     Classe base per modificare adulti, bambini e infant di una Presenza
@@ -70,21 +73,25 @@ class BaseEditPresenzaFieldAPI(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
+@permission_classes([IsAuthenticated])
 class EditAdultiPresenza(BaseEditPresenzaFieldAPI):
     field_name = "adulti"
     default_field_name = "default_adulti"
 
 
+@permission_classes([IsAuthenticated])
 class EditBambiniPresenza(BaseEditPresenzaFieldAPI):
     field_name = "bambini"
     default_field_name = "default_bambini"
 
 
+@permission_classes([IsAuthenticated])
 class EditInfantPresenza(BaseEditPresenzaFieldAPI):
     field_name = "infant"
     default_field_name = "default_infant"
 
 
+@permission_classes([IsAuthenticated])
 class TotaliPresenzaAPI(APIView):
     def get(self, request, presenza_id):
         presenza = get_object_or_404(Presenza, id=presenza_id)
@@ -100,6 +107,7 @@ class TotaliPresenzaAPI(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
+@permission_classes([IsAuthenticated])
 class EditNoteBaseAPI(APIView):
     model = None
     id_field = None
@@ -117,16 +125,19 @@ class EditNoteBaseAPI(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
+@permission_classes([IsAuthenticated])
 class EditNotePresenzaAPI(EditNoteBaseAPI):
     model = Presenza
     id_field = "presenza_id"
 
 
+@permission_classes([IsAuthenticated])
 class EditNoteServizioAPI(EditNoteBaseAPI):
     model = Servizio
     id_field = "servizio_id"
 
 
+@permission_classes([IsAuthenticated])
 class TotalePresenzePerServizioAPI(APIView):
     def get(self, request, servizio_id):
         servizio = get_object_or_404(Servizio, id=servizio_id)

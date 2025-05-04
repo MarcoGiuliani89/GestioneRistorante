@@ -1,5 +1,8 @@
 from rest_framework import status
+
+from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 
@@ -8,6 +11,7 @@ from .models import Ospite
 from .serializers import OspiteInPiediSerializer
 
 
+@permission_classes([IsAuthenticated])
 class OspitiInPiediServizioAPI(APIView):
     def get(self, request, servizio_id):
         # Ottimizza la query utilizzando select_related per le ForeignKey
@@ -25,6 +29,7 @@ class OspitiInPiediServizioAPI(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
+@permission_classes([IsAuthenticated])
 class ArriviPartenzeServizioAPI(APIView):
     def get(self, request, servizio_id):
         try:
@@ -84,7 +89,8 @@ class ArriviPartenzeServizioAPI(APIView):
         }
 
         return Response(response, status=status.HTTP_200_OK)
-    
+
+@permission_classes([IsAuthenticated])    
 class OspiteRoomsAPIView(APIView):
     def get(self, request, pk_ospite):
         ospite = get_object_or_404(Ospite, pk=pk_ospite)
